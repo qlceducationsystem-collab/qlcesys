@@ -71,3 +71,28 @@ export const options = {
   monitoring: toOptions(MONITORING_LEVELS),
   leverage: LEVERAGE_OPTIONS.map((l) => ({ value: l, label: `${l}x` })),
 };
+
+export const BUDGET_LABELS = { ...EXPENSE_CATEGORIES, AHORRO: 'Ahorro', INVERSION: 'Inversión' };
+export const DEBT_TYPES = {
+  TARJETA_CREDITO: 'Tarjeta de crédito', PRESTAMO_PERSONAL: 'Préstamo personal', CREDITO_AUTOMOTRIZ: 'Crédito automotriz',
+  HIPOTECA: 'Hipoteca', CREDITO_NOMINA: 'Crédito de nómina', PRESTAMO_FAMILIAR: 'Préstamo familiar', BNPL: 'Compra a meses / BNPL',
+  DEUDA_NEGOCIO: 'Deuda de negocio', IMPUESTOS: 'Impuestos pendientes', OTRA: 'Otra obligación',
+};
+export const TAX_ITEM_TYPES = {
+  NEGOCIO: 'Negocio', INVERSION_FINANCIERA: 'Inversión financiera', BIEN_INMUEBLE: 'Bien inmueble', RENTA_ACTIVOS: 'Renta de activos',
+  PARTICIPACION_EMPRESA: 'Participación en empresa', CRIPTOACTIVOS: 'Criptoactivos', OTRA: 'Otra inversión',
+};
+export const RESULT_PERIODS = { MENSUAL: 'Mensual', TRIMESTRAL: 'Trimestral', SEMESTRAL: 'Semestral', ANUAL: 'Anual', PERSONALIZADO: 'Personalizado' };
+export const SCENARIO_TYPES = { AHORRO: 'Ahorro', INVERSION: 'Inversión', META: 'Meta financiera', EFECTIVO: 'Efectivo', OTRO: 'Otro' };
+export const ESSENTIAL_SOURCES = {
+  MOVEMENTS: 'Movimientos reales de Ingresos y gastos',
+  BUDGET: 'Presupuesto planeado del Módulo 7',
+  DECLARED: 'Monto declarado por ti',
+  NONE: 'Sin información',
+};
+export const BLOCK_TITLES = { 1: 'Fundamentos, inversión y riesgo', 2: 'Organización y crecimiento patrimonial' };
+
+options.debtTypes = toOptions(DEBT_TYPES);
+options.taxItemTypes = toOptions(TAX_ITEM_TYPES);
+options.resultPeriods = toOptions(RESULT_PERIODS);
+options.scenarioTypes = toOptions(SCENARIO_TYPES);

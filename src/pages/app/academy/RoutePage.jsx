@@ -16,7 +16,7 @@ const ROUTES = [
     text: 'Quiero entender las inversiones de mayor riesgo, el trading, la volatilidad, el apalancamiento y cómo funciona una operación profesional.',
     modules: [['4', 'Inversiones de mayor riesgo', 'Riesgo, volatilidad, apalancamiento y drawdown.'], ['5', 'Trading', 'Cómo funciona una operación y sus riesgos.'], ['6', 'Operación profesional', 'Datos, ejecución, gestión de riesgo y tecnología.']],
     cta: 'Explorar ruta de mercados',
-    note: 'Antes del Módulo 4 se aplicará un filtro de conocimientos básicos. Esta selección no activa ninguna estrategia, cuenta, operación ni asignación de capital.',
+    note: 'Antes del Módulo 4 se aplicará un filtro de conocimientos básicos. La ruta es opcional: el Bloque 2 (M7–M12) sigue disponible sin completarla. Esta selección no activa ninguna estrategia, cuenta, operación ni asignación de capital.',
   },
   {
     key: 'PATRIMONIAL',
@@ -25,7 +25,7 @@ const ROUTES = [
     text: 'No me interesa estudiar trading ni estrategias de mayor riesgo por ahora. Quiero continuar con la organización y crecimiento de mi patrimonio.',
     modules: [['7', 'Presupuesto y control financiero', 'Ingresos, gastos y capacidad de ahorro.'], ['8', 'Fondo de emergencia y liquidez', 'Reserva y capacidad de respuesta.'], ['9–12', 'Organización y crecimiento patrimonial', 'Deudas, impuestos, inflación y plan patrimonial.']],
     cta: 'Continuar con educación patrimonial',
-    note: 'El Bloque 2 estará disponible en una siguiente etapa. No se registrará ninguna exposición ni actividad relacionada con trading.',
+    note: 'Continúas directamente con el Módulo 7. No se registrará ninguna exposición ni actividad relacionada con trading.',
   },
 ];
 
@@ -45,7 +45,7 @@ export default function RoutePage() {
       await api.put('/academy/route', { route });
       await overview.reload();
       setState({ busy: null, error: null });
-      if (route === 'MARKETS') navigate(`${basePath}/academia/filtro`);
+      navigate(route === 'MARKETS' ? `${basePath}/academia/filtro` : `${basePath}/academia/m/7`);
     } catch (error) {
       setState({ busy: null, error });
     }

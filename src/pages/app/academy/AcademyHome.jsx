@@ -39,9 +39,10 @@ export default function AcademyHome() {
               <p className="subtitle">Educación → herramienta → ejercicio → registro → seguimiento. Cada módulo utiliza la información construida en el anterior.</p>
             </div>
             <div className="academy-progress">
-              <span>Bloque 1</span>
-              <strong>{a.progressPct}%</strong>
+              <span>Bloque 1 · {a.progressPct}%</span>
               <ProgressBar value={a.progressPct} label="Progreso del bloque 1" />
+              <span>Bloque 2 · {a.block2ProgressPct}%</span>
+              <ProgressBar value={a.block2ProgressPct} label="Progreso del bloque 2" />
               {a.next && <Link className="btn-primary" to={modulePath(basePath, a.next.number)}>Continuar con M{a.next.number}</Link>}
             </div>
           </header>
@@ -75,16 +76,10 @@ export default function AcademyHome() {
           <section className="academy-block">
             <div className="block-head">
               <h2>Bloque 2 · Organización y crecimiento patrimonial</h2>
-              <span className="muted small">Bloque 2 disponible en una siguiente etapa</span>
+              <span className="muted small">{a.block2ProgressPct}% completado · La Ruta de Mercados (M4–M6) es opcional</span>
             </div>
-            <div className="tiles is-muted">
-              {a.block2.map((m) => (
-                <div key={m.number} className="module-tile state-COMING_SOON">
-                  <div className="tile-top"><span className="tile-n">{String(m.number).padStart(2, '0')}</span><Pill variant="muted">Siguiente etapa</Pill></div>
-                  <h3>{m.title}</h3>
-                  <p>{m.summary}</p>
-                </div>
-              ))}
+            <div className="tiles">
+              {a.block2.map((m) => <ModuleTile key={m.number} m={m} to={{ path: modulePath(basePath, m.number), admin: isAdminView }} />)}
             </div>
           </section>
         </div>

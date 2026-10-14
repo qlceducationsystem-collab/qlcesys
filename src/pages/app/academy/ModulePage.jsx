@@ -13,9 +13,18 @@ import { M1Diagnosis } from '../../../features/academy/tools/M1Diagnosis.jsx';
 import { M2ProductMap } from '../../../features/academy/tools/M2ProductMap.jsx';
 import { M3PortfolioBuilder } from '../../../features/academy/tools/M3PortfolioBuilder.jsx';
 import { M4RiskSimulator, M5TradeSimulator, M6ProfessionalSimulator } from '../../../features/academy/tools/SimulationTools.jsx';
+import { M7Budget } from '../../../features/academy/tools/M7Budget.jsx';
+import { M8EmergencyFund } from '../../../features/academy/tools/M8EmergencyFund.jsx';
+import { M9Obligations } from '../../../features/academy/tools/M9Obligations.jsx';
+import { M10NetReturn } from '../../../features/academy/tools/M10NetReturn.jsx';
+import { M11Inflation } from '../../../features/academy/tools/M11Inflation.jsx';
+import { M12AnnualReview } from '../../../features/academy/tools/M12AnnualReview.jsx';
 
-const TOOLS = { 1: M1Diagnosis, 2: M2ProductMap, 3: M3PortfolioBuilder, 4: M4RiskSimulator, 5: M5TradeSimulator, 6: M6ProfessionalSimulator };
-const NEXT_STEP = { 3: 'ruta', 6: null };
+const TOOLS = {
+  1: M1Diagnosis, 2: M2ProductMap, 3: M3PortfolioBuilder, 4: M4RiskSimulator, 5: M5TradeSimulator, 6: M6ProfessionalSimulator,
+  7: M7Budget, 8: M8EmergencyFund, 9: M9Obligations, 10: M10NetReturn, 11: M11Inflation, 12: M12AnnualReview,
+};
+const NEXT_STEP = { 3: 'ruta', 6: 'm/7', 12: null };
 
 function Lesson({ module }) {
   return (
@@ -72,7 +81,10 @@ function Progress({ module, onDone }) {
         </div>
       )}
       {module.number === 6 && module.status === 'COMPLETED' && (
-        <p className="muted small">Completaste la Ruta de Mercados. Puedes continuar con la educación patrimonial (Módulos 7–12) en la siguiente etapa. No estás obligado a operar ni a utilizar QLC.</p>
+        <p className="muted small">Completaste la Ruta de Mercados. Continúa con la educación patrimonial en el Módulo 7. No estás obligado a operar ni a utilizar QLC.</p>
+      )}
+      {module.number === 12 && module.status === 'COMPLETED' && (
+        <p className="muted small">Completaste los 12 módulos del programa. Tu revisión anual queda guardada en tu historial patrimonial.</p>
       )}
     </ToolCard>
   );
@@ -89,7 +101,7 @@ export default function ModulePage() {
   if (overview.error) return <ErrorState error={overview.error} onRetry={overview.reload} />;
   if (mod.error) {
     return (
-      <ModuleLayout overview={overview.data} kicker={`Módulo ${number}`} title="Módulo no disponible">
+      <ModuleLayout overview={overview.data} block={number > 6 ? 2 : 1} kicker={`Módulo ${number}`} title="Módulo no disponible">
         <ErrorState error={mod.error} />
         <div className="form-actions"><Link className="btn-secondary" to={`${basePath}/academia`}>Volver a la academia</Link></div>
       </ModuleLayout>
@@ -105,6 +117,7 @@ export default function ModulePage() {
   return (
     <ModuleLayout
       overview={overview.data}
+      block={m.block}
       kicker={`Módulo ${number}`}
       title={`${m.title}`}
       subtitle={m.tool?.question}

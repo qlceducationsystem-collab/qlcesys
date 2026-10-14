@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { useWorkspace } from '../../context/WorkspaceContext.jsx';
-import { MODULE_STATE } from '../../utils/labels.js';
+import { BLOCK_TITLES, MODULE_STATE } from '../../utils/labels.js';
 import { ProgressBar } from '../../components/ui/Card.jsx';
 import { modulePath } from './useAcademy.js';
 
@@ -22,8 +22,8 @@ export function ModuleNav({ overview }) {
   const [m1, m2, m3, m4, m5, m6] = overview.block1;
   const step = (m) => <StepLink key={m.number} to={modulePath(basePath, m.number)} number={m.number} title={m.title} state={m.state} />;
   return (
-    <nav className="ml-nav" aria-label="Bloque 1">
-      <div className="ml-nav-group">Bloque 1 · Fundamentos, inversión y riesgo</div>
+    <nav className="ml-nav" aria-label="Módulos de la academia">
+      <div className="ml-nav-group">Bloque 1 · {BLOCK_TITLES[1]}</div>
       {[m1, m2, m3].map(step)}
       <StepLink
         to={`${basePath}/academia/ruta`}
@@ -42,20 +42,21 @@ export function ModuleNav({ overview }) {
           {[m4, m5, m6].map(step)}
         </>
       )}
-      <div className="ml-nav-group">Bloque 2 · Organización patrimonial</div>
-      <div className="ml-step tone-muted is-static"><span className="ml-step-n">7–12</span><span className="ml-step-text"><b>Siguiente etapa</b><small>Disponible próximamente</small></span></div>
+      <div className="ml-nav-group">Bloque 2 · {BLOCK_TITLES[2]}</div>
+      {overview.block2.map(step)}
     </nav>
   );
 }
 
-export function ModuleLayout({ overview, kicker, title, subtitle, actions, children }) {
+export function ModuleLayout({ overview, block = 1, kicker, title, subtitle, actions, children }) {
+  const progress = block === 2 ? overview.block2ProgressPct : overview.progressPct;
   return (
     <div className="ml">
       <header className="ml-header">
         <div className="ml-crumbs">
           <span>QLC Financial Education</span>
           <span aria-hidden="true">/</span>
-          <span>Bloque 1</span>
+          <span>Bloque {block}</span>
           {kicker && (<><span aria-hidden="true">/</span><b>{kicker}</b></>)}
         </div>
         <div className="ml-title-row">
@@ -66,8 +67,8 @@ export function ModuleLayout({ overview, kicker, title, subtitle, actions, child
           {actions}
         </div>
         <div className="ml-progress">
-          <ProgressBar value={overview.progressPct} label="Progreso del bloque 1" />
-          <span>{overview.progressPct}% del bloque 1</span>
+          <ProgressBar value={progress} label={`Progreso del bloque ${block}`} />
+          <span>{progress}% del bloque {block}</span>
         </div>
       </header>
       <div className="ml-body">

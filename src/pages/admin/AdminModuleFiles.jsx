@@ -50,7 +50,7 @@ export default function AdminModuleFiles() {
     <>
       <PageHeader kicker="Contenido" title="Academia / archivos" subtitle="Imágenes en Cloudinary · videos y documentos en Google Drive. Neon guarda solo los metadatos." />
       <div className="segmented wide" role="group" aria-label="Módulo">
-        {[1, 2, 3, 4, 5, 6].map((n) => <button key={n} type="button" className={moduleNumber === n ? 'is-active' : ''} onClick={() => setModuleNumber(n)}>Módulo {n}</button>)}
+        {Array.from({ length: 12 }, (_, i) => i + 1).map((n) => <button key={n} type="button" className={moduleNumber === n ? 'is-active' : ''} onClick={() => setModuleNumber(n)}>Módulo {n}</button>)}
       </div>
       <Notice>Los videos de contenido de pago no se hacen públicos: se entregan desde el servidor solo a usuarios con acceso completo, mediante enlaces temporales.</Notice>
       <Card

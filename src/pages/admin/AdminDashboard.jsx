@@ -77,6 +77,23 @@ export default function AdminDashboard() {
                 ]} />
               </Card>
             </div>
+            <StatGrid>
+              <StatCard label="Usuarios que llegaron al Bloque 2" value={count(m.block2.reached)} accent />
+              <StatCard label="Revisiones anuales generadas" value={count(m.block2.annualReviews)} delta="Módulo 12" />
+              <StatCard label="Completaron M7" value={`${m.block2.modules[0]?.completionPct ?? 0}%`} delta="De quienes llegaron al Bloque 2" />
+              <StatCard label="Completaron M12" value={`${m.block2.modules[5]?.completionPct ?? 0}%`} delta="De quienes llegaron al Bloque 2" />
+            </StatGrid>
+            <div className="layout">
+              <Card title="Módulos iniciados y completados · Bloque 2"><ModuleFunnel modules={m.modules.filter((x) => x.module >= 7)} /></Card>
+              <Card title="Avance por módulo · Bloque 2">
+                <DataTable rowKey="module" rows={m.block2.modules} columns={[
+                  { key: 'module', label: 'Módulo', render: (r) => `M${r.module}` },
+                  { key: 'started', label: 'Iniciados', align: 'right' },
+                  { key: 'completed', label: 'Completados', align: 'right' },
+                  { key: 'completionPct', label: '% completó', align: 'right', render: (r) => `${r.completionPct}%` },
+                ]} />
+              </Card>
+            </div>
             <Card title="Secciones públicas visitadas">
               <DataTable rowKey="key" rows={m.sections} empty="Sin visitas registradas" columns={[
                 { key: 'key', label: 'Sección' },

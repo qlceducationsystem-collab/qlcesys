@@ -6,6 +6,7 @@ import { ClosedNotice } from '../../components/finance/Finance.jsx';
 import { RecordManager } from '../../features/records/RecordManager.jsx';
 import { RequirePeriod } from '../../features/periods/PeriodControls.jsx';
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, options } from '../../utils/labels.js';
+import { BudgetComparison, usePatrimonial } from '../../features/patrimonial/PatrimonialCards.jsx';
 
 const recordFields = (catOptions, labels) => [
   { name: 'category', label: 'Categoría', type: 'select', options: catOptions, display: (v) => labels[v] },
@@ -20,7 +21,9 @@ const recordColumns = (labels) => [
 const toForm = (r) => ({ category: r.category, description: r.description, amount: Number(r.amount) });
 
 function Body() {
-  const { summary: s, reload } = usePeriodSummary();
+  const { summary: s, reload: reloadSummary } = usePeriodSummary();
+  const patrimonial = usePatrimonial();
+  const reload = () => Promise.all([reloadSummary(), patrimonial.reload()]);
   const c = s?.cashflow;
   return (
     <>
@@ -44,6 +47,7 @@ function Body() {
           </div>
         </>
       )}
+      {patrimonial.data && <BudgetComparison budget={patrimonial.data.budget} />}
       <div className="layout even">
         <RecordManager endpoint="/incomes" title="Ingresos" addLabel="+ Ingreso" fields={recordFields(options.income, INCOME_CATEGORIES)}
           columns={recordColumns(INCOME_CATEGORIES)} toForm={toForm} onChanged={reload} emptyText="Sin ingresos registrados en este periodo." />

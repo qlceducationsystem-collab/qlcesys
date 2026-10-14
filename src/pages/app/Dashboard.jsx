@@ -9,6 +9,7 @@ import { BarChart } from '../../components/charts/Charts.jsx';
 import { ReconciliationBanner } from '../../components/finance/Finance.jsx';
 import { AllocationBars, ReadingCard } from '../../features/academy/AllocationView.jsx';
 import { modulePath } from '../../features/academy/useAcademy.js';
+import { Block2Summary, EmergencyFundCard } from '../../features/patrimonial/PatrimonialCards.jsx';
 
 function Onboarding({ academy }) {
   const { basePath } = useWorkspace();
@@ -93,6 +94,10 @@ function DashboardBody({ d }) {
       <div className="layout">
         <AcademyCard academy={d.academy} />
         <DiagnosisCard diagnosis={d.diagnosis} />
+      </div>
+      <div className="layout">
+        <Block2Summary patrimonial={d.patrimonial} academy={d.academy} />
+        <EmergencyFundCard emergency={d.patrimonial.emergency} />
       </div>
       <div className="layout">
         <Card title="Allocation actual">

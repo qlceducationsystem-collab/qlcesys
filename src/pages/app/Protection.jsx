@@ -8,6 +8,7 @@ import { ClosedNotice } from '../../components/finance/Finance.jsx';
 import { RecordManager } from '../../features/records/RecordManager.jsx';
 import { RequirePeriod } from '../../features/periods/PeriodControls.jsx';
 import { INSURANCE_TYPES, PROTECTION_TYPES, options } from '../../utils/labels.js';
+import { DebtCostCard, EmergencyFundCard, usePatrimonial } from '../../features/patrimonial/PatrimonialCards.jsx';
 
 const fields = [
   { name: 'type', label: 'Tipo', type: 'select', options: options.protection, display: (v) => PROTECTION_TYPES[v] },
@@ -26,6 +27,7 @@ function Body() {
   const { api } = useWorkspace();
   const { summary: s, reload, period } = usePeriodSummary();
   const hist = useAsync(() => api.get('/periods/history'), [api, period?.id]);
+  const patrimonial = usePatrimonial();
   const i = s?.indicators;
   return (
     <>
@@ -44,8 +46,14 @@ function Body() {
           <StatCard label="Seguro de vida" value={i.hasLifeInsurance ? 'Registrado' : 'Sin registro'} />
         </StatGrid>
       )}
+      {patrimonial.data && (
+        <div className="layout even">
+          <EmergencyFundCard emergency={patrimonial.data.emergency} />
+          <DebtCostCard debts={patrimonial.data.debts} />
+        </div>
+      )}
       <RecordManager endpoint="/protection" title="Liquidez, fondo de emergencia, reservas y coberturas" addLabel="+ Registrar"
-        fields={fields} columns={columns} onChanged={() => { reload(); hist.reload(); }}
+        fields={fields} columns={columns} onChanged={() => { reload(); hist.reload(); patrimonial.reload(); }}
         toForm={(r) => ({ type: r.type, name: r.name, amount: Number(r.amount), notes: r.notes || '' })}
         emptyText="Registra tu fondo de emergencia, liquidez y coberturas." />
       <Card title="Evolución de la liquidez">

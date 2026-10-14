@@ -53,3 +53,30 @@ export function SimBadge() {
 export function RealBadge() {
   return <span className="real-badge">Información real · Alimenta tu plataforma</span>;
 }
+
+const KIND_BADGES = {
+  REAL: ['real-badge', 'Dato real'],
+  PLAN: ['plan-badge', 'Plan · no es un movimiento'],
+  ESTIMATE: ['estimate-badge', 'Estimación · no modifica tu realidad'],
+  SIMULATION: ['sim-badge', 'Simulación educativa · No modifica tu patrimonio'],
+};
+
+export function KindBadge({ kind }) {
+  const [className, label] = KIND_BADGES[kind];
+  return <span className={className}>{label}</span>;
+}
+
+export function SaveStatus({ action, savedText = 'Cambios guardados.' }) {
+  if (action.busy) return <span className="save-status is-busy" role="status">Guardando…</span>;
+  if (action.saved) return <span className="save-status is-saved" role="status">✓ {savedText}</span>;
+  return null;
+}
+
+export function ToolSkeleton() {
+  return (
+    <div className="tool" aria-busy="true" aria-label="Cargando herramienta">
+      <div className="skeleton-grid">{[0, 1, 2, 3].map((i) => <div key={i} className="skeleton" />)}</div>
+      <div className="skeleton block" />
+    </div>
+  );
+}
