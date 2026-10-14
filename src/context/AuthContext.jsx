@@ -3,6 +3,17 @@ import { api, setUnauthorizedHandler, tokenStore } from '../api/client.js';
 
 const AuthContext = createContext(null);
 const NO_ACCESS = { access: { full: null, tools: [], hasAny: false, mode: 'NONE' }, offers: [], provider: 'MOCK' };
+const CHALLENGE_KEY = 'qlc_2fa_challenge';
+
+export const challengeStore = {
+  get: () => {
+    try { return JSON.parse(sessionStorage.getItem(CHALLENGE_KEY) || 'null'); } catch { return null; }
+  },
+  set: (value) => {
+    try { value ? sessionStorage.setItem(CHALLENGE_KEY, JSON.stringify(value)) : sessionStorage.removeItem(CHALLENGE_KEY); } catch { return undefined; }
+    return undefined;
+  },
+};
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -54,17 +65,28 @@ export function AuthProvider({ children }) {
     return u;
   }, [loadAccess]);
 
+  const settle = useCallback(async (res) => {
+    if (res.status === 'SETUP_2FA') {
+      challengeStore.set({ challengeToken: res.challengeToken, email: res.user.email, role: res.user.role });
+      return { setupRequired: true, user: res.user };
+    }
+    challengeStore.set(null);
+    return { user: await startSession(res) };
+  }, [startSession]);
+
   const value = useMemo(() => ({
     user,
     ready,
     accessInfo,
     access: accessInfo?.access || NO_ACCESS.access,
     hasAccess: user?.role === 'ADMIN' || !!accessInfo?.access?.hasAny,
-    login: async (body) => startSession(await api.post('/auth/login', body)),
-    register: async (body) => startSession(await api.post('/auth/register', body)),
+    login: async (body) => settle(await api.post('/auth/login', body)),
+    loginWithCode: async (body) => settle(await api.post('/auth/login/2fa', body)),
+    register: async (body) => settle(await api.post('/auth/register', body)),
+    activateTwoFactor: async (code) => settle(await api.post('/auth/2fa/activate', { challengeToken: challengeStore.get()?.challengeToken, code })),
     logout,
     refreshAccess: () => loadAccess(user),
-  }), [user, ready, accessInfo, startSession, logout, loadAccess]);
+  }), [user, ready, accessInfo, settle, logout, loadAccess]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

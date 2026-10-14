@@ -1,13 +1,13 @@
-import { useState } from 'react';
-import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { api } from '../../api/client.js';
-import { useAuth } from '../../context/AuthContext.jsx';
+import { challengeStore, useAuth } from '../../context/AuthContext.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { Field, FormError, Input } from '../../components/ui/Form.jsx';
 
-function AuthCard({ title, subtitle, children, footer }) {
+function AuthCard({ title, subtitle, children, footer, wide }) {
   return (
-    <div className="auth-card">
+    <div className={`auth-card ${wide ? 'wide' : ''}`}>
       <div className="section-kicker">QLC Financial Education</div>
       <h1>{title}</h1>
       {subtitle && <p className="subtitle">{subtitle}</p>}
@@ -30,29 +30,61 @@ function useForm(initial) {
       setState({ busy: false, error, done: null });
     }
   };
-  return { values, bind, state, run };
+  return { values, setValues, bind, state, run };
 }
 
 const homeFor = (u) => (u.role === 'ADMIN' ? '/admin' : '/app');
+const SETUP_PATH = '/seguridad/2fa';
+
+function CodeInput(props) {
+  return (
+    <Input
+      className="input code-input"
+      inputMode="numeric"
+      autoComplete="one-time-code"
+      pattern="\d{6}"
+      maxLength={6}
+      placeholder="000000"
+      required
+      {...props}
+      onChange={(e) => props.onChange({ target: { value: e.target.value.replace(/\D/g, '').slice(0, 6) } })}
+    />
+  );
+}
+
+const METHODS = [['password', 'Contraseña'], ['code', 'Google Authenticator']];
 
 export function Login() {
-  const { login } = useAuth();
+  const { login, loginWithCode } = useAuth();
   const nav = useNavigate();
   const loc = useLocation();
-  const f = useForm({ email: '', password: '' });
+  const [method, setMethod] = useState('password');
+  const f = useForm({ email: '', password: '', code: '' });
   const submit = (e) => {
     e.preventDefault();
-    f.run(async (v) => {
-      const u = await login(v);
-      nav(loc.state?.from || homeFor(u), { replace: true });
+    f.run(async ({ email, password, code }) => {
+      const res = method === 'password' ? await login({ email, password }) : await loginWithCode({ email, code });
+      if (res.setupRequired) return nav(SETUP_PATH, { replace: true, state: { from: loc.state?.from } });
+      nav(loc.state?.from || homeFor(res.user), { replace: true });
     });
   };
   return (
     <AuthCard title="Iniciar sesión" subtitle="Accede a tu plataforma de educación y organización patrimonial."
       footer={<>¿No tienes cuenta? <Link to="/registro">Crear cuenta</Link> · <Link to="/recuperar">Olvidé mi contraseña</Link></>}>
+      <div className="auth-methods" role="tablist" aria-label="Método de acceso">
+        {METHODS.map(([key, label]) => (
+          <button key={key} type="button" role="tab" aria-selected={method === key} className={method === key ? 'is-active' : ''} onClick={() => setMethod(key)}>{label}</button>
+        ))}
+      </div>
       <form className="stack" onSubmit={submit}>
         <Field label="Correo electrónico"><Input type="email" autoComplete="email" required {...f.bind('email')} /></Field>
-        <Field label="Contraseña"><Input type="password" autoComplete="current-password" required {...f.bind('password')} /></Field>
+        {method === 'password' ? (
+          <Field label="Contraseña"><Input type="password" autoComplete="current-password" required {...f.bind('password')} /></Field>
+        ) : (
+          <Field label="Código de Google Authenticator" hint="Disponible cuando ya registraste tu verificación en dos pasos.">
+            <CodeInput {...f.bind('code')} />
+          </Field>
+        )}
         <FormError error={f.state.error} />
         <Button type="submit" loading={f.state.busy}>Entrar</Button>
       </form>
@@ -71,11 +103,11 @@ export function Register() {
     setLocal(null);
     f.run(async ({ confirm: _c, phone, ...v }) => {
       await register({ ...v, ...(phone ? { phone } : {}) });
-      nav('/app/acceso', { replace: true });
+      nav(SETUP_PATH, { replace: true, state: { from: '/app/acceso' } });
     });
   };
   return (
-    <AuthCard title="Crear cuenta" subtitle="Después de registrarte podrás elegir el acceso completo o solo las herramientas."
+    <AuthCard title="Crear cuenta" subtitle="Después de registrarte configurarás tu verificación en dos pasos con Google Authenticator."
       footer={<>¿Ya tienes cuenta? <Link to="/login">Iniciar sesión</Link></>}>
       <form className="stack" onSubmit={submit}>
         <Field label="Nombre completo"><Input required autoComplete="name" maxLength={120} {...f.bind('name')} /></Field>
@@ -91,33 +123,86 @@ export function Register() {
   );
 }
 
-export function ForgotPassword() {
-  const f = useForm({ email: '' });
-  const submit = (e) => { e.preventDefault(); f.run((v) => api.post('/auth/forgot-password', v)); };
+export function TwoFactorSetup() {
+  const { activateTwoFactor } = useAuth();
+  const nav = useNavigate();
+  const loc = useLocation();
+  const challenge = challengeStore.get();
+  const [setup, setSetup] = useState({ data: null, error: null });
+  const f = useForm({ code: '' });
+
+  useEffect(() => {
+    if (!challenge?.challengeToken) return;
+    api.post('/auth/2fa/setup', { challengeToken: challenge.challengeToken })
+      .then((data) => setSetup({ data, error: null }))
+      .catch((error) => setSetup({ data: null, error }));
+  }, [challenge?.challengeToken]);
+
+  if (!challenge?.challengeToken) return <Navigate to="/login" replace />;
+
+  const submit = (e) => {
+    e.preventDefault();
+    f.run(async ({ code }) => {
+      const res = await activateTwoFactor(code);
+      nav(loc.state?.from || homeFor(res.user), { replace: true });
+    });
+  };
+
   return (
-    <AuthCard title="Recuperar contraseña" footer={<Link to="/login">Volver a iniciar sesión</Link>}>
-      {f.state.done ? <p className="notice">{f.state.done.message}</p> : (
-        <form className="stack" onSubmit={submit}>
-          <Field label="Correo electrónico"><Input type="email" required {...f.bind('email')} /></Field>
-          <FormError error={f.state.error} />
-          <Button type="submit" loading={f.state.busy}>Enviar instrucciones</Button>
-        </form>
+    <AuthCard wide title="Protege tu cuenta" subtitle="Configura la verificación en dos pasos. La necesitarás para entrar con código y para restablecer tu contraseña."
+      footer={<Link to="/login" onClick={() => challengeStore.set(null)}>Cancelar y volver a iniciar sesión</Link>}>
+      <ol className="twofa-steps">
+        <li>Instala <b>Google Authenticator</b> en tu teléfono.</li>
+        <li>Escanea el código QR o captura la clave manualmente.</li>
+        <li>Escribe el código de 6 dígitos que aparece en la aplicación.</li>
+      </ol>
+      {setup.error && <FormError error={setup.error} />}
+      {!setup.data && !setup.error && <div className="twofa-qr skeleton" aria-label="Generando código QR" />}
+      {setup.data && (
+        <div className="twofa-setup">
+          <img className="twofa-qr" src={setup.data.qr} alt={`Código QR para ${setup.data.account}`} width="200" height="200" />
+          <div className="twofa-key">
+            <span className="field-label">Clave manual</span>
+            <code className="code-line">{setup.data.secret.match(/.{1,4}/g).join(' ')}</code>
+            <span className="small muted">Cuenta: {setup.data.account} · Emisor: {setup.data.issuer}</span>
+          </div>
+        </div>
       )}
+      <form className="stack" onSubmit={submit}>
+        <Field label="Código de verificación"><CodeInput {...f.bind('code')} /></Field>
+        <FormError error={f.state.error} />
+        <Button type="submit" loading={f.state.busy} disabled={!setup.data}>Activar y continuar</Button>
+      </form>
     </AuthCard>
   );
 }
 
-export function ResetPassword() {
-  const [params] = useSearchParams();
-  const f = useForm({ password: '' });
-  const submit = (e) => { e.preventDefault(); f.run((v) => api.post('/auth/reset-password', { token: params.get('token') || '', password: v.password })); };
+export function ForgotPassword() {
+  const f = useForm({ email: '', code: '', password: '', confirm: '' });
+  const [local, setLocal] = useState(null);
+  const submit = (e) => {
+    e.preventDefault();
+    if (f.values.password !== f.values.confirm) return setLocal({ message: 'Las contraseñas no coinciden' });
+    setLocal(null);
+    f.run(({ email, code, password }) => api.post('/auth/reset-password', { email, code, password }));
+  };
   return (
-    <AuthCard title="Nueva contraseña" footer={<Link to="/login">Iniciar sesión</Link>}>
-      {f.state.done ? <p className="notice">Contraseña actualizada. Ya puedes iniciar sesión.</p> : (
+    <AuthCard title="Restablecer contraseña" subtitle="Usa el código de Google Authenticator que registraste en tu cuenta."
+      footer={<Link to="/login">Volver a iniciar sesión</Link>}>
+      {f.state.done ? (
+        <div className="stack">
+          <p className="notice">{f.state.done.message}</p>
+          <Link className="btn-primary" to="/login">Iniciar sesión</Link>
+        </div>
+      ) : (
         <form className="stack" onSubmit={submit}>
-          <Field label="Nueva contraseña" hint="Mínimo 8 caracteres."><Input type="password" required minLength={8} {...f.bind('password')} /></Field>
-          <FormError error={f.state.error} />
-          <Button type="submit" loading={f.state.busy}>Guardar contraseña</Button>
+          <Field label="Correo electrónico"><Input type="email" required autoComplete="email" {...f.bind('email')} /></Field>
+          <Field label="Código de Google Authenticator"><CodeInput {...f.bind('code')} /></Field>
+          <Field label="Nueva contraseña" hint="Mínimo 8 caracteres."><Input type="password" required minLength={8} autoComplete="new-password" {...f.bind('password')} /></Field>
+          <Field label="Confirmar contraseña"><Input type="password" required minLength={8} autoComplete="new-password" {...f.bind('confirm')} /></Field>
+          <FormError error={local || f.state.error} />
+          <Button type="submit" loading={f.state.busy}>Guardar nueva contraseña</Button>
+          <p className="small muted">Si no registraste tu verificación en dos pasos o perdiste el acceso a tu teléfono, solicita a un administrador que la restablezca.</p>
         </form>
       )}
     </AuthCard>

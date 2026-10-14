@@ -7,7 +7,7 @@ import { AuthLayout } from '../layouts/PublicLayout.jsx';
 import { Empty, Loading } from '../components/ui/States.jsx';
 import { RequireAuth } from './guards.jsx';
 import PublicExperience from '../pages/public/experience/PublicExperience.jsx';
-import { ForgotPassword, Login, Register, ResetPassword } from '../pages/public/AuthPages.jsx';
+import { ForgotPassword, Login, Register, TwoFactorSetup } from '../pages/public/AuthPages.jsx';
 
 const page = (loader) => lazy(loader);
 
@@ -60,7 +60,7 @@ export default function AppRoutes() {
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Register />} />
           <Route path="/recuperar" element={<ForgotPassword />} />
-          <Route path="/restablecer" element={<ResetPassword />} />
+          <Route path="/seguridad/2fa" element={<TwoFactorSetup />} />
         </Route>
 
         <Route path="/app" element={<RequireAuth role="CLIENT"><WorkspaceProvider><AppLayout /></WorkspaceProvider></RequireAuth>}>

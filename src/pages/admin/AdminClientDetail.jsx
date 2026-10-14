@@ -68,6 +68,42 @@ function GrantManager({ client, onSaved }) {
   );
 }
 
+function TwoFactorReset({ client, onSaved }) {
+  const [open, setOpen] = useState(false);
+  const [reason, setReason] = useState('');
+  const [state, setState] = useState({ busy: false, error: null });
+  const confirm = async () => {
+    setState({ busy: true, error: null });
+    try {
+      await api.post(`/admin/clients/${client.id}/reset-2fa`, { reason });
+      setOpen(false);
+      setReason('');
+      setState({ busy: false, error: null });
+      onSaved();
+    } catch (error) {
+      setState({ busy: false, error });
+    }
+  };
+  if (!client.twoFactorEnabled) return null;
+  return (
+    <>
+      <Button variant="secondary" onClick={() => setOpen(true)}>Restablecer 2FA</Button>
+      <ConfirmDialog
+        open={open}
+        title="Restablecer verificación en dos pasos"
+        danger
+        loading={state.busy}
+        message={`${client.name} deberá configurar de nuevo Google Authenticator en su próximo inicio de sesión con contraseña.`}
+        onConfirm={confirm}
+        onClose={() => setOpen(false)}
+      >
+        <Field label="Motivo (obligatorio)"><Textarea rows={2} value={reason} onChange={(e) => setReason(e.target.value)} maxLength={500} /></Field>
+        <FormError error={state.error} />
+      </ConfirmDialog>
+    </>
+  );
+}
+
 export default function AdminClientDetail() {
   const { clientId } = useParams();
   const { user } = useAuth();
@@ -84,7 +120,9 @@ export default function AdminClientDetail() {
             <Card title="Información">
               <Row label="Acceso" value={accessPill(c.access)} />
               {c.access.full && <Row label="Acceso anual vigente hasta" value={date(c.access.full.expiresAt)} />}
-              <Row label="Módulos completados" value={`${c.completedModules} / 6`} />
+              <Row label="Módulos completados" value={`${c.completedModules} / 12`} />
+              <Row label="Verificación en dos pasos" value={<Pill variant={c.twoFactorEnabled ? '' : 'warn'}>{c.twoFactorEnabled ? 'Activa' : 'Pendiente'}</Pill>} />
+              {user?.adminLevel === 'FULL' && <TwoFactorReset client={c} onSaved={() => { client.reload(); audit.reload(); }} />}
               <Row label="Teléfono" value={c.phone || '—'} />
               <Row label="Último acceso" value={dateTime(c.lastLoginAt)} />
               <Row label="Periodos / cortes / citas" value={`${c.counts.periods} / ${c.counts.monthlyCloses} / ${c.counts.appointments}`} />

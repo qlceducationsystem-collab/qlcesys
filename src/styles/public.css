@@ -503,3 +503,55 @@ h1.ps-title { font-size: clamp(32px, min(5.4vw, 8.4dvh), 78px); }
   .stage-layer.is-leave { display: none; }
   .hero-glow { animation: none; }
 }
+
+.auth-shell { position: relative; isolation: isolate; background: #04070b; overflow-x: hidden; }
+.auth-shell > :not(.trading-backdrop) { position: relative; z-index: 1; }
+.trading-backdrop { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: radial-gradient(120% 90% at 50% 10%, #0a1520 0%, #05080c 55%, #030507 100%); animation: tbReveal 2.6s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.tb-chart { position: absolute; inset: -4%; width: 108%; height: 108%; filter: blur(1.6px); opacity: 0.85; }
+.tb-series line { stroke-width: 1.4; }
+.tb-up line { stroke: rgba(91, 212, 165, 0.55); }
+.tb-up rect { fill: rgba(91, 212, 165, 0.42); }
+.tb-down line { stroke: rgba(255, 123, 134, 0.5); }
+.tb-down rect { fill: rgba(255, 123, 134, 0.36); }
+.tb-back { opacity: 0.32; }
+.tb-front { opacity: 0.7; }
+.tb-area { fill: url(#tb-area); }
+.tb-line { fill: none; stroke: #5bd4ff; stroke-width: 2.2; stroke-dasharray: 1; stroke-dashoffset: 1; filter: drop-shadow(0 0 6px rgba(91, 212, 255, 0.8)); animation: tbDraw 4.5s 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+.tb-drift { animation: tbDrift 48s ease-in-out infinite alternate; }
+.tb-drift-slow { animation: tbDrift 80s ease-in-out infinite alternate-reverse; }
+.tb-glow { position: absolute; left: 50%; top: 42%; width: 140vmax; height: 140vmax; transform: translate(-50%, -50%) scale(0.05); border-radius: 50%; background: radial-gradient(circle, rgba(0, 168, 255, 0.24) 0%, rgba(0, 118, 184, 0.12) 22%, rgba(200, 155, 60, 0.05) 40%, transparent 62%); animation: tbGlow 3.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, tbPulse 9s 3.2s ease-in-out infinite; }
+.tb-sweep { position: absolute; top: -30%; left: -60%; width: 55%; height: 160%; background: linear-gradient(100deg, transparent 0%, rgba(91, 212, 255, 0.07) 45%, rgba(255, 255, 255, 0.05) 50%, rgba(91, 212, 255, 0.07) 55%, transparent 100%); transform: rotate(8deg); filter: blur(30px); animation: tbSweep 14s 1.2s ease-in-out infinite; }
+.tb-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, transparent 35%, rgba(2, 4, 6, 0.78) 100%); }
+@keyframes tbReveal { from { clip-path: circle(0% at 50% 42%); } to { clip-path: circle(150% at 50% 42%); } }
+@keyframes tbDraw { to { stroke-dashoffset: 0; } }
+@keyframes tbDrift { from { transform: translateX(0); } to { transform: translateX(-90px); } }
+@keyframes tbGlow { to { transform: translate(-50%, -50%) scale(1); } }
+@keyframes tbPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+@keyframes tbSweep { 0% { left: -60%; } 55%, 100% { left: 130%; } }
+
+.auth-card { background: linear-gradient(160deg, rgba(10, 16, 23, 0.78), rgba(5, 8, 12, 0.86)); border: 1px solid rgba(91, 212, 255, 0.16); backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05); animation: authCardIn 0.7s 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.auth-card h1, .auth-card .field-label { text-shadow: 0 1px 12px rgba(0, 0, 0, 0.6); }
+.auth-card .subtitle { color: #c9d4de; }
+.auth-card .input { background: rgba(3, 6, 10, 0.72); }
+.auth-legal { color: #8593a1; }
+@keyframes authCardIn { from { opacity: 0; transform: translateY(14px) scale(0.985); } to { opacity: 1; transform: none; } }
+.auth-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; margin-bottom: 16px; border: 1px solid var(--line); border-radius: 12px; background: rgba(0, 0, 0, 0.35); }
+.auth-methods button { border: 0; background: none; color: var(--muted); padding: 9px 10px; border-radius: 9px; font-size: 12.5px; cursor: pointer; transition: background 0.2s, color 0.2s; }
+.auth-methods button.is-active { background: rgba(0, 168, 255, 0.16); color: #fff; }
+.auth-methods button:focus-visible { outline: 2px solid var(--blue2); outline-offset: 2px; }
+.code-input { font-size: 22px; letter-spacing: 0.5em; text-align: center; font-variant-numeric: tabular-nums; }
+.twofa-steps { margin: 0 0 16px; padding-left: 20px; color: #c9d4de; font-size: 13px; display: grid; gap: 4px; }
+.twofa-setup { display: flex; gap: 18px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+.twofa-qr { width: 200px; height: 200px; border-radius: 14px; background: #fff; padding: 8px; flex: 0 0 auto; }
+.twofa-qr.skeleton { background: rgba(255, 255, 255, 0.06); margin-bottom: 16px; }
+.twofa-key { display: flex; flex-direction: column; gap: 8px; flex: 1 1 200px; min-width: 0; }
+@media (max-width: 560px) {
+  .twofa-setup { justify-content: center; }
+  .tb-chart { filter: blur(2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .trading-backdrop, .tb-line, .tb-drift, .tb-drift-slow, .tb-glow, .tb-sweep, .auth-card { animation: none; }
+  .tb-line { stroke-dashoffset: 0; }
+  .tb-glow { transform: translate(-50%, -50%) scale(1); }
+  .tb-sweep { display: none; }
+}
