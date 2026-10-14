@@ -1,0 +1,42 @@
+export function Field({ label, error, hint, children, full }) {
+  return (
+    <label className={`field ${full ? 'field-full' : ''}`}>
+      <span className="field-label">{label}</span>
+      {children}
+      {hint && !error && <span className="field-hint">{hint}</span>}
+      {error && <span className="field-error">{error}</span>}
+    </label>
+  );
+}
+
+export const Input = (props) => <input className="input" {...props} />;
+
+export const MoneyInput = (props) => <input className="input" type="number" inputMode="decimal" step="0.01" min="0" {...props} />;
+
+export const Textarea = (props) => <textarea className="input" rows={4} {...props} />;
+
+export function Select({ options = [], placeholder, ...rest }) {
+  return (
+    <select className="input" {...rest}>
+      {placeholder && <option value="">{placeholder}</option>}
+      {options.map((o) => (
+        <option key={o.value} value={o.value}>{o.label}</option>
+      ))}
+    </select>
+  );
+}
+
+export const FormGrid = ({ children, cols = 2 }) => <div className={`form-grid cols-${cols}`}>{children}</div>;
+
+// Muestra errores de validación del backend (zod) por campo o generales.
+export function FormError({ error }) {
+  if (!error) return null;
+  return (
+    <div className="form-error" role="alert">
+      {error.message}
+      {error.details?.length > 0 && (
+        <ul>{error.details.map((d, i) => <li key={i}>{d.field ? `${d.field}: ` : ''}{d.message}</li>)}</ul>
+      )}
+    </div>
+  );
+}
