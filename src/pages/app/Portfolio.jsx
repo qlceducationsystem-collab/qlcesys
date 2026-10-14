@@ -60,7 +60,7 @@ function ProductCard({ p, writable, onEdit, onDelete, basePath }) {
 function PortfolioBody({ summary, categories, reload }) {
   const { api, period, canEdit, basePath } = useWorkspace();
   const writable = canEdit && period.status === 'OPEN';
-  const [form, setForm] = useState(null); // { product|null, categoryCode }
+  const [form, setForm] = useState(null);
   const [pending, setPending] = useState(null);
   const [busy, setBusy] = useState(false);
   const { portfolio } = summary;

@@ -29,7 +29,6 @@ h1, h2, h3, h4 { margin: 0; }
 .right { text-align: right; }
 .stack { display: flex; flex-direction: column; gap: 14px; }
 
-/* Botones */
 .btn-primary, .btn-secondary, .btn-danger, .btn-add, .btn-ghost {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   border-radius: var(--radius-sm); padding: 10px 14px; font-weight: 650; font-size: 12px;
@@ -49,7 +48,6 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .icon-btn { background: transparent; border: 1px solid var(--line); color: var(--text); border-radius: 8px; width: 36px; height: 36px; cursor: pointer; font-size: 18px; line-height: 1; }
 .back { margin-bottom: 14px; }
 
-/* Formularios */
 .form-grid { display: grid; gap: 12px; }
 .form-grid.cols-2 { grid-template-columns: 1fr 1fr; }
 .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
@@ -67,7 +65,6 @@ textarea.input { resize: vertical; }
 .form-error { background: rgba(196, 61, 75, 0.1); border: 1px solid rgba(255, 123, 134, 0.3); color: #ffb3ba; padding: 10px 12px; border-radius: 10px; font-size: 12px; margin-top: 8px; }
 .form-error ul { margin: 6px 0 0; padding-left: 18px; }
 
-/* Estados */
 .state { padding: 46px 20px; text-align: center; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .state h3 { color: var(--text); font-size: 17px; }
 .state p { max-width: 520px; margin: 0; font-size: 13px; }
@@ -77,7 +74,6 @@ textarea.input { resize: vertical; }
 .spinner { width: 18px; height: 18px; border: 2px solid var(--line2); border-top-color: var(--blue); border-radius: 50%; animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Modal */
 .modal-backdrop { position: fixed; inset: 0; background: rgba(2, 4, 7, 0.72); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 100; }
 .modal { width: min(560px, 100%); max-height: calc(100vh - 32px); overflow: auto; background: linear-gradient(145deg, #111b26, #0a1119); border: 1px solid var(--line2); border-radius: 18px; box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5); }
 .modal-wide { width: min(860px, 100%); }
@@ -89,7 +85,6 @@ textarea.input { resize: vertical; }
 .diff-table th, .diff-table td { padding: 8px; border-bottom: 1px solid var(--line); text-align: left; }
 .diff-table th { color: var(--muted2); font-size: 10px; text-transform: uppercase; }
 
-/* Tablas responsive */
 .table-wrap { width: 100%; overflow-x: auto; }
 .table { width: 100%; border-collapse: collapse; font-size: 12px; }
 .table th, .table td { text-align: left; padding: 11px; border-bottom: 1px solid var(--line); vertical-align: middle; }

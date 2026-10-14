@@ -1,6 +1,6 @@
-// Cliente HTTP único. La URL del backend viene de VITE_API_URL (nunca localhost fijo).
 const BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 const TOKEN_KEY = 'qlc_token';
+const SESSION_KEY = 'qlc_session';
 
 export class ApiError extends Error {
   constructor(status, message, details) {
@@ -10,21 +10,35 @@ export class ApiError extends Error {
   }
 }
 
-export const tokenStore = {
-  get: () => {
-    try { return localStorage.getItem(TOKEN_KEY); } catch { return null; }
+const safeStorage = (storage) => ({
+  get: (k) => {
+    try { return storage.getItem(k); } catch { return null; }
   },
-  set: (t) => {
-    try { t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY); } catch { /* sin almacenamiento */ }
+  set: (k, v) => {
+    try { v === null ? storage.removeItem(k) : storage.setItem(k, v); } catch { return undefined; }
+    return undefined;
   },
-};
+});
 
-// Notifica sesión expirada al AuthContext.
+const local = safeStorage(window.localStorage);
+const session = safeStorage(window.sessionStorage);
+
+export const tokenStore = { get: () => local.get(TOKEN_KEY), set: (t) => local.set(TOKEN_KEY, t || null) };
+
+export function sessionId() {
+  let id = session.get(SESSION_KEY);
+  if (!id) {
+    id = (crypto.randomUUID?.() || `${Date.now()}${Math.random()}`).replace(/[^a-z0-9]/gi, '').slice(0, 32);
+    session.set(SESSION_KEY, id);
+  }
+  return id;
+}
+
 let onUnauthorized = () => {};
 export const setUnauthorizedHandler = (fn) => { onUnauthorized = fn; };
 
 function headers(clientId, json = true) {
-  const h = {};
+  const h = { 'X-Session-Id': sessionId() };
   if (json) h['Content-Type'] = 'application/json';
   const token = tokenStore.get();
   if (token) h.Authorization = `Bearer ${token}`;
@@ -32,13 +46,7 @@ function headers(clientId, json = true) {
   return h;
 }
 
-async function request(method, path, { body, clientId } = {}) {
-  let res;
-  try {
-    res = await fetch(`${BASE}/api${path}`, { method, headers: headers(clientId), body: body === undefined ? undefined : JSON.stringify(body) });
-  } catch {
-    throw new ApiError(0, 'No se pudo conectar con el servidor');
-  }
+async function parse(res) {
   if (res.status === 204) return null;
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
@@ -48,7 +56,21 @@ async function request(method, path, { body, clientId } = {}) {
   return data;
 }
 
-// Descarga de archivos (PDF) con autenticación.
+async function request(method, path, { body, clientId, form } = {}) {
+  let res;
+  try {
+    res = await fetch(`${BASE}/api${path}`, {
+      method,
+      headers: headers(clientId, !form),
+      body: form || (body === undefined ? undefined : JSON.stringify(body)),
+      keepalive: path === '/public/events',
+    });
+  } catch {
+    throw new ApiError(0, 'No se pudo conectar con el servidor');
+  }
+  return parse(res);
+}
+
 async function download(path, clientId, fallbackName = 'documento.pdf') {
   const res = await fetch(`${BASE}/api${path}`, { headers: headers(clientId, false) });
   if (!res.ok) {
@@ -65,7 +87,6 @@ async function download(path, clientId, fallbackName = 'documento.pdf') {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-// Cliente ligado opcionalmente a un cliente gestionado por el administrador.
 export function createApi(clientId = null) {
   return {
     clientId,
@@ -74,8 +95,12 @@ export function createApi(clientId = null) {
     put: (p, body) => request('PUT', p, { body, clientId }),
     patch: (p, body) => request('PATCH', p, { body, clientId }),
     del: (p) => request('DELETE', p, { clientId }),
+    upload: (p, form, method = 'POST') => request(method, p, { form, clientId }),
     download: (p, name) => download(p, clientId, name),
   };
 }
 
 export const api = createApi();
+
+export const trackEvent = (event, metadata) =>
+  api.post('/public/events', { event, sessionId: sessionId(), path: window.location.pathname, metadata }).catch(() => null);

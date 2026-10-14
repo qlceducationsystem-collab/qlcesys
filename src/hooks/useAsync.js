@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-// Carga datos con estados loading / error / data y recarga manual.
 export function useAsync(fn, deps = [], { enabled = true } = {}) {
   const [state, setState] = useState({ data: null, error: null, loading: enabled });
   const seq = useRef(0);
@@ -15,7 +14,7 @@ export function useAsync(fn, deps = [], { enabled = true } = {}) {
     } catch (error) {
       if (id === seq.current) setState({ data: null, error, loading: false });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [...deps, enabled]);
 
   useEffect(() => { run(); }, [run]);

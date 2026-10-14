@@ -1,5 +1,3 @@
-// Espacio de trabajo del área privada: sobre qué cliente se opera y en qué periodo.
-// Cliente → sus propios datos. Admin → los MISMOS registros del cliente (X-Client-Id).
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { createApi } from '../api/client.js';
 import { useAuth } from './AuthContext.jsx';
@@ -9,7 +7,7 @@ const LEVELS = { VIEW: 1, EDIT: 2, FULL: 3 };
 
 const storeKey = (clientId) => `qlc_period_${clientId || 'me'}`;
 const readStored = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
-const writeStored = (k, v) => { try { localStorage.setItem(k, v); } catch { /* opcional */ } };
+const writeStored = (k, v) => { try { localStorage.setItem(k, v); } catch { return undefined; } };
 
 export function WorkspaceProvider({ clientId = null, client = null, children }) {
   const { user } = useAuth();

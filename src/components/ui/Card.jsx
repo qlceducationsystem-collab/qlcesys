@@ -54,7 +54,6 @@ export function ProgressBar({ value = 0, label }) {
   );
 }
 
-// Fila etiqueta / valor (estilo .row del HTML de referencia).
 export function Row({ label, value, valueTone, sub }) {
   return (
     <div className="row">

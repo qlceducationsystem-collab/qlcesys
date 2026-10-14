@@ -1,0 +1,134 @@
+import { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useWorkspace } from '../../../context/WorkspaceContext.jsx';
+import { Button } from '../../../components/ui/Button.jsx';
+import { Field, FormError, Textarea } from '../../../components/ui/Form.jsx';
+import { ErrorState, Loading } from '../../../components/ui/States.jsx';
+import { Pill } from '../../../components/ui/Card.jsx';
+import { ModuleLayout } from '../../../features/academy/ModuleLayout.jsx';
+import { RiskNote, ToolCard } from '../../../features/academy/ResultParts.jsx';
+import { ModuleMedia } from '../../../features/academy/ModuleMedia.jsx';
+import { modulePath, useAcademy, useModule } from '../../../features/academy/useAcademy.js';
+import { M1Diagnosis } from '../../../features/academy/tools/M1Diagnosis.jsx';
+import { M2ProductMap } from '../../../features/academy/tools/M2ProductMap.jsx';
+import { M3PortfolioBuilder } from '../../../features/academy/tools/M3PortfolioBuilder.jsx';
+import { M4RiskSimulator, M5TradeSimulator, M6ProfessionalSimulator } from '../../../features/academy/tools/SimulationTools.jsx';
+
+const TOOLS = { 1: M1Diagnosis, 2: M2ProductMap, 3: M3PortfolioBuilder, 4: M4RiskSimulator, 5: M5TradeSimulator, 6: M6ProfessionalSimulator };
+const NEXT_STEP = { 3: 'ruta', 6: null };
+
+function Lesson({ module }) {
+  return (
+    <div className="lesson-view">
+      {module.lesson.map((s) => (
+        <section key={s.title} className="lesson-block">
+          <h3>{s.title}</h3>
+          {s.paragraphs.map((p, i) => <p key={i}>{p}</p>)}
+        </section>
+      ))}
+      <ModuleMedia items={module.media} />
+      {module.riskNotes.map((n) => <RiskNote key={n}>{n}</RiskNote>)}
+    </div>
+  );
+}
+
+function Progress({ module, onDone }) {
+  const { api, canEdit, basePath } = useWorkspace();
+  const navigate = useNavigate();
+  const [exercise, setExercise] = useState(module.exercise || '');
+  const [state, setState] = useState({ busy: false, error: null, saved: false });
+  useEffect(() => {
+    setExercise(module.exercise || '');
+  }, [module.exercise]);
+
+  const save = async (status) => {
+    setState({ busy: true, error: null, saved: false });
+    try {
+      await api.put(`/academy/modules/${module.number}/progress`, { status, exercise });
+      setState({ busy: false, error: null, saved: true });
+      await onDone();
+      if (status === 'COMPLETED') {
+        const next = NEXT_STEP[module.number];
+        if (next) navigate(`${basePath}/academia/${next}`);
+        else if (next === undefined) navigate(modulePath(basePath, module.number + 1));
+      }
+    } catch (error) {
+      setState({ busy: false, error, saved: false });
+    }
+  };
+
+  return (
+    <ToolCard title="Ejercicio y registro" description={module.exerciseGuide?.prompt || 'Registra tus conclusiones y marca el módulo como completado cuando termines.'}>
+      {module.exerciseGuide?.steps && <ol className="exercise-steps">{module.exerciseGuide.steps.map((s) => <li key={s}>{s}</li>)}</ol>}
+      <Field label="Tu registro">
+        <Textarea value={exercise} onChange={(e) => setExercise(e.target.value)} maxLength={5000} disabled={!canEdit} placeholder="Escribe tus respuestas y conclusiones" />
+      </Field>
+      <FormError error={state.error} />
+      {state.saved && <p className="small up">Avance guardado.</p>}
+      {canEdit && (
+        <div className="form-actions">
+          <Button variant="secondary" loading={state.busy} onClick={() => save('IN_PROGRESS')}>Guardar avance</Button>
+          <Button loading={state.busy} onClick={() => save('COMPLETED')}>{module.status === 'COMPLETED' ? 'Actualizar registro' : 'Completar módulo'}</Button>
+        </div>
+      )}
+      {module.number === 6 && module.status === 'COMPLETED' && (
+        <p className="muted small">Completaste la Ruta de Mercados. Puedes continuar con la educación patrimonial (Módulos 7–12) en la siguiente etapa. No estás obligado a operar ni a utilizar QLC.</p>
+      )}
+    </ToolCard>
+  );
+}
+
+export default function ModulePage() {
+  const number = Number(useParams().n);
+  const { basePath } = useWorkspace();
+  const overview = useAcademy();
+  const mod = useModule(number);
+  const [tab, setTab] = useState(null);
+
+  if ((overview.loading && !overview.data) || (mod.loading && !mod.data)) return <Loading />;
+  if (overview.error) return <ErrorState error={overview.error} onRetry={overview.reload} />;
+  if (mod.error) {
+    return (
+      <ModuleLayout overview={overview.data} kicker={`Módulo ${number}`} title="Módulo no disponible">
+        <ErrorState error={mod.error} />
+        <div className="form-actions"><Link className="btn-secondary" to={`${basePath}/academia`}>Volver a la academia</Link></div>
+      </ModuleLayout>
+    );
+  }
+
+  const m = mod.data;
+  const Tool = TOOLS[number];
+  const tabs = m.mode === 'ACADEMY' ? [['clase', 'Clase'], ['herramienta', 'Herramienta'], ['avance', 'Ejercicio y avance']] : [['herramienta', 'Herramienta'], ['avance', 'Avance']];
+  const active = tab && tabs.some(([k]) => k === tab) ? tab : tabs[0][0];
+  const refresh = async () => { await Promise.all([overview.reload(), mod.reload()]); };
+
+  return (
+    <ModuleLayout
+      overview={overview.data}
+      kicker={`Módulo ${number}`}
+      title={`${m.title}`}
+      subtitle={m.tool?.question}
+      actions={<Pill variant={m.status === 'COMPLETED' ? '' : 'warn'}>{m.status === 'COMPLETED' ? 'Completado' : m.status === 'IN_PROGRESS' ? 'En curso' : 'Sin iniciar'}</Pill>}
+    >
+      <div className="tabs" role="tablist">
+        {tabs.map(([key, label]) => (
+          <button key={key} type="button" role="tab" aria-selected={active === key} className={active === key ? 'is-active' : ''} onClick={() => setTab(key)}>{label}</button>
+        ))}
+      </div>
+      <div className="tab-panel" key={active}>
+        {active === 'clase' && <Lesson module={m} />}
+        {active === 'herramienta' && (
+          <>
+            <div className="tool-intro">
+              <div><span className="section-kicker">Herramienta</span><h2>{m.tool?.name}</h2></div>
+              {m.mode === 'TOOL_ONLY' && <ul className="essentials">{m.essentials.map((e) => <li key={e}>{e}</li>)}</ul>}
+            </div>
+            {m.mode === 'TOOL_ONLY' && m.riskNotes.map((n) => <RiskNote key={n}>{n}</RiskNote>)}
+            <Tool onSaved={refresh} />
+          </>
+        )}
+        {active === 'avance' && <Progress module={m} onDone={refresh} />}
+      </div>
+    </ModuleLayout>
+  );
+}

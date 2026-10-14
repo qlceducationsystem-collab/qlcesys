@@ -1,4 +1,3 @@
-// Formato de cifras. Los cálculos viven en el backend; aquí solo se presentan.
 const mxn = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 export const money = (n) => (n === null || n === undefined || Number.isNaN(Number(n)) ? '—' : mxn.format(Number(n)));
@@ -9,7 +8,6 @@ export const signedMoney = (n) => {
   return `${v > 0 ? '+' : v < 0 ? '−' : ''}${mxn.format(Math.abs(v))}`;
 };
 
-// ROI nulo (capital inicial 0) → N/D
 export const pct = (n, { signed = false } = {}) => {
   if (n === null || n === undefined) return 'N/D';
   const v = Number(n);
@@ -27,8 +25,15 @@ export const date = (d) => (d ? new Date(d).toLocaleDateString('es-MX', { year: 
 export const dateTime = (d) =>
   d ? new Date(d).toLocaleString('es-MX', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
 
-// Valor para <input type="date"> en zona local.
 export const toDateInput = (d) => {
   const x = d ? new Date(d) : new Date();
   return new Date(x.getTime() - x.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+};
+
+const usdFmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+export const usd = (n) => (n === null || n === undefined ? '—' : usdFmt.format(Number(n)));
+export const signedUsd = (n) => {
+  if (n === null || n === undefined) return '—';
+  const v = Number(n);
+  return `${v > 0 ? '+' : v < 0 ? '−' : ''}${usdFmt.format(Math.abs(v))}`;
 };

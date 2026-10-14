@@ -1,0 +1,120 @@
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useWorkspace } from '../../../context/WorkspaceContext.jsx';
+import { useAsync } from '../../../hooks/useAsync.js';
+import { money, pct } from '../../../utils/format.js';
+import { options } from '../../../utils/labels.js';
+import { Button } from '../../../components/ui/Button.jsx';
+import { Field, FormError, MoneyInput, Select } from '../../../components/ui/Form.jsx';
+import { Loading, ErrorState } from '../../../components/ui/States.jsx';
+import { MetricCard, MetricGrid, RealBadge, ToolCard } from '../ResultParts.jsx';
+
+const EMPTY = {
+  income: '', expenses: '', debtPayment: '', monthlyInvestment: '',
+  cash: '', investments: '', otherAssets: '', totalDebt: '',
+  emergencyFund: '', riskTolerance: 'MODERADO', mainGoal: 'CONSTRUIR_PATRIMONIO',
+};
+
+const GROUPS = [
+  { step: '1', title: 'Flujo mensual', description: 'Tu situación mensual actual.', fields: [['income', 'Ingresos mensuales'], ['expenses', 'Gastos mensuales'], ['debtPayment', 'Pago mensual de deudas'], ['monthlyInvestment', 'Aportación mensual a inversión']] },
+  { step: '2', title: 'Patrimonio actual', description: 'Activos, liquidez e inversiones para obtener tu patrimonio neto.', fields: [['cash', 'Efectivo y liquidez'], ['investments', 'Inversiones'], ['otherAssets', 'Bienes y otros activos'], ['totalDebt', 'Deudas totales']] },
+];
+
+const levelTone = { GOOD: 'good', MODERATE: 'warn', REVIEW: 'bad' };
+const monthsTone = (m) => (m === null ? '' : m >= 6 ? 'good' : m >= 3 ? 'warn' : 'bad');
+
+function Results({ result }) {
+  return (
+    <ToolCard step="4" title="Resultado del diagnóstico" description="Tu línea base. Así estás hoy." aside={<RealBadge />}>
+      <MetricGrid>
+        <MetricCard
+          label="Tasa de ahorro"
+          value={pct(result.savingRate)}
+          tone={levelTone[result.savingLevel?.key]}
+          hint={result.savingLevel?.label || 'Registra tus ingresos'}
+          explanation={`Qué significa: de cada $100 que recibes quedan ${result.savingRate === null ? '—' : `$${result.savingRate.toFixed(2)}`} después de gastos y deudas. Por qué importa: es el motor para acumular patrimonio.`}
+        />
+        <MetricCard label="Patrimonio neto" value={money(result.netWorth)} tone={result.netWorth >= 0 ? 'good' : 'bad'} hint="Activos − deudas" explanation="Responde: si sumo todo lo que tengo y resto lo que debo, ¿cuánto realmente tengo?" />
+        <MetricCard label="Liquidez" value={result.liquidityMonths === null ? 'N/D' : `${result.liquidityMonths.toFixed(1)} meses`} tone={monthsTone(result.liquidityMonths)} hint="Meses de gastos cubiertos" explanation="Responde: si mañana dejo de recibir ingresos, ¿cuánto tiempo puedo pagar mis gastos? Patrimonio no es lo mismo que liquidez." />
+        <MetricCard label="Inversión / patrimonio" value={pct(result.investmentToNetWorth)} hint="Peso actual de inversiones" explanation="Qué parte de tu patrimonio neto está invertida. Lo profundizarás en Allocation (Módulo 3)." />
+        <MetricCard label="Deuda / patrimonio" value={pct(result.debtToNetWorth)} hint="Nivel relativo de deuda" explanation="Indicador educativo, no una calificación. El análisis completo de deudas requiere tasa, plazo y tipo de deuda." />
+        <MetricCard label="Flujo disponible" value={money(result.freeCashFlow)} tone={result.freeCashFlow >= 0 ? 'good' : 'bad'} hint="Después de gastos, deuda e inversión" explanation="Lo que queda después de cumplir tu plan financiero del mes." />
+      </MetricGrid>
+    </ToolCard>
+  );
+}
+
+export function M1Diagnosis({ onSaved }) {
+  const { api, canEdit, basePath, reloadPeriods } = useWorkspace();
+  const saved = useAsync(() => api.get('/academy/diagnosis'), [api]);
+  const [form, setForm] = useState(null);
+  const [result, setResult] = useState(null);
+  const [state, setState] = useState({ busy: false, error: null });
+
+  if (saved.loading && !saved.data) return <Loading />;
+  if (saved.error) return <ErrorState error={saved.error} onRetry={saved.reload} />;
+  const values = form || { ...EMPTY, ...(saved.data?.input || {}) };
+  const shown = result || saved.data?.result;
+  const set = (k) => (e) => setForm({ ...values, [k]: e.target.value });
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setState({ busy: true, error: null });
+    try {
+      const res = await api.put('/academy/diagnosis', values);
+      setResult(res.result);
+      await reloadPeriods(res.periodId);
+      onSaved?.();
+      setState({ busy: false, error: null });
+    } catch (error) {
+      setState({ busy: false, error });
+    }
+  };
+
+  return (
+    <form className="tool" onSubmit={submit}>
+      <div className="tool-grid">
+        {GROUPS.map((g) => (
+          <ToolCard key={g.step} step={g.step} title={g.title} description={g.description}>
+            <div className="form-grid cols-2">
+              {g.fields.map(([name, label]) => (
+                <Field key={name} label={label}>
+                  <MoneyInput name={name} value={values[name]} onChange={set(name)} placeholder="0" disabled={!canEdit} />
+                </Field>
+              ))}
+            </div>
+          </ToolCard>
+        ))}
+        <ToolCard step="3" title="Liquidez y perfil" description="Cuánto tiempo podrías cubrir tus gastos y tu tolerancia al riesgo.">
+          <div className="form-grid cols-2">
+            <Field label="Fondo disponible para emergencias" hint="Parte de tu efectivo reservada para imprevistos.">
+              <MoneyInput value={values.emergencyFund} onChange={set('emergencyFund')} placeholder="0" disabled={!canEdit} />
+            </Field>
+            <Field label="Tolerancia al riesgo">
+              <Select value={values.riskTolerance} onChange={set('riskTolerance')} options={options.tolerance} disabled={!canEdit} />
+            </Field>
+            <Field label="Objetivo financiero principal" full>
+              <Select value={values.mainGoal} onChange={set('mainGoal')} options={options.goals} disabled={!canEdit} />
+            </Field>
+          </div>
+        </ToolCard>
+        <ToolCard title="¿A dónde va esta información?" description="No se crea una base separada: tus datos alimentan la plataforma.">
+          <ul className="flow-links">
+            <li><Link to={basePath}>Inicio</Link><span>Resumen de tu situación</span></li>
+            <li><Link to={`${basePath}/ingresos-gastos`}>Ingresos y gastos</Link><span>Ingreso, gastos y pago de deudas</span></li>
+            <li><Link to={`${basePath}/patrimonio`}>Patrimonio</Link><span>Activos, deudas y patrimonio neto</span></li>
+            <li><Link to={`${basePath}/cartera`}>Mi cartera</Link><span>Liquidez e inversiones por desglosar</span></li>
+            <li><Link to={`${basePath}/proteccion`}>Protección</Link><span>Meses de liquidez</span></li>
+          </ul>
+        </ToolCard>
+      </div>
+      <FormError error={state.error} />
+      {canEdit && (
+        <div className="tool-actions">
+          <Button type="submit" loading={state.busy}>{shown ? 'Actualizar diagnóstico' : 'Generar diagnóstico'}</Button>
+        </div>
+      )}
+      {shown && <Results result={shown} />}
+    </form>
+  );
+}

@@ -28,7 +28,6 @@ export function Select({ options = [], placeholder, ...rest }) {
 
 export const FormGrid = ({ children, cols = 2 }) => <div className={`form-grid cols-${cols}`}>{children}</div>;
 
-// Muestra errores de validación del backend (zod) por campo o generales.
 export function FormError({ error }) {
   if (!error) return null;
   return (

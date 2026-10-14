@@ -15,7 +15,7 @@ import { NewPeriodModal, RequirePeriod } from '../../features/periods/PeriodCont
 function CurrentPeriodClose({ onClosed }) {
   const { api, period, canEdit, isFullAdmin, reloadPeriods } = useWorkspace();
   const { summary: s } = usePeriodSummary();
-  const [dialog, setDialog] = useState(null); // 'close' | 'reopen'
+  const [dialog, setDialog] = useState(null);
   const [reason, setReason] = useState('');
   const [state, setState] = useState({ busy: false, error: null });
   const [newOpen, setNewOpen] = useState(false);

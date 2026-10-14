@@ -3,7 +3,6 @@ import { useWorkspace } from '../../context/WorkspaceContext.jsx';
 import { money, pct, signedMoney, tone } from '../../utils/format.js';
 import { Card, Row } from '../ui/Card.jsx';
 
-// PATRIMONIO CONCILIADO / INFORMACIÓN NO CONCILIADA (Mi cartera vs Movimientos).
 export function ReconciliationBanner({ reconciliation, compact }) {
   if (!reconciliation) return null;
   const ok = reconciliation.reconciled;
@@ -30,7 +29,6 @@ export function ReconciliationBanner({ reconciliation, compact }) {
   );
 }
 
-// Patrimonio inicial + aportaciones − deducciones + rentabilidad = patrimonio final.
 export function PatrimonyBreakdown({ patrimony, roi }) {
   return (
     <Card title="Patrimonio del periodo">
@@ -54,7 +52,6 @@ export function PatrimonyBreakdown({ patrimony, roi }) {
 export const Money = ({ value, signed }) => <span className={signed ? tone(value) : ''}>{signed ? signedMoney(value) : money(value)}</span>;
 export const Roi = ({ value }) => <span className={tone(value)}>{pct(value, { signed: true })}</span>;
 
-// Aviso cuando el periodo está cerrado (solo lectura).
 export function ClosedNotice() {
   const { period, basePath } = useWorkspace();
   if (period?.status !== 'CLOSED') return null;

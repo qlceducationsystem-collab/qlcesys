@@ -71,11 +71,11 @@ export function Register() {
     setLocal(null);
     f.run(async ({ confirm: _c, phone, ...v }) => {
       await register({ ...v, ...(phone ? { phone } : {}) });
-      nav('/suscripcion', { replace: true });
+      nav('/app/acceso', { replace: true });
     });
   };
   return (
-    <AuthCard title="Crear cuenta" subtitle="Después de registrarte podrás activar tu membresía mensual."
+    <AuthCard title="Crear cuenta" subtitle="Después de registrarte podrás elegir el acceso completo o solo las herramientas."
       footer={<>¿Ya tienes cuenta? <Link to="/login">Iniciar sesión</Link></>}>
       <form className="stack" onSubmit={submit}>
         <Field label="Nombre completo"><Input required autoComplete="name" maxLength={120} {...f.bind('name')} /></Field>

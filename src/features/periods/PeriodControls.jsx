@@ -8,7 +8,6 @@ import { Empty, ErrorState, Loading } from '../../components/ui/States.jsx';
 
 const YEARS = Array.from({ length: 8 }, (_, i) => new Date().getFullYear() - 3 + i);
 
-// Sugiere el mes siguiente al último periodo (o el mes actual).
 function nextPeriod(periods) {
   const last = periods[0];
   if (!last) {
@@ -91,7 +90,6 @@ export function PeriodSelector() {
   );
 }
 
-// Garantiza que exista un periodo seleccionado antes de mostrar la pantalla.
 export function RequirePeriod({ children }) {
   const { period, periodsState, reloadPeriods, canEdit } = useWorkspace();
   const [open, setOpen] = useState(false);

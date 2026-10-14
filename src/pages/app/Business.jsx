@@ -8,8 +8,6 @@ import { ClosedNotice, Money } from '../../components/finance/Finance.jsx';
 import { RecordManager } from '../../features/records/RecordManager.jsx';
 import { RequirePeriod } from '../../features/periods/PeriodControls.jsx';
 
-// Los negocios se registran una sola vez en Mi cartera (categoría Negocios);
-// aquí solo se agrega su flujo operativo mensual.
 function Body() {
   const { basePath } = useWorkspace();
   const { summary: s, reload } = usePeriodSummary();

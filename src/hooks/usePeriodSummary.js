@@ -1,7 +1,6 @@
 import { useWorkspace } from '../context/WorkspaceContext.jsx';
 import { useAsync } from './useAsync.js';
 
-// Resumen calculado por el backend para el periodo seleccionado (fuente única).
 export function usePeriodSummary() {
   const { api, period } = useWorkspace();
   const res = useAsync(() => api.get(`/periods/${period.id}/summary`), [api, period?.id], { enabled: !!period });

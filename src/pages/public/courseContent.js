@@ -1,7 +1,3 @@
-// Contenido del curso gratuito (fuente: QLC_Educacion_Financiera_GRATUITA.html).
-// Los bloques se renderizan con componentes reutilizables en CourseBlocks.jsx.
-// Tipos de bloque: cards, lesson, risk, quote, table, timeline, bars.
-
 export const HERO = {
   eyebrow: 'Educación financiera · Curso gratuito',
   title: ['Aprende a invertir antes de aprender a ', 'arriesgar.'],
@@ -294,7 +290,6 @@ export const SECTIONS = [
   },
 ];
 
-// Transición al producto de pago (documento maestro, secciones 2 y 3).
 export const PLATFORM_FEATURES = [
   ['Academia progresiva', 'Cada mes se desbloquea una nueva unidad con educación, herramienta, ejercicio, registro y seguimiento.'],
   ['Mi cartera', 'Registra cada producto por categoría y obtén resultado y ROI por producto, categoría y cartera global.'],

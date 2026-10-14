@@ -1,12 +1,6 @@
-// Gráficas ligeras (SVG/CSS) que consumen datos reales del backend.
-// Una sola serie por gráfica → un solo tono azul (magnitud); el último punto se resalta.
 import { useState } from 'react';
 import { money, pct } from '../../utils/format.js';
 
-/**
- * Barras verticales con tooltip al pasar el cursor.
- * data: [{ label, value, hint? }]
- */
 export function BarChart({ data, height = 190, format = money, ariaLabel = 'Gráfica' }) {
   const [hover, setHover] = useState(null);
   if (!data.length) return <div className="chart-empty">Sin datos suficientes para graficar.</div>;
@@ -14,7 +8,7 @@ export function BarChart({ data, height = 190, format = money, ariaLabel = 'Grá
   const max = Math.max(...values, 0);
   const min = Math.min(...values, 0);
   const span = max - min || 1;
-  const zero = (max / span) * 100; // posición de la línea base (% desde arriba)
+  const zero = (max / span) * 100;
 
   return (
     <figure className="chart" aria-label={ariaLabel}>
@@ -57,10 +51,6 @@ export function BarChart({ data, height = 190, format = money, ariaLabel = 'Grá
   );
 }
 
-/**
- * Distribución horizontal (estilo Allocation del HTML de referencia).
- * items: [{ key, label, value, share }]
- */
 export function DistributionBars({ items, emptyText = 'Sin datos para mostrar la distribución.' }) {
   if (!items.length) return <div className="chart-empty">{emptyText}</div>;
   return (

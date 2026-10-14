@@ -10,7 +10,6 @@ import { ClosedNotice, PatrimonyBreakdown, ReconciliationBanner } from '../../co
 import { RequirePeriod } from '../../features/periods/PeriodControls.jsx';
 import { PROTECTION_TYPES } from '../../utils/labels.js';
 
-// Vista consolidada: reutiliza Mi cartera, Protección y Deudas (sin registrar datos dos veces).
 function PatrimonyBody({ s, history }) {
   const b = s.balanceSheet;
   const years = [...new Set(history.map((h) => h.year))];

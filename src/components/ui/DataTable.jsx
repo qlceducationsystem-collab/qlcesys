@@ -1,5 +1,3 @@
-// Tabla responsive: en móvil cada fila se convierte en tarjeta (usa data-label).
-// columns: [{ key, label, render?, align?, className? }]
 export function DataTable({ columns, rows, rowKey = 'id', empty = 'Sin registros', footer }) {
   return (
     <div className="table-wrap">

@@ -1,35 +1,65 @@
-import { useEffect } from 'react';
+import { useEffect, useId, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Button } from './Button.jsx';
 
-export function Modal({ open, title, onClose, children, footer, wide }) {
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+function useFocusTrap(open, ref, onClose) {
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
   useEffect(() => {
     if (!open) return undefined;
-    const onKey = (e) => e.key === 'Escape' && onClose?.();
+    const previous = document.activeElement;
+    const node = ref.current;
+    (node?.querySelector('[data-autofocus]') || node?.querySelector(FOCUSABLE) || node)?.focus();
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        closeRef.current?.();
+      }
+      if (e.key !== 'Tab' || !node) return;
+      const items = [...node.querySelectorAll(FOCUSABLE)];
+      if (!items.length) return;
+      const [first, last] = [items[0], items[items.length - 1]];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
     document.addEventListener('keydown', onKey);
     document.body.classList.add('no-scroll');
     return () => {
       document.removeEventListener('keydown', onKey);
       document.body.classList.remove('no-scroll');
+      previous?.focus?.();
     };
-  }, [open, onClose]);
+  }, [open, ref]);
+}
 
+export function Modal({ open, title, onClose, children, footer, wide, className = '' }) {
+  const ref = useRef(null);
+  const titleId = useId();
+  useFocusTrap(open, ref, onClose);
   if (!open) return null;
-  return (
+  return createPortal(
     <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose?.()}>
-      <div className={`modal ${wide ? 'modal-wide' : ''}`} role="dialog" aria-modal="true" aria-label={title}>
+      <div ref={ref} className={`modal ${wide ? 'modal-wide' : ''} ${className}`} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1}>
         <header className="modal-head">
-          <h3>{title}</h3>
-          <button className="icon-btn" onClick={onClose} aria-label="Cerrar">×</button>
+          <h3 id={titleId}>{title}</h3>
+          <button type="button" className="icon-btn" onClick={onClose} aria-label="Cerrar">×</button>
         </header>
         <div className="modal-body">{children}</div>
         {footer && <footer className="modal-foot">{footer}</footer>}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
-// Confirmación visual para cambios importantes (requisito de trazabilidad).
-export function ConfirmDialog({ open, title = "Confirmar cambio", message, details, confirmLabel = "Confirmar", danger, loading, onConfirm, onClose, children }) {
+export function ConfirmDialog({ open, title = 'Confirmar cambio', message, details, confirmLabel = 'Confirmar', danger, loading, onConfirm, onClose, children }) {
   return (
     <Modal
       open={open}

@@ -1,5 +1,3 @@
-// CRUD reutilizable para registros de un periodo (ingresos, gastos, protección,
-// movimientos, negocios). El backend valida propiedad, periodo abierto y bitácora.
 import { useState } from 'react';
 import { useWorkspace } from '../../context/WorkspaceContext.jsx';
 import { useAsync } from '../../hooks/useAsync.js';
@@ -19,7 +17,6 @@ function FieldInput({ field, value, onChange }) {
   return <Input type={field.type || 'text'} maxLength={field.maxLength || 200} {...common} />;
 }
 
-// Describe los cambios para la confirmación visual.
 const describeChanges = (fields, before, after) =>
   fields
     .filter((f) => String(before[f.name] ?? '') !== String(after[f.name] ?? ''))
@@ -59,15 +56,11 @@ export function RecordForm({ fields, initial, onSubmit, onCancel, submitLabel = 
   );
 }
 
-/**
- * endpoint: '/incomes'; fields: config de formulario; columns: config de tabla.
- * toForm(row) → valores del formulario; onChanged → recargar resumen.
- */
 export function RecordManager({ endpoint, title, addLabel = "+ Agregar", fields, columns, toForm = (r) => r, onChanged, emptyText, select = (d) => d, rowId = (r) => r.id }) {
   const { api, period, canEdit } = useWorkspace();
   const list = useAsync(async () => select(await api.get(`${endpoint}?periodId=${period.id}`)), [api, endpoint, period?.id]);
-  const [editing, setEditing] = useState(null); // { row|null }
-  const [pending, setPending] = useState(null); // { kind, row, values, changes }
+  const [editing, setEditing] = useState(null);
+  const [pending, setPending] = useState(null);
   const [confirming, setConfirming] = useState(false);
   const [actionError, setActionError] = useState(null);
   const writable = canEdit && period.status === 'OPEN';
@@ -78,7 +71,7 @@ export function RecordManager({ endpoint, title, addLabel = "+ Agregar", fields,
   };
 
   const save = async (values) => {
-    // Campos opcionales vacíos se envían como null.
+
     const clean = Object.fromEntries(Object.entries(values).map(([k, v]) => [k, v === '' ? null : v]));
     const body = { ...clean, periodId: period.id };
     if (!editing.row) {

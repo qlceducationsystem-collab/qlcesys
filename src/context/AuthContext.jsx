@@ -2,22 +2,31 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { api, setUnauthorizedHandler, tokenStore } from '../api/client.js';
 
 const AuthContext = createContext(null);
+const NO_ACCESS = { access: { full: null, tools: [], hasAny: false, mode: 'NONE' }, offers: [], provider: 'MOCK' };
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [membership, setMembership] = useState(null);
+  const [accessInfo, setAccessInfo] = useState(null);
   const [ready, setReady] = useState(false);
 
-  const logout = useCallback(() => {
-    api.post('/auth/logout').catch(() => {});
+  const clearSession = useCallback(() => {
     tokenStore.set(null);
     setUser(null);
-    setMembership(null);
+    setAccessInfo(null);
   }, []);
 
-  const loadMembership = useCallback(async (u) => {
-    if (u?.role !== 'CLIENT') return setMembership(null);
-    setMembership(await api.get('/subscriptions/me'));
+  const logout = useCallback(() => {
+    api.post('/auth/logout').catch(() => null);
+    clearSession();
+  }, [clearSession]);
+
+  const loadAccess = useCallback(async (u) => {
+    if (u?.role !== 'CLIENT') return setAccessInfo(null);
+    try {
+      setAccessInfo(await api.get('/payments/access'));
+    } catch {
+      setAccessInfo(NO_ACCESS);
+    }
   }, []);
 
   const refresh = useCallback(async () => {
@@ -25,37 +34,37 @@ export function AuthProvider({ children }) {
     try {
       const { user: u } = await api.get('/auth/me');
       setUser(u);
-      await loadMembership(u);
+      await loadAccess(u);
     } catch {
-      tokenStore.set(null);
-      setUser(null);
+      clearSession();
     } finally {
       setReady(true);
     }
-  }, [loadMembership]);
+  }, [loadAccess, clearSession]);
 
   useEffect(() => {
-    setUnauthorizedHandler(() => { tokenStore.set(null); setUser(null); setMembership(null); });
+    setUnauthorizedHandler(clearSession);
     refresh();
-  }, [refresh]);
+  }, [refresh, clearSession]);
 
   const startSession = useCallback(async ({ token, user: u }) => {
     tokenStore.set(token);
     setUser(u);
-    await loadMembership(u);
+    await loadAccess(u);
     return u;
-  }, [loadMembership]);
+  }, [loadAccess]);
 
   const value = useMemo(() => ({
     user,
-    membership,
     ready,
-    hasAccess: user?.role === 'ADMIN' || !!membership?.hasAccess,
+    accessInfo,
+    access: accessInfo?.access || NO_ACCESS.access,
+    hasAccess: user?.role === 'ADMIN' || !!accessInfo?.access?.hasAny,
     login: async (body) => startSession(await api.post('/auth/login', body)),
     register: async (body) => startSession(await api.post('/auth/register', body)),
     logout,
-    refreshMembership: () => loadMembership(user),
-  }), [user, membership, ready, startSession, logout, loadMembership]);
+    refreshAccess: () => loadAccess(user),
+  }), [user, ready, accessInfo, startSession, logout, loadAccess]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

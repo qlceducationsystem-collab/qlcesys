@@ -7,6 +7,8 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/app.css';
 import './styles/public.css';
+import './styles/academy.css';
+import './styles/admin.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

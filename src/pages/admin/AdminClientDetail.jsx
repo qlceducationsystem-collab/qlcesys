@@ -3,44 +3,65 @@ import { Link, useParams } from 'react-router-dom';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useAsync } from '../../hooks/useAsync.js';
-import { date } from '../../utils/format.js';
-import { SUBSCRIPTION_STATUS } from '../../utils/labels.js';
-import { Card, PageHeader, Row } from '../../components/ui/Card.jsx';
+import { date, dateTime } from '../../utils/format.js';
+import { Card, PageHeader, Pill, Row } from '../../components/ui/Card.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { ConfirmDialog } from '../../components/ui/Modal.jsx';
 import { Field, FormError, Select, Textarea } from '../../components/ui/Form.jsx';
 import { AsyncView } from '../../components/ui/States.jsx';
+import { DataTable } from '../../components/ui/DataTable.jsx';
 import { AuditTable } from './AdminAudit.jsx';
-import { statusPill } from './AdminClients.jsx';
+import { accessPill } from './AdminClients.jsx';
 
-function SubscriptionManager({ client, onSaved }) {
-  const [status, setStatus] = useState(client.subscription?.status || 'ACTIVE');
+function GrantManager({ client, onSaved }) {
+  const offers = useAsync(() => api.get('/admin/pricing'), []);
+  const [offerCode, setOfferCode] = useState('FULL_ANNUAL');
   const [reason, setReason] = useState('');
-  const [open, setOpen] = useState(false);
+  const [dialog, setDialog] = useState(null);
   const [state, setState] = useState({ busy: false, error: null });
-  const save = async () => {
+
+  const run = async (fn) => {
     setState({ busy: true, error: null });
     try {
-      await api.patch(`/admin/clients/${client.id}/subscription`, { status, reason });
-      setOpen(false);
+      await fn();
+      setDialog(null);
       setReason('');
-      onSaved();
       setState({ busy: false, error: null });
+      onSaved();
     } catch (error) {
       setState({ busy: false, error });
     }
   };
+
   return (
-    <Card title="Gestionar membresía (manual)">
-      <p className="small muted">Para cortesías o correcciones. Los pagos normales se confirman automáticamente por Mercado Pago. Queda registrado en la bitácora.</p>
-      <Field label="Nuevo estado">
-        <Select value={status} onChange={(e) => setStatus(e.target.value)} options={['ACTIVE', 'PAST_DUE', 'CANCELLED', 'EXPIRED', 'PENDING'].map((s) => ({ value: s, label: SUBSCRIPTION_STATUS[s] }))} />
-      </Field>
-      <Field label="Motivo (obligatorio)"><Textarea value={reason} onChange={(e) => setReason(e.target.value)} maxLength={500} /></Field>
-      <Button disabled={!reason.trim()} onClick={() => setOpen(true)}>Aplicar cambio</Button>
-      <ConfirmDialog open={open} title="Confirmar cambio de membresía" loading={state.busy} onConfirm={save} onClose={() => setOpen(false)}
-        message={`El estado de la membresía de ${client.name} cambiará y el acceso a la plataforma dependerá del nuevo estado. Sus datos financieros se conservan.`}
-        details={[{ field: 'Estado', from: SUBSCRIPTION_STATUS[client.effectiveStatus], to: SUBSCRIPTION_STATUS[status] }]}>
+    <Card title="Accesos del cliente">
+      <DataTable rows={client.grants} empty="Sin accesos otorgados." columns={[
+        { key: 'offer', label: 'Producto' },
+        { key: 'startsAt', label: 'Inicio', render: (g) => date(g.startsAt) },
+        { key: 'expiresAt', label: 'Vence', render: (g) => (g.expiresAt ? date(g.expiresAt) : 'Sin vencimiento') },
+        { key: 'origin', label: 'Origen', render: (g) => (g.paymentAttemptId ? 'Pago' : 'Manual') },
+        { key: 'active', label: 'Estado', render: (g) => <Pill variant={g.active ? '' : 'muted'}>{g.active ? 'Activo' : 'Revocado'}</Pill> },
+        { key: 'x', label: '', render: (g) => g.active && <button type="button" className="btn-link danger" onClick={() => setDialog({ kind: 'revoke', grant: g })}>Revocar</button> },
+      ]} />
+      <div className="form-grid cols-2">
+        <Field label="Otorgar acceso manual (cortesía o corrección)">
+          <Select value={offerCode} onChange={(e) => setOfferCode(e.target.value)} options={(offers.data || []).map((o) => ({ value: o.code, label: o.name }))} />
+        </Field>
+        <Field label="Motivo (obligatorio)"><Textarea rows={2} value={reason} onChange={(e) => setReason(e.target.value)} maxLength={500} /></Field>
+      </div>
+      <Button disabled={!reason.trim()} onClick={() => setDialog({ kind: 'grant' })}>Otorgar acceso</Button>
+      <ConfirmDialog
+        open={!!dialog}
+        title={dialog?.kind === 'revoke' ? 'Revocar acceso' : 'Otorgar acceso'}
+        danger={dialog?.kind === 'revoke'}
+        loading={state.busy}
+        message={dialog?.kind === 'revoke' ? `Se revocará “${dialog.grant.offer}”. Los datos del cliente se conservan.` : `Se otorgará el acceso seleccionado a ${client.name}. Quedará registrado en la auditoría.`}
+        onConfirm={() => run(() => (dialog.kind === 'revoke'
+          ? api.post(`/admin/clients/${client.id}/grants/${dialog.grant.id}/revoke`, { reason: reason || 'Revocación administrativa' })
+          : api.post(`/admin/clients/${client.id}/grants`, { offerCode, reason })))}
+        onClose={() => setDialog(null)}
+      >
+        {dialog?.kind === 'revoke' && <Field label="Motivo"><Textarea rows={2} value={reason} onChange={(e) => setReason(e.target.value)} /></Field>}
         <FormError error={state.error} />
       </ConfirmDialog>
     </Card>
@@ -57,20 +78,19 @@ export default function AdminClientDetail() {
     <AsyncView {...client} onRetry={client.reload}>
       {(c) => (
         <>
-          <Link className="btn-secondary back" to="/admin">← Clientes</Link>
+          <Link className="btn-secondary back" to="/admin/clientes">← Clientes</Link>
           <PageHeader title={c.name} subtitle={c.email} actions={<Link className="btn-primary" to={`/admin/clientes/${c.id}/app`}>Ver / gestionar como cliente</Link>} />
           <div className="layout">
             <Card title="Información">
-              <Row label="Membresía" value={statusPill(c.effectiveStatus)} />
-              <Row label="Activación" value={date(c.subscription?.activatedAt)} />
-              <Row label="Siguiente cobro" value={date(c.subscription?.nextBillingDate)} />
-              <Row label="Último pago" value={date(c.subscription?.lastPaymentAt)} />
-              <Row label="Mes de suscripción" value={c.academy.currentMonth || '—'} />
+              <Row label="Acceso" value={accessPill(c.access)} />
+              {c.access.full && <Row label="Acceso anual vigente hasta" value={date(c.access.full.expiresAt)} />}
+              <Row label="Módulos completados" value={`${c.completedModules} / 6`} />
               <Row label="Teléfono" value={c.phone || '—'} />
+              <Row label="Último acceso" value={dateTime(c.lastLoginAt)} />
               <Row label="Periodos / cortes / citas" value={`${c.counts.periods} / ${c.counts.monthlyCloses} / ${c.counts.appointments}`} />
               <Row label="Cliente desde" value={date(c.createdAt)} />
             </Card>
-            {user?.adminLevel === 'FULL' && <SubscriptionManager client={c} onSaved={() => { client.reload(); audit.reload(); }} />}
+            {user?.adminLevel === 'FULL' && <GrantManager client={c} onSaved={() => { client.reload(); audit.reload(); }} />}
           </div>
           <Card title="Historial de cambios administrativos del cliente">
             <AsyncView {...audit} onRetry={audit.reload}>{(a) => <AuditTable items={a.items} hideClient />}</AsyncView>

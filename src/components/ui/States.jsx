@@ -18,7 +18,6 @@ export function Empty({ title = 'Aún no hay información', text, action }) {
   );
 }
 
-// Estados de error, incluidos 401 (sin sesión) y 403 (sin permiso / membresía).
 export function ErrorState({ error, onRetry }) {
   const status = error?.status;
   if (status === 401) {
@@ -48,7 +47,6 @@ export function ErrorState({ error, onRetry }) {
   );
 }
 
-// Envuelve el ciclo loading / error / empty / success.
 export function AsyncView({ loading, error, data, onRetry, isEmpty, empty, children }) {
   if (loading && !data) return <Loading />;
   if (error) return <ErrorState error={error} onRetry={onRetry} />;
