@@ -2,7 +2,16 @@ import { money } from '../../../utils/format.js';
 import { responsiveImage } from '../../../utils/media.js';
 import { MoreInfo, SectionCtas, SectionHead } from './SectionParts.jsx';
 
-const priceLabel = (offer) => (offer?.price === null || offer?.price === undefined ? 'Precio por definir' : `${money(offer.price)} ${offer.currency}`);
+const hasPrice = (offer) => offer?.price !== null && offer?.price !== undefined;
+const priceLabel = (offer) => (hasPrice(offer) ? `${money(offer.price)} ${offer.currency}` : 'Precio por definir');
+
+function toolsPrice(tools) {
+  const priced = tools.filter(hasPrice);
+  if (!priced.length) return 'Precio por definir';
+  const min = priced.reduce((a, t) => (Number(t.price) < Number(a.price) ? t : a));
+  const same = priced.length === tools.length && priced.every((t) => Number(t.price) === Number(min.price));
+  return `${same ? '' : 'Desde '}${priceLabel(min)}`;
+}
 
 function SectionImage({ section }) {
   if (!section.image) return null;
@@ -82,7 +91,7 @@ export function AccessSection({ section, offers, go }) {
           <div className="access-price">{priceLabel(full)}</div>
           <ul className="access-list">
             <li>Academia con explicaciones de cada módulo</li>
-            <li>Herramientas M1–M6</li>
+            <li>Herramientas M1–M12</li>
             <li>Plataforma patrimonial completa</li>
           </ul>
         </article>
@@ -90,9 +99,10 @@ export function AccessSection({ section, offers, go }) {
           <span className="access-tag">{optionTools?.tag || 'Opción 2'}</span>
           <h3>{optionTools?.title || 'Solo herramientas'}</h3>
           <p>{optionTools?.text}</p>
+          <div className="access-price">{toolsPrice(tools)}<small> por herramienta · pago único</small></div>
           <ul className="access-tools">
-            {tools.slice(0, 6).map((t) => (
-              <li key={t.code}><span>M{t.moduleNumber}</span><em>{priceLabel(t)}</em></li>
+            {tools.map((t) => (
+              <li key={t.code} title={t.name}><span>M{t.moduleNumber}</span></li>
             ))}
           </ul>
         </article>

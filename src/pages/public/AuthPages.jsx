@@ -4,6 +4,7 @@ import { api } from '../../api/client.js';
 import { challengeStore, useAuth } from '../../context/AuthContext.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { Field, FormError, Input } from '../../components/ui/Form.jsx';
+import { LEGAL_DOCS, LEGAL_VERSION } from './legal/legalContent.js';
 
 function AuthCard({ title, subtitle, children, footer, wide }) {
   return (
@@ -97,12 +98,14 @@ export function Register() {
   const nav = useNavigate();
   const f = useForm({ name: '', email: '', phone: '', password: '', confirm: '' });
   const [local, setLocal] = useState(null);
+  const [accepted, setAccepted] = useState(false);
   const submit = (e) => {
     e.preventDefault();
     if (f.values.password !== f.values.confirm) return setLocal({ message: 'Las contraseñas no coinciden' });
+    if (!accepted) return setLocal({ message: 'Debes aceptar los Términos y el Aviso de privacidad' });
     setLocal(null);
     f.run(async ({ confirm: _c, phone, ...v }) => {
-      await register({ ...v, ...(phone ? { phone } : {}) });
+      await register({ ...v, ...(phone ? { phone } : {}), acceptLegal: true, legalVersion: LEGAL_VERSION });
       nav(SETUP_PATH, { replace: true, state: { from: '/app/acceso' } });
     });
   };
@@ -115,9 +118,13 @@ export function Register() {
         <Field label="Teléfono (opcional)"><Input type="tel" autoComplete="tel" maxLength={30} {...f.bind('phone')} /></Field>
         <Field label="Contraseña" hint="Mínimo 8 caracteres."><Input type="password" required minLength={8} autoComplete="new-password" {...f.bind('password')} /></Field>
         <Field label="Confirmar contraseña"><Input type="password" required minLength={8} autoComplete="new-password" {...f.bind('confirm')} /></Field>
+        <label className="check legal-check">
+          <input type="checkbox" required checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
+          <span>He leído y acepto los <Link to={LEGAL_DOCS.terminos.path} target="_blank" rel="noopener">Términos y condiciones</Link> y el <Link to={LEGAL_DOCS.privacidad.path} target="_blank" rel="noopener">Aviso de privacidad</Link>.</span>
+        </label>
         <FormError error={local || f.state.error} />
         <Button type="submit" loading={f.state.busy}>Crear cuenta</Button>
-        <p className="small muted">Al crear tu cuenta aceptas que la plataforma es educativa y de organización financiera; no constituye asesoría de inversión.</p>
+        <p className="small muted">La plataforma es educativa y de organización financiera; no constituye asesoría de inversión.</p>
       </form>
     </AuthCard>
   );

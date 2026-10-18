@@ -32,7 +32,7 @@ select.month option { background: #0d131a; }
 
 .top { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 22px; }
 .top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-h1 { font-size: clamp(28px, 4vw, 44px); line-height: 1.05; letter-spacing: -.04em; margin-bottom: 6px; }
+h1 { font-size: clamp(28px, 4vw, 44px); line-height: 1.12; letter-spacing: -.04em; margin-bottom: 6px; }
 .subtitle { color: var(--muted); font-size: 13px; }
 .section-kicker { font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: var(--blue2); margin-bottom: 7px; }
 .block-title { font-size: 15px; margin: 22px 0 12px; color: var(--silver); }

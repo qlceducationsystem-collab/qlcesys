@@ -12,6 +12,12 @@ const TOOL_LABELS = {
   4: 'Riesgo y exposición',
   5: 'Simulador de operación',
   6: 'Operación profesional',
+  7: 'Presupuesto y control',
+  8: 'Fondo de emergencia',
+  9: 'Panel de obligaciones',
+  10: 'Rendimiento neto',
+  11: 'Poder adquisitivo',
+  12: 'Evolución patrimonial',
 };
 
 export function AccessOffers({ title = 'Dos formas de adquirir QLC Financial Education', compact }) {
@@ -39,7 +45,7 @@ export function AccessOffers({ title = 'Dos formas de adquirir QLC Financial Edu
             <p>Academia + explicaciones + herramientas durante el periodo anual configurado.</p>
             <ul className="offer-list">
               <li>Clases y explicaciones de cada módulo</li>
-              <li>Herramientas M1–M6 conectadas a tu plataforma</li>
+              <li>Herramientas M1–M12 conectadas a tu plataforma</li>
               <li>Mi cartera, patrimonio, cortes e informe anual</li>
             </ul>
             <div className="offer-price">{offerPrice(full)}</div>

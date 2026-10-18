@@ -24,11 +24,11 @@ export function CopytradingFilter({ open, onClose }) {
       {answer === 'yes' && (
         <div className="stack">
           <p>El contenido de QLC está dirigido a personas con conocimientos previos de copytrading y trading. Es una estrategia de alto riesgo y ningún resultado está garantizado.</p>
-          {QLC_URL ? (
-            <a className="btn-primary" href={QLC_URL} target="_blank" rel="noopener noreferrer">Continuar a QLC</a>
-          ) : (
-            <p className="muted small">La página de QLC estará disponible próximamente.</p>
-          )}
+          <p>Una vez que sabes que es una estrategia de alto riesgo, conoce la plataforma y podrás adquirir conocimientos.</p>
+          <div className="form-actions">
+            <Link className="btn-secondary" to="/?s=plataforma" onClick={close}>Conocer la plataforma</Link>
+            {QLC_URL && <a className="btn-primary" href={QLC_URL} target="_blank" rel="noopener noreferrer">Continuar a QLC</a>}
+          </div>
         </div>
       )}
       {answer === 'no' && (

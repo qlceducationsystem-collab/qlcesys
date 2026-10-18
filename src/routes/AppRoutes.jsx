@@ -49,6 +49,8 @@ const ADMIN_PAGES = [
 const routesFor = (pages) =>
   pages.map(([path, Page]) => (path === '' ? <Route key="index" index element={<Page />} /> : <Route key={path} path={path} element={<Page />} />));
 
+const LegalPage = page(() => import('../pages/public/legal/LegalPage.jsx'));
+
 const NotFound = () => <Empty title="Página no encontrada" text="La dirección no existe." />;
 
 export default function AppRoutes() {
@@ -61,6 +63,8 @@ export default function AppRoutes() {
           <Route path="/registro" element={<Register />} />
           <Route path="/recuperar" element={<ForgotPassword />} />
           <Route path="/seguridad/2fa" element={<TwoFactorSetup />} />
+          <Route path="/privacidad" element={<LegalPage doc="privacidad" />} />
+          <Route path="/terminos" element={<LegalPage doc="terminos" />} />
         </Route>
 
         <Route path="/app" element={<RequireAuth role="CLIENT"><WorkspaceProvider><AppLayout /></WorkspaceProvider></RequireAuth>}>

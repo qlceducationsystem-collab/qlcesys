@@ -9,12 +9,11 @@ function RichText({ text }) {
 }
 
 function lessonSlides(block) {
-  const paragraphs = chunk(block.paragraphs || [], 2);
-  const slides = (paragraphs.length ? paragraphs : [[]]).map((group, i) => ({ type: 'text', title: i ? `${block.title} (cont.)` : block.title, paragraphs: group }));
+  const slides = chunk(block.paragraphs || [], 2).map((group, i) => ({ type: 'text', title: i ? `${block.title} (cont.)` : block.title, paragraphs: group }));
   if (block.list) chunk(block.list, 5).forEach((items) => slides.push({ type: 'list', title: block.title, items }));
   if (block.after?.length) slides.push({ type: 'text', title: block.title, paragraphs: block.after });
   if (block.example) slides.push({ type: 'example', title: block.title, example: block.example });
-  return slides;
+  return slides.length ? slides : [{ type: 'text', title: block.title, paragraphs: [] }];
 }
 
 const BLOCK_SLIDES = {
@@ -89,13 +88,14 @@ function Slide({ slide }) {
 export function ClassViewer({ lessons, index, onChange, onClose }) {
   const lesson = lessons[index];
   const slides = useMemo(() => buildSlides(lesson), [lesson]);
-  const [step, setStep] = useState(0);
+  const [position, setPosition] = useState({ index, step: 0 });
+  const step = position.index === index ? Math.min(position.step, slides.length - 1) : 0;
+  const setStep = (next) => setPosition((p) => {
+    const current = p.index === index ? p.step : 0;
+    return { index, step: typeof next === 'function' ? next(current) : next };
+  });
   const panelRef = useRef(null);
   const last = step === slides.length - 1;
-
-  useEffect(() => {
-    setStep(0);
-  }, [index]);
   useEffect(() => {
     const previous = document.activeElement;
     panelRef.current?.focus();
@@ -110,7 +110,7 @@ export function ClassViewer({ lessons, index, onChange, onClose }) {
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [slides.length, onClose]);
+  }, [slides.length, onClose, index]);
 
   return (
     <div className="cv" role="dialog" aria-modal="true" aria-label={lesson.title} ref={panelRef} tabIndex={-1}>
