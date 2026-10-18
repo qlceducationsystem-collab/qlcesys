@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-const CURRENT_VERSION = __APP_VERSION__;
+const CURRENT_VERSION = typeof __APP_VERSION__ === 'undefined' ? null : __APP_VERSION__;
 const CHECK_EVERY_MS = 5 * 60 * 1000;
 const FIRST_CHECK_MS = 8000;
 const SNOOZE_MS = 30 * 60 * 1000;
@@ -35,7 +35,7 @@ function useNewVersion() {
   const check = useCallback(async () => {
     if (Date.now() < snoozedUntil.current) return;
     const latest = await fetchLatestVersion().catch(() => null);
-    if (latest && latest !== CURRENT_VERSION) setState({ version: latest, reason: 'NEW_VERSION' });
+    if (CURRENT_VERSION && latest && latest !== CURRENT_VERSION) setState({ version: latest, reason: 'NEW_VERSION' });
   }, []);
 
   useEffect(() => {

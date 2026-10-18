@@ -2,7 +2,7 @@ import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-const shared = fileURLToPath(new URL('../shared', import.meta.url));
+const shared = fileURLToPath(new URL('./src/shared', import.meta.url));
 const buildId = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 12) || Date.now().toString(36);
 
 const versionFile = () => ({
@@ -23,5 +23,5 @@ export default defineConfig({
   plugins: [react(), versionFile()],
   define: { __APP_VERSION__: JSON.stringify(buildId) },
   resolve: { alias: { '@shared': shared } },
-  server: { port: 5173, fs: { allow: ['..'] } },
+  server: { port: 5173 },
 });
