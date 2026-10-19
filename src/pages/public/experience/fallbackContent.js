@@ -12,7 +12,7 @@ export const FALLBACK_CONTENT = {
       secondaryText: 'No existe una inversión perfecta. Existe una estructura de patrimonio donde cada activo cumple una función diferente.',
       primaryCtaLabel: 'Comenzar el curso gratuito',
       primaryCtaTarget: 'curso',
-      secondaryCtaLabel: 'Conocer la plataforma',
+      secondaryCtaLabel: 'Conocer el software educativo',
       secondaryCtaTarget: 'plataforma',
       items: [
         { title: '8 clases', text: 'Curso gratuito' },
@@ -22,7 +22,7 @@ export const FALLBACK_CONTENT = {
     },
     {
       key: 'curso',
-      navLabel: 'Curso',
+      navLabel: 'Curso gratuito',
       eyebrow: 'Curso gratuito',
       title: 'Ocho clases para construir criterio financiero',
       subtitle: 'Elige una clase y avanza a tu ritmo.',
@@ -54,19 +54,20 @@ export const FALLBACK_CONTENT = {
     },
     {
       key: 'plataforma',
-      navLabel: 'Plataforma',
+      navLabel: 'Software Educativo',
       eyebrow: 'QLC Financial Education',
-      title: 'De aprender conceptos a aplicarlos sobre tu situación real',
-      description: 'Educación financiera acompañada de herramientas para registrar, organizar, medir y comprender tu patrimonio mes a mes.',
+      title: 'Lleva tu educación financiera al siguiente nivel.',
+      description: 'Adquiere nuestro software educativo por una cuota accesible y transforma tus conocimientos en experiencia práctica.',
+      secondaryText: 'Accede a contenidos educativos estructurados, ejercicios prácticos y herramientas para registrar, organizar, analizar y comprender tus finanzas, tus inversiones y la evolución de tu patrimonio.',
       primaryCtaLabel: 'Ver formas de acceso',
       primaryCtaTarget: 'acceso',
       items: [
         { title: 'Academia progresiva', text: 'Educación, herramienta, ejercicio, registro y seguimiento.' },
-        { title: 'Mi cartera', text: 'Resultado y ROI por producto, categoría y cartera global.' },
+        { title: 'Mi cartera de inversiones', text: 'Crea tu cartera. Registra y clasifica tus inversiones por producto y categoría, organiza su estructura y analiza sus resultados, tanto de forma individual como global.' },
         { title: 'Patrimonio conciliado', text: 'Aportaciones y deducciones separadas de la rentabilidad.' },
         { title: 'Cortes mensuales', text: 'Historial mensual descargable en PDF.' },
         { title: 'Informe anual', text: 'Qué cambió en tu patrimonio y por qué.' },
-        { title: 'Asesoría', text: 'Sesiones educativas con cita.' },
+        { title: 'Asesoría', text: 'Orientación financiera individual 1 a 1, con nuestro equipo de expertos, por chat interno.' },
       ],
     },
     {
@@ -79,7 +80,7 @@ export const FALLBACK_CONTENT = {
       primaryCtaTarget: '/registro',
       items: [
         { title: 'Acceso completo anual', text: 'Academia + explicaciones + herramientas durante el periodo anual.', tag: 'Opción 1' },
-        { title: 'Solo herramientas', text: 'Pago único por la herramienta de cada módulo, sin la academia.', tag: 'Opción 2' },
+        { title: 'Solo herramientas', text: 'Suscripción mensual por la herramienta de cada módulo, sin la academia.', tag: 'Opción 2' },
       ],
     },
     {

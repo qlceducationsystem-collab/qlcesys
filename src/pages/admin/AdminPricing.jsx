@@ -23,7 +23,7 @@ function OfferEditor({ offer, onSaved, canEdit }) {
       await api.put(`/admin/pricing/${offer.code}`, {
         ...f,
         price: f.price === '' ? null : Number(f.price),
-        accessDays: offer.type === 'FULL_ANNUAL' ? Number(f.accessDays || 365) : null,
+        accessDays: Number(f.accessDays || (offer.type === 'FULL_ANNUAL' ? 365 : 30)),
       });
       setConfirm(false);
       setState({ busy: false, error: null });
@@ -44,7 +44,7 @@ function OfferEditor({ offer, onSaved, canEdit }) {
         <Field label="Nombre" full><Input value={f.name} onChange={set('name')} disabled={!canEdit} /></Field>
         <Field label="Precio" hint="Vacío = Precio por definir"><MoneyInput value={f.price} onChange={set('price')} disabled={!canEdit} placeholder="Por definir" /></Field>
         <Field label="Moneda"><Input maxLength={3} value={f.currency} onChange={set('currency')} disabled={!canEdit} /></Field>
-        {offer.type === 'FULL_ANNUAL' && <Field label="Días de acceso"><Input type="number" min="1" value={f.accessDays} onChange={set('accessDays')} disabled={!canEdit} /></Field>}
+        <Field label={offer.type === 'FULL_ANNUAL' ? 'Días de acceso' : 'Días por mensualidad'}><Input type="number" min="1" value={f.accessDays} onChange={set('accessDays')} disabled={!canEdit} /></Field>
         <label className="check"><input type="checkbox" checked={f.active} onChange={set('active')} disabled={!canEdit} /> Disponible para compra</label>
       </div>
       <FormError error={state.error} />
@@ -79,7 +79,7 @@ export default function AdminPricing() {
             <Card title="Acceso completo anual">
               <div className="price-grid single">{offers.filter((o) => o.type === 'FULL_ANNUAL').map((o) => <OfferEditor key={`${o.code}-${o.price}-${o.active}`} offer={o} onSaved={res.reload} canEdit={canEdit} />)}</div>
             </Card>
-            <Card title="Solo herramientas · pago único por módulo">
+            <Card title="Solo herramientas · suscripción mensual por módulo">
               <div className="price-grid">{offers.filter((o) => o.type === 'TOOL_ONLY').map((o) => <OfferEditor key={`${o.code}-${o.price}-${o.active}`} offer={o} onSaved={res.reload} canEdit={canEdit} />)}</div>
             </Card>
           </>

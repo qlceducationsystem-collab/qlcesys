@@ -52,7 +52,8 @@ export function FeatureSection({ section, go }) {
   return (
     <div className="ps-container features">
       <div className="features-head">
-        <SectionHead section={section} />
+        <SectionHead section={section} compact />
+        {section.secondaryText && <p className="ps-lead features-extra reveal" style={{ '--r': 3 }}>{section.secondaryText}</p>}
         <SectionCtas section={section} go={go} />
       </div>
       <div className="feature-grid">
@@ -99,7 +100,7 @@ export function AccessSection({ section, offers, go }) {
           <span className="access-tag">{optionTools?.tag || 'Opción 2'}</span>
           <h3>{optionTools?.title || 'Solo herramientas'}</h3>
           <p>{optionTools?.text}</p>
-          <div className="access-price">{toolsPrice(tools)}<small> por herramienta · pago único</small></div>
+          <div className="access-price">{toolsPrice(tools)}<small> al mes por herramienta · cancela cuando quieras</small></div>
           <ul className="access-tools">
             {tools.map((t) => (
               <li key={t.code} title={t.name}><span>M{t.moduleNumber}</span></li>

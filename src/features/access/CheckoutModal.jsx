@@ -26,7 +26,7 @@ function Summary({ offer, method, setMethod }) {
         <span>Total</span>
         <strong>{offer.price === null || offer.price === undefined ? 'Precio por definir — simulación de acceso' : offerPrice(offer)}</strong>
         {offer.type === 'FULL_ANNUAL' && <small>Vigencia de {offer.accessDays || 365} días</small>}
-        {offer.type === 'TOOL_ONLY' && <small>Pago único por la herramienta</small>}
+        {offer.type === 'TOOL_ONLY' && <small>Suscripción mensual · {offer.accessDays || 30} días de acceso por pago</small>}
       </div>
       <fieldset className="checkout-methods">
         <legend>Método de pago</legend>

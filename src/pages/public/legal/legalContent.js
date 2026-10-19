@@ -64,7 +64,7 @@ export const LEGAL_DOCS = {
         'Eres responsable de la información financiera que registras y de las decisiones que tomes con base en ella.',
       ]],
       ['Accesos, precios y pagos', [
-        'El acceso completo anual incluye la academia y las herramientas durante 365 días desde su activación. La modalidad Solo herramientas otorga acceso permanente a la herramienta del módulo adquirido, sin la academia.',
+        'El acceso completo anual incluye la academia y las herramientas durante 365 días desde su activación. La modalidad Solo herramientas es una suscripción mensual: cada pago otorga 30 días de acceso a la herramienta del módulo elegido, sin la academia, y puede renovarse.',
         'Los precios se muestran en pesos mexicanos dentro de la plataforma y pueden cambiar; el cambio no afecta accesos ya pagados.',
         'Las solicitudes de aclaración o reembolso se atienden conforme a la legislación de protección al consumidor aplicable.',
       ]],

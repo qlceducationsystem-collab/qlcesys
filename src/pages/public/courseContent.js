@@ -289,12 +289,3 @@ export const SECTIONS = [
     ],
   },
 ];
-
-export const PLATFORM_FEATURES = [
-  ['Academia progresiva', 'Cada mes se desbloquea una nueva unidad con educación, herramienta, ejercicio, registro y seguimiento.'],
-  ['Mi cartera', 'Registra cada producto por categoría y obtén resultado y ROI por producto, categoría y cartera global.'],
-  ['Patrimonio y conciliación', 'Separa aportaciones, deducciones y rentabilidad, y verifica que tu patrimonio esté conciliado.'],
-  ['Cortes mensuales', 'Cierra cada mes, conserva tu historial y descarga cada corte en PDF.'],
-  ['Informe anual', 'Al completar 12 meses obtienes tu Informe Patrimonial Anual con lo que cambió y por qué.'],
-  ['Asesoría personalizada', 'Solicita sesiones educativas con cita para resolver dudas sobre tu organización financiera.'],
-];

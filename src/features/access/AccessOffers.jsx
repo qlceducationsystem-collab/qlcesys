@@ -55,15 +55,16 @@ export function AccessOffers({ title = 'Dos formas de adquirir QLC Financial Edu
         <article className="offer-card">
           <div className="offer-top"><span className="offer-tag">Opción 2</span></div>
           <h3>Solo herramientas</h3>
-          <p>Sin la academia: pagas una sola vez por la herramienta práctica de cada módulo.</p>
+          <p>Sin la academia: pagas una mensualidad por la herramienta práctica de cada módulo que necesites.</p>
           <ul className="offer-tools">
             {tools.map((t) => {
               const owned = !!access.full || access.tools.includes(t.moduleNumber);
+              const until = access.toolAccess?.find((x) => x.moduleNumber === t.moduleNumber)?.expiresAt;
               return (
                 <li key={t.code} className={owned ? 'is-owned' : ''}>
                   <span className="offer-tool-n">M{t.moduleNumber}</span>
-                  <span className="offer-tool-name">{TOOL_LABELS[t.moduleNumber] || t.name}<small>{offerPrice(t)}</small></span>
-                  {owned ? <Pill>Activa</Pill> : <Button variant="secondary" onClick={() => setSelected(t)}>Adquirir</Button>}
+                  <span className="offer-tool-name">{TOOL_LABELS[t.moduleNumber] || t.name}<small>{offerPrice(t)} / mes{until && !access.full ? ` · vigente hasta ${date(until)}` : ''}</small></span>
+                  {owned && !until ? <Pill>Activa</Pill> : <Button variant="secondary" onClick={() => setSelected(t)}>{owned ? 'Renovar' : 'Suscribirme'}</Button>}
                 </li>
               );
             })}
