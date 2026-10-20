@@ -5,7 +5,7 @@ const CHECK_EVERY_MS = 5 * 60 * 1000;
 const FIRST_CHECK_MS = 8000;
 const SNOOZE_MS = 30 * 60 * 1000;
 const VERSION_PARAM = 'v';
-const VOLATILE_KEYS = ['qlc_public_content'];
+const VOLATILE_KEYS = ['qlc_public_offers'];
 
 async function fetchLatestVersion() {
   const res = await fetch(`/version.json?t=${Date.now()}`, { cache: 'no-store' });
@@ -19,7 +19,7 @@ async function clearBrowserCaches() {
   await Promise.all(registrations.map((r) => r.unregister()));
   const keys = 'caches' in window ? await caches.keys() : [];
   await Promise.all(keys.map((k) => caches.delete(k)));
-  VOLATILE_KEYS.forEach((k) => sessionStorage.removeItem(k));
+  VOLATILE_KEYS.forEach((k) => localStorage.removeItem(k));
 }
 
 function reloadFresh(version) {

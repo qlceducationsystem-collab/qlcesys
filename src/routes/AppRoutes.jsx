@@ -37,7 +37,6 @@ const ADMIN_PAGES = [
   ['solicitudes', page(() => import('../pages/admin/AdminLeads.jsx'))],
   ['clientes', page(() => import('../pages/admin/AdminClients.jsx'))],
   ['clientes/:clientId', page(() => import('../pages/admin/AdminClientDetail.jsx'))],
-  ['contenido', page(() => import('../pages/admin/AdminPublicContent.jsx'))],
   ['precios', page(() => import('../pages/admin/AdminPricing.jsx'))],
   ['pagos', page(() => import('../pages/admin/AdminPayments.jsx'))],
   ['archivos', page(() => import('../pages/admin/AdminModuleFiles.jsx'))],

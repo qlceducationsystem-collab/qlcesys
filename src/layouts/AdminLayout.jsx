@@ -15,7 +15,6 @@ const NAV = [
   { to: '/admin/solicitudes', icon: '✉', label: 'Solicitudes de información' },
   { to: '/admin/citas', icon: '◌', label: 'Citas de asesoría' },
   { group: 'Contenido' },
-  { to: '/admin/contenido', icon: '▣', label: 'Contenido público' },
   { to: '/admin/archivos', icon: '▤', label: 'Academia / archivos' },
   { group: 'Comercial' },
   { to: '/admin/precios', icon: '◇', label: 'Precios y accesos' },

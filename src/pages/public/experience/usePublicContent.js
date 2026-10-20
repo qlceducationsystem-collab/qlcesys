@@ -1,43 +1,49 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../../api/client.js';
-import { FALLBACK_CONTENT } from './fallbackContent.js';
+import { PUBLIC_SECTIONS } from './publicContent.js';
 
-const CACHE_KEY = 'qlc_public_content';
-const CACHE_TTL = 5 * 60 * 1000;
+const OFFERS_KEY = 'qlc_public_offers';
+const OFFERS_TTL = 6 * 60 * 60 * 1000;
 
-function readCache() {
+function readOffers() {
   try {
-    const cached = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null');
-    return cached && Date.now() - cached.at < CACHE_TTL ? cached.data : null;
+    const cached = JSON.parse(localStorage.getItem(OFFERS_KEY) || 'null');
+    return cached?.offers ? cached : null;
   } catch {
     return null;
   }
 }
 
-function writeCache(data) {
+function writeOffers(offers) {
   try {
-    sessionStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), data }));
+    localStorage.setItem(OFFERS_KEY, JSON.stringify({ at: Date.now(), offers }));
   } catch {
     return undefined;
   }
   return undefined;
 }
 
-export function usePublicContent() {
-  const [content, setContent] = useState(() => readCache() || FALLBACK_CONTENT);
+export function usePublicOffers() {
+  const [offers, setOffers] = useState(() => readOffers()?.offers || []);
 
   useEffect(() => {
-    if (readCache()) return undefined;
+    const cached = readOffers();
+    if (cached && Date.now() - cached.at < OFFERS_TTL) return undefined;
     let alive = true;
-    api.get('/public/content')
+    api.get('/public/offers')
       .then((data) => {
-        if (!alive || !data?.sections?.length) return;
-        writeCache(data);
-        setContent(data);
+        if (!alive || !Array.isArray(data?.offers)) return;
+        writeOffers(data.offers);
+        setOffers(data.offers);
       })
       .catch(() => null);
     return () => { alive = false; };
   }, []);
 
-  return content;
+  return offers;
+}
+
+export function usePublicContent() {
+  const offers = usePublicOffers();
+  return { sections: PUBLIC_SECTIONS, offers };
 }
