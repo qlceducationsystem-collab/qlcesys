@@ -47,6 +47,7 @@ export function AccessOffers({ title = 'Dos formas de adquirir QLC Financial Edu
               <li>Clases y explicaciones de cada módulo</li>
               <li>Herramientas M1–M12 conectadas a tu plataforma</li>
               <li>Mi cartera, patrimonio, cortes e informe anual</li>
+              <li>Orientación financiera personalizada en sesiones 1 a 1</li>
             </ul>
             <div className="offer-price">{offerPrice(full)}</div>
             <Button onClick={() => setSelected(full)}>{access.full ? 'Renovar acceso anual' : 'Adquirir acceso completo'}</Button>

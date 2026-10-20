@@ -11,6 +11,7 @@ import './styles/public.css';
 import './styles/academy.css';
 import './styles/admin.css';
 import './styles/update.css';
+import './styles/marketing.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

@@ -26,7 +26,7 @@ export function CopytradingFilter({ open, onClose }) {
           <p>El contenido de QLC está dirigido a personas con conocimientos previos de copytrading y trading. Es una estrategia de alto riesgo y ningún resultado está garantizado.</p>
           <p>Una vez que sabes que es una estrategia de alto riesgo, conoce la plataforma y podrás adquirir conocimientos.</p>
           <div className="form-actions">
-            <Link className="btn-secondary" to="/?s=plataforma" onClick={close}>Conocer la plataforma</Link>
+            <Link className="btn-secondary" to="/trading-academy" onClick={close}>Conocer Trading Institucional</Link>
             {QLC_URL && <a className="btn-primary" href={QLC_URL} target="_blank" rel="noopener noreferrer">Continuar a QLC</a>}
           </div>
         </div>

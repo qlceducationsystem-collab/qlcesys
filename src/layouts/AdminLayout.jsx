@@ -12,6 +12,7 @@ const NAV = [
   { group: 'General' },
   { to: '/admin', icon: '◎', label: 'Dashboard', end: true },
   { to: '/admin/clientes', icon: '◫', label: 'Clientes' },
+  { to: '/admin/solicitudes', icon: '✉', label: 'Solicitudes de información' },
   { to: '/admin/citas', icon: '◌', label: 'Citas de asesoría' },
   { group: 'Contenido' },
   { to: '/admin/contenido', icon: '▣', label: 'Contenido público' },

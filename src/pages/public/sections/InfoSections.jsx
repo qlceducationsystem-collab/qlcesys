@@ -94,6 +94,7 @@ export function AccessSection({ section, offers, go }) {
             <li>Academia con explicaciones de cada módulo</li>
             <li>Herramientas M1–M12</li>
             <li>Plataforma patrimonial completa</li>
+            <li>Orientación financiera personalizada en sesiones 1 a 1</li>
           </ul>
         </article>
         <article className="access-card reveal-card" style={{ '--c': 1 }}>

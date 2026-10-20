@@ -38,6 +38,7 @@ export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal }) {
               {s.navLabel}
             </button>
           ))}
+          <Link className="pnav-extra" to="/trading-academy">Trading Institucional</Link>
         </nav>
         <div className="pnav-actions">
           {onLegal && <button type="button" className="pnav-ghost pnav-legal" onClick={onLegal}>Aviso</button>}
@@ -65,6 +66,10 @@ export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal }) {
               {s.navLabel}
             </button>
           ))}
+          <Link className="pnav-sheet-link" to="/trading-academy" style={{ '--i': sections.length }}>
+            <span>★</span>
+            Trading Institucional
+          </Link>
           <div className="pnav-sheet-actions">
             {!home && <Link className="pbtn pbtn-ghost" to="/login">Iniciar sesión</Link>}
             {onLegal && <button type="button" className="pbtn pbtn-ghost" onClick={onLegal}>Aviso legal</button>}

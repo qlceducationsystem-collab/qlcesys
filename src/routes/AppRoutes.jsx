@@ -34,6 +34,7 @@ const PRIVATE_PAGES = [
 
 const ADMIN_PAGES = [
   ['', page(() => import('../pages/admin/AdminDashboard.jsx'))],
+  ['solicitudes', page(() => import('../pages/admin/AdminLeads.jsx'))],
   ['clientes', page(() => import('../pages/admin/AdminClients.jsx'))],
   ['clientes/:clientId', page(() => import('../pages/admin/AdminClientDetail.jsx'))],
   ['contenido', page(() => import('../pages/admin/AdminPublicContent.jsx'))],
@@ -50,6 +51,8 @@ const routesFor = (pages) =>
   pages.map(([path, Page]) => (path === '' ? <Route key="index" index element={<Page />} /> : <Route key={path} path={path} element={<Page />} />));
 
 const LegalPage = page(() => import('../pages/public/legal/LegalPage.jsx'));
+const QlcHome = page(() => import('../pages/public/marketing/QlcHome.jsx'));
+const TradingAcademy = page(() => import('../pages/public/marketing/TradingAcademy.jsx'));
 
 const NotFound = () => <Empty title="Página no encontrada" text="La dirección no existe." />;
 
@@ -57,7 +60,9 @@ export default function AppRoutes() {
   return (
     <Suspense fallback={<Loading />}>
       <Routes>
-        <Route path="/" element={<PublicExperience />} />
+        <Route path="/" element={<QlcHome />} />
+        <Route path="/educacion-financiera" element={<PublicExperience />} />
+        <Route path="/trading-academy" element={<TradingAcademy />} />
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Register />} />

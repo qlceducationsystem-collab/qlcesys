@@ -55,7 +55,7 @@ body.public-locked {
 .pnav-brand-text b { font-size: 14px; letter-spacing: 0.24em; }
 .pnav-brand-text small { font-size: 8.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted2); margin-top: 3px; }
 .pnav-links { display: flex; gap: 4px; margin-left: 8px; flex: 1; min-width: 0; }
-.pnav-links button {
+.pnav-links button, .pnav-links .pnav-extra {
   position: relative;
   background: none;
   border: 0;
@@ -104,7 +104,7 @@ body.public-locked {
   gap: 4px;
   animation: sheetIn 0.32s var(--ease-out);
 }
-.pnav-sheet > button {
+.pnav-sheet > button, .pnav-sheet > .pnav-sheet-link {
   display: flex;
   align-items: baseline;
   gap: 14px;
@@ -121,7 +121,8 @@ body.public-locked {
   animation: wordIn 0.42s var(--ease-out) forwards;
   animation-delay: calc(var(--i) * 40ms + 60ms);
 }
-.pnav-sheet > button span { font-size: 11px; color: var(--blue2); letter-spacing: 0.12em; }
+.pnav-sheet > .pnav-sheet-link { color: var(--gold2); text-decoration: none; }
+.pnav-sheet > button span, .pnav-sheet > .pnav-sheet-link span { font-size: 11px; color: var(--blue2); letter-spacing: 0.12em; }
 .pnav-sheet > button.is-active { color: var(--blue2); }
 .pnav-sheet-actions { display: flex; gap: 10px; margin-top: auto; flex-wrap: wrap; }
 
