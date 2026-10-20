@@ -167,3 +167,11 @@
   .mk-chart-line, .mk-logo-stage img { animation: none; stroke-dashoffset: 0; }
   .mk-btn:hover, .mk-card:hover { transform: none; }
 }
+
+.mk-card-cta { display: flex; flex-direction: column; }
+.mk-card-cta p { flex: 1; }
+.mk-card-cta .mk-btn { align-self: flex-start; margin-top: 18px; }
+.mk-section[id] { scroll-margin-top: 80px; }
+@media (max-width: 640px) {
+  .mk-card-cta .mk-btn { align-self: stretch; white-space: normal; }
+}

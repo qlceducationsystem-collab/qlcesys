@@ -7,9 +7,7 @@ export const TRADING_PATH = '/trading-academy';
 
 const LINKS = [
   { href: '#productos', label: 'Programas' },
-  { href: '#enfoque', label: 'Nuestro enfoque' },
-  { to: EDUCATION_PATH, label: 'Educación financiera' },
-  { to: TRADING_PATH, label: 'Trading Institucional' },
+  { href: '#enfoque', label: '¿Por dónde comienzo?' },
 ];
 
 const PRODUCTS = [
@@ -36,9 +34,9 @@ const PRODUCTS = [
 ];
 
 const VALUES = [
-  ['01 · Organizar', 'Quiero ordenar mis finanzas', 'Empieza con Educación Financiera para conocer tu patrimonio, establecer objetivos y comprender mejor tus decisiones de inversión.'],
-  ['02 · Profundizar', 'Quiero estudiar los mercados', 'Elige Trading Academy si buscas aprender análisis cuantitativo, pruebas de estrategias y evaluación sistemática del riesgo.'],
-  ['03 · Explorar', 'Busco una alternativa de operativa', 'Solicita información sobre Copytrading Institucional y evalúa si sus condiciones y riesgos son compatibles con tu situación.'],
+  { num: '01 · Organizar', title: 'Quiero ordenar mis finanzas', text: 'Empieza con Educación Financiera para conocer tu patrimonio, establecer objetivos y comprender mejor tus decisiones de inversión.', to: EDUCATION_PATH, cta: 'Ir a Educación financiera →' },
+  { num: '02 · Profundizar', title: 'Quiero estudiar los mercados', text: 'Elige Trading Academy si buscas aprender análisis cuantitativo, pruebas de estrategias y evaluación sistemática del riesgo.', to: TRADING_PATH, cta: 'Ir a Trading Academy →' },
+  { num: '03 · Explorar', title: 'Quiero invertir ahora', text: 'Solicita información sobre Copytrading Institucional y evalúa si sus condiciones y riesgos son compatibles con tu situación.', to: `${TRADING_PATH}#copytrading`, cta: 'Ir a Copytrading →' },
 ];
 
 export default function QlcHome() {
@@ -112,11 +110,12 @@ export default function QlcHome() {
             <p>No todos los alumnos necesitan lo mismo. La ruta depende de qué quieren aprender y de su punto de partida.</p>
           </div>
           <div className="mk-grid">
-            {VALUES.map(([num, title, text]) => (
-              <article key={num} className="mk-card">
-                <div className="mk-num">{num}</div>
-                <h3>{title}</h3>
-                <p>{text}</p>
+            {VALUES.map((v) => (
+              <article key={v.num} className="mk-card mk-card-cta">
+                <div className="mk-num">{v.num}</div>
+                <h3>{v.title}</h3>
+                <p>{v.text}</p>
+                <Link className="mk-btn mk-primary mk-sm" to={v.to}>{v.cta}</Link>
               </article>
             ))}
           </div>

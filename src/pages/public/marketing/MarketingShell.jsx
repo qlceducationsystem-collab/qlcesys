@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext.jsx';
 import { LeadRequestProvider } from '../../../features/leads/LeadModal.jsx';
 import { LegalLinks } from '../legal/LegalPage.jsx';
@@ -12,11 +12,17 @@ export function MarketingShell({ title, brandTitle, brandSub, links = [], cta, f
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const home = user ? (user.role === 'ADMIN' ? '/admin' : '/app') : null;
+  const { hash } = useLocation();
 
   useEffect(() => {
     document.title = title;
-    window.scrollTo(0, 0);
   }, [title]);
+
+  useEffect(() => {
+    const target = hash ? document.getElementById(hash.slice(1)) : null;
+    if (target) target.scrollIntoView({ block: 'start' });
+    else window.scrollTo(0, 0);
+  }, [hash, title]);
 
   return (
     <LeadRequestProvider>

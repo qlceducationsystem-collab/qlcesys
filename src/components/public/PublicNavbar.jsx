@@ -31,7 +31,7 @@ export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal }) {
             <button
               key={s.key}
               type="button"
-              className={s.key === activeKey ? 'is-active' : ''}
+              className={`${s.key === activeKey ? 'is-active' : ''} ${s.navHighlight ? 'is-highlight' : ''}`}
               aria-current={s.key === activeKey ? 'page' : undefined}
               onClick={() => select(s.key)}
             >
@@ -61,7 +61,7 @@ export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal }) {
       {open && (
         <div className="pnav-sheet">
           {sections.map((s, i) => (
-            <button key={s.key} type="button" className={s.key === activeKey ? 'is-active' : ''} style={{ '--i': i }} onClick={() => select(s.key)}>
+            <button key={s.key} type="button" className={`${s.key === activeKey ? 'is-active' : ''} ${s.navHighlight ? 'is-highlight' : ''}`} style={{ '--i': i }} onClick={() => select(s.key)}>
               <span>{String(i + 1).padStart(2, '0')}</span>
               {s.navLabel}
             </button>
