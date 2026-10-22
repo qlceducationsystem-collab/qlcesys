@@ -29,7 +29,7 @@ export function MarketingShell({ title, brandTitle, brandSub, links = [], cta, f
       <div className="mk">
         <header className={`mk-header ${open ? 'is-open' : ''}`}>
           <div className="mk-wrap mk-nav">
-            <Link className="mk-brand" to="/" aria-label="QLC · Academia de Inversiones">
+            <Link className="mk-brand" to="/" aria-label="QLC · Institutional Investment Academy">
               <img src="/brand/qlc-logo.png" alt="" width="42" height="36" />
               <span><strong>{brandTitle}</strong><small>{brandSub}</small></span>
             </Link>

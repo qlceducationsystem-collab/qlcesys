@@ -1,5 +1,6 @@
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import { LeadButton } from '../../../features/leads/LeadModal.jsx';
+import { CopytradingButton } from '../experience/CopytradingFilter.jsx';
 import { Eyebrow, MarketingShell } from './MarketingShell.jsx';
 
 export const EDUCATION_PATH = '/educacion-financiera';
@@ -45,9 +46,9 @@ export default function QlcHome() {
 
   return (
     <MarketingShell
-      title="QLC · Academia de Inversiones"
+      title="QLC · Institutional Investment Academy"
       brandTitle="QLC"
-      brandSub="Academia de Inversiones"
+      brandSub="Institutional Investment Academy"
       links={LINKS}
       cta={<a className="mk-btn mk-primary mk-sm" href="#productos">Explorar programas ↗</a>}
       footerTagline="Educación financiera · Trading cuantitativo · Copytrading institucional"
@@ -56,7 +57,7 @@ export default function QlcHome() {
         <div>
           <Eyebrow>Quantum Liquidity Capital · Formación</Eyebrow>
           <h1>Construye tu conocimiento. <span className="mk-accent">Invierte con criterio.</span></h1>
-          <p className="mk-lead">QLC Academia de Inversiones reúne dos rutas de aprendizaje complementarias: educación financiera para organizar y comprender tu patrimonio, y formación especializada en trading para estudiar los mercados con un enfoque cuantitativo.</p>
+          <p className="mk-lead">QLC Institutional Investment Academy reúne dos rutas de aprendizaje complementarias: educación financiera para organizar y comprender tu patrimonio, y formación especializada en trading para estudiar los mercados con un enfoque cuantitativo.</p>
           <div className="mk-note">Primero entiende tu situación financiera. Después elige la formación que corresponde a tus objetivos, experiencia y capacidad de riesgo.</div>
           <div className="mk-cta-row">
             <a className="mk-btn mk-primary" href="#productos">Conocer los programas →</a>
@@ -66,7 +67,7 @@ export default function QlcHome() {
         <div className="mk-visual mk-monogram" aria-hidden="true">
           <div className="mk-visual-head"><span>Quantum Liquidity Capital</span><span className="mk-status">● Learning ecosystem</span></div>
           <div className="mk-logo-stage"><img src="/brand/qlc-logo.png" alt="" /></div>
-          <div className="mk-logo-title">QLC <small>Academia de Inversiones</small></div>
+          <div className="mk-logo-title">QLC <small>Institutional Investment Academy</small></div>
           <div className="mk-metrics">
             {[['Finanzas', 'Orden patrimonial'], ['Mercados', 'Análisis técnico'], ['Riesgo', 'Decisiones informadas']].map(([b, s]) => <div key={b}><b>{b}</b><small>{s}</small></div>)}
           </div>
@@ -97,7 +98,7 @@ export default function QlcHome() {
               <h3>¿Buscas participar en una estrategia en lugar de estudiar trading?</h3>
               <p>Conoce también el <strong>Copytrading Institucional de QLC</strong>, nuestro producto principal, y revisa su funcionamiento, condiciones y riesgos antes de tomar una decisión.</p>
             </div>
-            <LeadButton interest="COPYTRADING">Conocer Copytrading →</LeadButton>
+            <CopytradingButton>Conocer Copytrading →</CopytradingButton>
           </div>
         </div>
       </section>
@@ -126,7 +127,7 @@ export default function QlcHome() {
         <div className="mk-wrap">
           <div className="mk-callout">
             <div>
-              <Eyebrow>QLC · Academia de Inversiones</Eyebrow>
+              <Eyebrow>QLC · Institutional Investment Academy</Eyebrow>
               <h3>Aprender es el primer paso para decidir mejor.</h3>
               <p>Conoce los contenidos, el alcance y las condiciones de cada programa. La formación ayuda a desarrollar criterio; no elimina los riesgos ni garantiza resultados de inversión.</p>
             </div>

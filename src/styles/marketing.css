@@ -175,3 +175,39 @@
 @media (max-width: 640px) {
   .mk-card-cta .mk-btn { align-self: stretch; white-space: normal; }
 }
+
+.mk-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; padding: 22px; border: 1px solid var(--line); border-radius: 22px; background: linear-gradient(150deg, var(--panel2), var(--bg2)); margin-bottom: 18px; }
+.mk-fact { display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 4px 6px; }
+.mk-fact-icon { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; color: var(--blue2); background: rgba(0, 118, 184, 0.18); border: 1px solid rgba(0, 168, 255, 0.28); margin-bottom: 8px; flex: 0 0 auto; }
+.mk-fact-icon svg { width: 21px; height: 21px; }
+.mk-fact-label { font-size: 13px; color: var(--silver); font-weight: 600; }
+.mk-fact strong { font-size: clamp(22px, 2.2vw, 28px); letter-spacing: -0.02em; line-height: 1.2; }
+.mk-fact small { font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+.mk-fact-note { grid-column: 1 / -1; display: flex; gap: 14px; align-items: flex-start; padding-top: 16px; border-top: 1px solid var(--line); }
+.mk-fact-note .mk-fact-icon { margin-bottom: 0; }
+.mk-fact-note b { font-size: 16px; }
+.mk-fact-note p { margin: 4px 0 0; color: var(--muted); font-size: 13.5px; }
+.mk-program-detail { margin-bottom: 26px; align-items: start; }
+.mk-details { display: grid; gap: 16px; }
+.mk-details h3 { font-size: 17px; margin: 0 0 6px; color: var(--blue2); }
+.mk-details p { margin: 0; color: #b4c2ce; font-size: 14px; }
+.mk-structure { margin: 16px 0 18px; display: grid; }
+.mk-structure div { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 4px; border-bottom: 1px solid var(--line); }
+.mk-structure div:last-child { border-bottom: 0; }
+.mk-structure dt { color: var(--silver); font-size: 14px; }
+.mk-structure dd { margin: 0; font-weight: 700; font-size: 17px; white-space: nowrap; }
+.mk-structure dd.is-highlight { color: var(--blue2); font-size: 19px; }
+@media (max-width: 960px) {
+  .mk-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 420px) {
+  .mk-facts { padding: 16px; gap: 12px; }
+  .mk-fact strong { font-size: 20px; }
+}
+@media (max-width: 640px) {
+  .mk-actions > .mk-btn, .mk-actions > button:not(.mk-burger) { display: none; }
+  .mk-brand { min-width: 0; flex: 1 1 auto; }
+  .mk-brand span { min-width: 0; }
+  .mk-brand strong { font-size: 13px; }
+  .mk-brand small { white-space: normal; line-height: 1.35; }
+}

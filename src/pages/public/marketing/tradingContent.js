@@ -76,5 +76,33 @@ export const TRADING_FAQ = [
   ['¿El curso garantiza resultados?', 'No. La formación transmite conceptos y procesos de análisis, pero no garantiza rentabilidad ni sustituye la experiencia, la práctica y la gestión del riesgo.'],
   ['¿Necesito operar con mucho capital para estudiar?', 'No necesitas operar con capital elevado para aprender los fundamentos. La aplicación institucional a gran escala puede requerir recursos, controles y una infraestructura acordes con el alcance de la operación.'],
   ['¿El enfoque cuantitativo elimina las pérdidas?', 'No. Los datos históricos no predicen con certeza el futuro. Los sistemas cuantitativos también atraviesan periodos adversos y pueden dejar de funcionar bajo nuevas condiciones de mercado.'],
-  ['¿Qué opción ofrece QLC si no deseo cursar la academia?', 'Puedes solicitar información del Copytrading Institucional, revisar sus condiciones y valorar si se ajusta a tu situación financiera y tolerancia al riesgo.'],
+  ['¿Qué opción ofrece QLC si no deseo cursar la academia?', 'Puedes conocer el Copytrading Institucional, revisar sus condiciones y valorar si se ajusta a tu situación financiera y tolerancia al riesgo.'],
 ];
+
+export const PROGRAM = {
+  intro: 'Cada módulo desarrolla una competencia concreta mediante una metodología estructurada que integra formación especializada, herramientas de análisis y aplicación práctica. La secuencia está diseñada para que el alumno comprenda primero el riesgo y los datos, antes de construir, evaluar o aplicar un método operativo.',
+  facts: [
+    { icon: 'calendar', label: 'Duración', value: '1 mes', note: 'Por módulo' },
+    { icon: 'wallet', label: 'Inversión', value: '1,000 USDT', note: 'Por módulo' },
+    { icon: 'users', label: 'Admisión', value: '20 plazas', note: 'Por convocatoria trimestral' },
+    { icon: 'video', label: 'Acompañamiento', value: 'Personalizado', note: 'Herramientas y sesiones por Google Meet' },
+  ],
+  admission: {
+    title: 'Admisión mediante evaluación previa',
+    text: 'Los candidatos recibirán por correo electrónico la notificación de aceptación o rechazo de su solicitud.',
+  },
+  details: [
+    ['Duración y modalidad', 'Cada módulo tiene una duración de 1 mes e incluye acceso a herramientas de apoyo y asesoría personalizada en línea mediante videoconferencias por Google Meet, orientadas a resolver dudas, revisar avances y reforzar los conocimientos adquiridos.'],
+    ['Inversión académica', 'El costo es de 1,000 USDT por módulo, correspondiente a un periodo de formación de un mes.'],
+    ['Proceso de admisión', 'El programa cuenta con un cupo limitado a 20 participantes por convocatoria, abierta cada tres meses. Los candidatos deberán completar una evaluación previa para determinar su perfil, sus conocimientos y su adecuación a la metodología del programa.'],
+  ],
+  structure: {
+    title: 'Estructura académica de QLC',
+    rows: [
+      ['Horas diarias', '1 hora'],
+      ['Horas semanales', '7 horas'],
+      ['Horas por módulo de 30 días', '30 horas', true],
+      ['Inversión por módulo', '1,000 USDT'],
+    ],
+  },
+};

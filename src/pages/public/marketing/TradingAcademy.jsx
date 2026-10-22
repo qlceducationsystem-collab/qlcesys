@@ -1,7 +1,57 @@
 import { Link } from 'react-router-dom';
 import { LeadButton } from '../../../features/leads/LeadModal.jsx';
+import { CopytradingButton } from '../experience/CopytradingFilter.jsx';
 import { Eyebrow, MarketingShell } from './MarketingShell.jsx';
-import { APPROACHES, AUDIENCE, COPY_POINTS, KNOWLEDGE, REQUIREMENTS, TRADING_FAQ, TRADING_MODULES } from './tradingContent.js';
+import { APPROACHES, AUDIENCE, COPY_POINTS, KNOWLEDGE, PROGRAM, REQUIREMENTS, TRADING_FAQ, TRADING_MODULES } from './tradingContent.js';
+
+const FACT_ICONS = {
+  calendar: <path d="M7 3v3m10-3v3M4 9h16M5 5.5h14A1.5 1.5 0 0 1 20.5 7v12a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19V7A1.5 1.5 0 0 1 5 5.5Zm3 7h.01M12 12.5h.01M16 12.5h.01M8 16h.01M12 16h.01" />,
+  wallet: <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3M4 7.5V17a2.5 2.5 0 0 0 2.5 2.5h13V8H6.5A2.5 2.5 0 0 1 4 5.5m12 8.5h1.5" />,
+  users: <path d="M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm-6 9a6 6 0 0 1 12 0m1-9a3 3 0 1 0-1.5-5.6M21 20a5 5 0 0 0-4-4.9" />,
+  video: <path d="M4 7h11a1.5 1.5 0 0 1 1.5 1.5v7A1.5 1.5 0 0 1 15 17H4a1.5 1.5 0 0 1-1.5-1.5v-7A1.5 1.5 0 0 1 4 7Zm12.5 4 5-3v8l-5-3" />,
+  mail: <path d="M3.5 6.5h17v11h-17zm0 0 8.5 6.5 8.5-6.5" />,
+};
+
+const FactIcon = ({ name }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{FACT_ICONS[name]}</svg>
+);
+
+function ProgramOverview() {
+  return (
+    <>
+      <div className="mk-facts">
+        {PROGRAM.facts.map((f) => (
+          <article key={f.label} className="mk-fact">
+            <span className="mk-fact-icon"><FactIcon name={f.icon} /></span>
+            <span className="mk-fact-label">{f.label}</span>
+            <strong>{f.value}</strong>
+            <small>{f.note}</small>
+          </article>
+        ))}
+        <div className="mk-fact-note">
+          <span className="mk-fact-icon"><FactIcon name="mail" /></span>
+          <div><b>{PROGRAM.admission.title}</b><p>{PROGRAM.admission.text}</p></div>
+        </div>
+      </div>
+      <div className="mk-two mk-program-detail">
+        <div className="mk-details">
+          {PROGRAM.details.map(([title, text]) => (
+            <section key={title}><h3>{title}</h3><p>{text}</p></section>
+          ))}
+        </div>
+        <article className="mk-panel is-featured">
+          <h3>{PROGRAM.structure.title}</h3>
+          <dl className="mk-structure">
+            {PROGRAM.structure.rows.map(([label, value, highlight]) => (
+              <div key={label}><dt>{label}</dt><dd className={highlight ? 'is-highlight' : ''}>{value}</dd></div>
+            ))}
+          </dl>
+          <LeadButton interest="TRADING_ACADEMY">Solicitar evaluación de admisión →</LeadButton>
+        </article>
+      </div>
+    </>
+  );
+}
 
 const LINKS = [
   { href: '#programa', label: 'Programa' },
@@ -64,8 +114,9 @@ export default function TradingAcademy() {
           <div className="mk-head">
             <Eyebrow>Ruta de aprendizaje</Eyebrow>
             <h2>Un programa por etapas, de los fundamentos a la validación.</h2>
-            <p>Cada módulo desarrolla una competencia concreta. La secuencia está diseñada para que el alumno comprenda primero el riesgo y los datos, antes de construir, probar o aplicar un método operativo.</p>
+            <p>{PROGRAM.intro}</p>
           </div>
+          <ProgramOverview />
           <div className="mk-grid">
             {TRADING_MODULES.map(([title, text, tags], i) => (
               <article key={title} className="mk-card">
@@ -145,7 +196,7 @@ export default function TradingAcademy() {
             <Eyebrow tone="gold">QLC · Producto principal</Eyebrow>
             <h3>Copytrading <span className="mk-gold">Institucional</span></h3>
             <p>Una alternativa para quienes buscan seguir una operativa mediante las funciones de copytrading disponibles en la plataforma correspondiente, conociendo de antemano las reglas y los riesgos.</p>
-            <LeadButton interest="COPYTRADING">Solicitar información →</LeadButton>
+            <CopytradingButton>Conocer QLC Copytrading →</CopytradingButton>
             <p className="mk-disclaimer">El copytrading no elimina el riesgo de mercado ni garantiza beneficios. Pueden producirse pérdidas parciales o totales del capital asignado. La disponibilidad, los requisitos y los cargos dependen de la plataforma y de las condiciones vigentes.</p>
           </article>
         </div>
