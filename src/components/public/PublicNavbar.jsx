@@ -22,7 +22,7 @@ export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal }) {
   };
 
   return (
-    <header className={`pnav ${open ? 'is-open' : ''}`}>
+    <header className={`pnav ${sections.length ? 'has-sections' : ''} ${open ? 'is-open' : ''}`}>
       <div className="pnav-inner">
         <button type="button" className="pnav-brand" onClick={() => select(sections[0]?.key)} aria-label={t('common.goHome')}>
           <BrandLogo width="40" height="34" />

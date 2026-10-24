@@ -34,11 +34,11 @@ body.public-locked {
 }
 .pnav-inner {
   height: 100%;
-  width: min(var(--pmax), calc(100% - 32px));
+  width: min(1480px, calc(100% - 32px));
   margin: auto;
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 16px;
 }
 .pnav-brand {
   display: flex;
@@ -53,15 +53,15 @@ body.public-locked {
 .pnav-brand .brand-logo { width: 40px; height: 40px; object-fit: cover; border-radius: 9px; }
 .pnav-brand-text { display: flex; flex-direction: column; line-height: 1.1; text-align: left; }
 .pnav-brand-text b { font-size: 14px; letter-spacing: 0.24em; }
-.pnav-brand-text small { font-size: 8.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted2); margin-top: 3px; }
-.pnav-links { display: flex; gap: 4px; margin-left: 8px; flex: 1; min-width: 0; }
+.pnav-brand-text small { font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted2); margin-top: 3px; }
+.pnav-links { display: flex; gap: 2px; flex: 1; min-width: 0; justify-content: center; }
 .pnav-links button, .pnav-links .pnav-extra {
   position: relative;
   background: none;
   border: 0;
   color: #aeb9c5;
-  font-size: 13.5px;
-  padding: 9px 12px;
+  font-size: 13px;
+  padding: 9px 10px;
   cursor: pointer;
   border-radius: 8px;
   transition: color 0.2s, background 0.2s;
@@ -83,7 +83,7 @@ body.public-locked {
   transition: transform 0.35s var(--ease-out);
 }
 .pnav-links button.is-active::after { transform: scaleX(1); }
-.pnav-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.pnav-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; flex: 0 0 auto; }
 .pnav-ghost { background: none; border: 0; color: var(--silver); font-size: 13px; cursor: pointer; padding: 8px 6px; }
 .pnav-ghost:hover { color: #fff; }
 .pnav-burger { display: none; width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line2); background: rgba(255, 255, 255, 0.03); cursor: pointer; flex-direction: column; justify-content: center; align-items: center; gap: 5px; }
@@ -213,17 +213,16 @@ h1.ps-title { font-size: clamp(32px, min(5.4vw, 8.4dvh), 78px); }
 .reveal-card { opacity: 0; animation: revealUp 0.55s var(--ease-out) forwards; animation-delay: calc(360ms + var(--c, 0) * 60ms); }
 .reveal-visual { opacity: 0; animation: visualIn 0.8s var(--ease-out) forwards; animation-delay: 0.22s; }
 
-.ps-hero { display: grid; grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr); gap: clamp(24px, 3vw, 48px); align-items: stretch; }
-.hero-copy { display: flex; flex-direction: column; justify-content: center; min-height: 0; padding-bottom: 2dvh; }
+.ps-hero { display: grid; grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr); gap: clamp(24px, 3vw, 48px); align-items: stretch; align-content: center; }
+.hero-copy { display: flex; flex-direction: column; justify-content: center; min-height: 0; }
 .hero-note { display: flex; flex-direction: column; gap: 6px; margin-top: clamp(12px, 2.4dvh, 24px); padding: 14px 18px; border-left: 3px solid var(--blue); background: linear-gradient(90deg, rgba(0, 168, 255, 0.14), rgba(0, 168, 255, 0.02)); border-radius: 0 12px 12px 0; max-width: 56ch; }
 .hero-note-text { font-size: 14px; color: #d3dde6; line-height: 1.5; }
 .hero-note .ps-more { display: none; align-self: flex-start; }
-.hero-visual { display: flex; align-items: center; justify-content: flex-end; min-height: 0; }
+.hero-visual { display: flex; align-items: stretch; justify-content: flex-end; min-height: 0; contain: size; }
 .hero-card {
   position: relative;
   width: min(600px, 100%);
-  height: min(100%, 600px);
-  max-height: 100%;
+  height: 100%;
   border-radius: 28px;
   border: 1px solid rgba(199, 204, 210, 0.15);
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.012));
@@ -426,6 +425,11 @@ h1.ps-title { font-size: clamp(32px, min(5.4vw, 8.4dvh), 78px); }
 @keyframes sweep { to { transform: translateX(120%); } }
 @keyframes lineGrow { to { transform: scaleX(1); } }
 
+@media (max-width: 1420px) {
+  .pnav.has-sections .pnav-links, .pnav.has-sections .pnav-login { display: none; }
+  .pnav.has-sections .pnav-burger { display: inline-flex; }
+}
+
 @media (max-width: 1100px) {
   .pnav-links button { padding: 9px 8px; font-size: 13px; }
   .pnav-legal { display: none; }
@@ -441,7 +445,7 @@ h1.ps-title { font-size: clamp(32px, min(5.4vw, 8.4dvh), 78px); }
   .stage-dots { right: 8px; }
   .ps-hero { grid-template-columns: 1fr; grid-template-rows: auto minmax(22dvh, 1fr); gap: 2dvh; }
   .hero-copy { justify-content: flex-start; padding-bottom: 0; }
-  .hero-visual { justify-content: center; }
+  .hero-visual { justify-content: center; align-items: center; contain: none; min-height: 0; overflow: hidden; }
   .hero-card { height: 100%; width: auto; aspect-ratio: 1 / 1; max-width: 100%; padding: 12px; border-radius: 22px; }
   .hero-mini { display: none; }
   .hero-note .hero-note-text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }

@@ -59,7 +59,7 @@ const LINKS = [
   { href: '#perfil', label: 'Perfil' },
   { href: '#metodo', label: 'El método' },
   { href: '#copytrading', label: 'Copytrading' },
-  { to: '/educacion-financiera', label: 'Educación financiera' },
+  { to: '/', label: 'Educación financiera' },
 ];
 
 const LINE = 'M15 202 L45 190 L68 207 L94 166 L120 178 L145 146 L168 157 L195 118 L222 139 L248 100 L273 117 L300 84 L325 110 L350 70 L378 91 L402 62 L428 81 L453 43 L480 62 L505 37 L530 53 L560 22 L585 31';
@@ -216,7 +216,7 @@ export default function TradingAcademy() {
             <div>
               <Eyebrow>Siguiente paso</Eyebrow>
               <h3>Conoce el programa o solicita información de QLC.</h3>
-              <p>Recibe detalles del temario, perfil recomendado, condiciones de acceso y alternativas disponibles. Si apenas comienzas, empieza por <Link to="/educacion-financiera">Educación financiera</Link>.</p>
+              <p>Recibe detalles del temario, perfil recomendado, condiciones de acceso y alternativas disponibles. Si apenas comienzas, empieza por <Link to="/">Educación financiera</Link>.</p>
             </div>
             <LeadButton interest="TRADING_ACADEMY">Solicitar información ↗</LeadButton>
           </div>
