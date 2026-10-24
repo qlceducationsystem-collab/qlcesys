@@ -11,6 +11,22 @@ export function Field({ label, error, hint, children, full }) {
 
 export const Input = (props) => <input className="input" {...props} />;
 
+export function CodeInput(props) {
+  return (
+    <input
+      className="input code-input"
+      inputMode="numeric"
+      autoComplete="one-time-code"
+      pattern="\d{6}"
+      maxLength={6}
+      placeholder="000000"
+      required
+      {...props}
+      onChange={(e) => props.onChange({ target: { value: e.target.value.replace(/\D/g, '').slice(0, 6) } })}
+    />
+  );
+}
+
 export const MoneyInput = (props) => <input className="input" type="number" inputMode="decimal" step="0.01" min="0" {...props} />;
 
 export const Textarea = (props) => <textarea className="input" rows={4} {...props} />;

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { BrandLogo } from '../../components/layout/BrandLogo.jsx';
 
 const CURRENT_VERSION = typeof __APP_VERSION__ === 'undefined' ? null : __APP_VERSION__;
 const CHECK_EVERY_MS = 5 * 60 * 1000;
@@ -86,7 +87,7 @@ export function UpdatePrompt() {
       <div className="update-halo" aria-hidden="true"><span /></div>
       <div className="update-ring" aria-hidden="true"><span /></div>
       <div className="update-inner">
-        <img className="update-logo" src="/brand/qlc-logo.png" alt="" width="40" height="40" />
+        <BrandLogo className="update-logo" width="40" height="40" />
         <div className="update-copy">
           <b id="update-title">{reason === 'LOAD_ERROR' ? 'Hay una versión más reciente' : 'Nueva versión disponible'}</b>
           <span id="update-text">Borra la caché y recarga para ver la última versión de QLC Financial Education.</span>

@@ -1,13 +1,15 @@
 import { useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
+import { useI18n } from '../../../i18n/I18nContext.jsx';
 import { LEGAL_DOCS, LEGAL_UPDATED } from './legalContent.js';
 
 export function LegalLinks({ className = '' }) {
+  const { t } = useI18n();
   return (
     <span className={`legal-links ${className}`}>
-      <NavLink to={LEGAL_DOCS.terminos.path}>Términos y condiciones</NavLink>
+      <NavLink to={LEGAL_DOCS.terminos.path}>{t('common.terms')}</NavLink>
       <span aria-hidden="true">·</span>
-      <NavLink to={LEGAL_DOCS.privacidad.path}>Aviso de privacidad</NavLink>
+      <NavLink to={LEGAL_DOCS.privacidad.path}>{t('common.privacy')}</NavLink>
     </span>
   );
 }

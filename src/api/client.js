@@ -94,7 +94,7 @@ export function createApi(clientId = null) {
     post: (p, body = {}) => request('POST', p, { body, clientId }),
     put: (p, body) => request('PUT', p, { body, clientId }),
     patch: (p, body) => request('PATCH', p, { body, clientId }),
-    del: (p) => request('DELETE', p, { clientId }),
+    del: (p, body) => request('DELETE', p, { body, clientId }),
     upload: (p, form, method = 'POST') => request(method, p, { form, clientId }),
     download: (p, name) => download(p, clientId, name),
   };

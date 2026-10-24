@@ -50,7 +50,7 @@ body.public-locked {
   cursor: pointer;
   color: var(--text);
 }
-.pnav-brand img { width: 40px; height: 40px; object-fit: cover; border-radius: 9px; }
+.pnav-brand .brand-logo { width: 40px; height: 40px; object-fit: cover; border-radius: 9px; }
 .pnav-brand-text { display: flex; flex-direction: column; line-height: 1.1; text-align: left; }
 .pnav-brand-text b { font-size: 14px; letter-spacing: 0.24em; }
 .pnav-brand-text small { font-size: 8.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted2); margin-top: 3px; }
@@ -403,7 +403,7 @@ h1.ps-title { font-size: clamp(32px, min(5.4vw, 8.4dvh), 78px); }
 }
 .intro.is-leaving { opacity: 0; visibility: hidden; }
 .intro-mark { position: relative; overflow: hidden; border-radius: 22px; animation: markIn 0.6s var(--ease-out) both; }
-.intro-mark img { display: block; width: 148px; height: auto; border-radius: 22px; }
+.intro-mark .brand-logo { display: block; width: 148px; height: auto; border-radius: 22px; }
 .intro-sweep { position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(91, 212, 255, 0.55) 50%, transparent 65%); transform: translateX(-120%); animation: sweep 0.75s 0.15s var(--ease-out) forwards; mix-blend-mode: screen; }
 .intro-line { width: 160px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, transparent, var(--blue), transparent); transform: scaleX(0); animation: lineGrow 0.6s 0.1s var(--ease-out) forwards; box-shadow: 0 0 16px rgba(0, 168, 255, 0.7); }
 

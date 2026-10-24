@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
+import { useI18n } from '../../i18n/I18nContext.jsx';
 
 export function Button({ variant = 'primary', loading, children, className = '', ...rest }) {
+  const { t } = useI18n();
   return (
     <button className={`btn-${variant} ${className}`} disabled={loading || rest.disabled} {...rest}>
-      {loading ? 'Procesando…' : children}
+      {loading ? t('common.processing') : children}
     </button>
   );
 }

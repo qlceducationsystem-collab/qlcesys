@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { BrandLogo } from '../layout/BrandLogo.jsx';
 
 const SEEN_KEY = 'qlc_intro_seen';
 const DURATION = 760;
@@ -35,7 +36,7 @@ export function IntroReveal() {
   return (
     <div className={`intro ${phase === 'leaving' ? 'is-leaving' : ''}`} aria-hidden="true">
       <div className="intro-mark">
-        <img src="/brand/qlc-logo.png" alt="" width="148" height="128" />
+        <BrandLogo width="148" height="128" />
         <span className="intro-sweep" />
       </div>
       <span className="intro-line" />

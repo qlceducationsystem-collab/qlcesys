@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
+import { BrandLogo } from './BrandLogo.jsx';
 
 export function Brand({ to = '/', sub = 'FINANCIAL EDUCATION' }) {
   return (
     <Link to={to} className="brand">
-      <img className="brand-mark" src="/brand/qlc-logo.png" alt="QLC" width="43" height="43" />
+      <BrandLogo className="brand-mark" alt="QLC" width="43" height="43" />
       <div>
         <div className="brand-name">QLC</div>
         <span>{sub}</span>

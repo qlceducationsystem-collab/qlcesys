@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { WorkspaceProvider } from '../context/WorkspaceContext.jsx';
 import { Brand, Disclaimer } from '../components/layout/Brand.jsx';
 import { ErrorState, Loading } from '../components/ui/States.jsx';
+import { SecurityNavButton } from '../features/security/AccountSecurity.jsx';
 import { ADMIN_LEVELS } from '../utils/labels.js';
 import { AppLayout } from './AppLayout.jsx';
 
@@ -50,6 +51,7 @@ export function AdminLayout() {
               </NavLink>
             ),
           )}
+          <SecurityNavButton />
           <button type="button" className="nav-logout" onClick={logout}><span className="ico">⎋</span>Cerrar sesión</button>
         </nav>
         <div className="userbox">Administrador: {user?.name}<br /><span>{ADMIN_LEVELS[user?.adminLevel] || 'Sin nivel asignado'}</span></div>

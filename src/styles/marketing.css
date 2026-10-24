@@ -14,7 +14,7 @@
 .mk-header { position: sticky; top: 0; z-index: 20; background: rgba(5, 7, 10, 0.86); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-bottom: 1px solid var(--line); }
 .mk-nav { min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 22px; }
 .mk-brand { display: flex; align-items: center; gap: 12px; flex: 0 0 auto; }
-.mk-brand img { width: 42px; height: 36px; object-fit: contain; }
+.mk-brand .brand-logo { width: 42px; height: 36px; object-fit: contain; }
 .mk-brand strong { display: block; letter-spacing: 0.2em; font-size: 14px; text-transform: uppercase; }
 .mk-brand small { display: block; color: var(--muted2); letter-spacing: 0.2em; font-size: 9px; text-transform: uppercase; }
 .mk-links { display: flex; align-items: center; gap: 24px; font-size: 13px; color: var(--silver); }
@@ -57,7 +57,7 @@
 .mk-metrics b { display: block; font-size: 16px; }
 .mk-metrics small { color: var(--muted2); font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; }
 .mk-logo-stage { position: relative; display: flex; align-items: center; justify-content: center; height: 220px; }
-.mk-logo-stage img { width: min(260px, 72%); height: auto; mix-blend-mode: screen; -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 62%, transparent 100%); mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 62%, transparent 100%); animation: mkFloat 6s ease-in-out infinite; }
+.mk-logo-stage .brand-logo { width: min(260px, 72%); height: auto; mix-blend-mode: screen; -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 62%, transparent 100%); mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 62%, transparent 100%); animation: mkFloat 6s ease-in-out infinite; }
 .mk-logo-title { position: relative; text-align: center; letter-spacing: 0.28em; font-weight: 700; font-size: 19px; margin-bottom: 18px; }
 .mk-logo-title small { display: block; color: var(--gold2); font-size: 10px; letter-spacing: 0.32em; margin-top: 7px; text-transform: uppercase; }
 
@@ -164,7 +164,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mk-chart-line, .mk-logo-stage img { animation: none; stroke-dashoffset: 0; }
+  .mk-chart-line, .mk-logo-stage .brand-logo { animation: none; stroke-dashoffset: 0; }
   .mk-btn:hover, .mk-card:hover { transform: none; }
 }
 

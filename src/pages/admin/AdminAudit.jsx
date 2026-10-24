@@ -15,7 +15,7 @@ export function AuditTable({ items, hideClient }) {
     <DataTable rows={items} empty="Sin cambios administrativos registrados." columns={[
       { key: 'createdAt', label: 'Fecha', render: (l) => dateTime(l.createdAt) },
       ...(hideClient ? [] : [{ key: 'client', label: 'Cliente', render: (l) => l.client?.name || 'Sistema' }]),
-      { key: 'admin', label: 'Administrador', render: (l) => l.admin?.name },
+      { key: 'admin', label: 'Administrador', render: (l) => l.admin?.name || 'Administrador eliminado' },
       { key: 'module', label: 'Sección' },
       { key: 'action', label: 'Acción', render: (l) => ACTIONS[l.action] || l.action },
       { key: 'field', label: 'Campo', render: (l) => l.field || '—' },

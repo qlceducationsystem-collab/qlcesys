@@ -5,6 +5,7 @@ import { useWorkspace } from '../context/WorkspaceContext.jsx';
 import { Brand, Disclaimer } from '../components/layout/Brand.jsx';
 import { PeriodSelector } from '../features/periods/PeriodControls.jsx';
 import { AccessOffers } from '../features/access/AccessOffers.jsx';
+import { SecurityNavButton } from '../features/security/AccountSecurity.jsx';
 import { ACCESS_MODES, ADMIN_LEVELS } from '../utils/labels.js';
 
 export const NAV = [
@@ -68,6 +69,7 @@ export function AppLayout() {
             <NavLink to={`${basePath}/acceso`} className={({ isActive }) => (isActive ? 'active' : '')}><span className="ico">◇</span>Mi acceso</NavLink>
           )}
           {isAdminView && <Link to="/admin"><span className="ico">←</span>Panel administrativo</Link>}
+          {!isAdminView && <SecurityNavButton />}
           <button type="button" className="nav-logout" onClick={logout}><span className="ico">⎋</span>Cerrar sesión</button>
         </nav>
         <div className="userbox">

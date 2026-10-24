@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { useI18n } from '../../i18n/I18nContext.jsx';
+import { BrandLogo } from '../layout/BrandLogo.jsx';
+import { LanguageSwitcher } from '../ui/LanguageSwitcher.jsx';
 
 export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal }) {
   const { user } = useAuth();
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const home = user ? (user.role === 'ADMIN' ? '/admin' : '/app') : null;
 
@@ -19,14 +23,14 @@ export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal }) {
   return (
     <header className={`pnav ${open ? 'is-open' : ''}`}>
       <div className="pnav-inner">
-        <button type="button" className="pnav-brand" onClick={() => select(sections[0]?.key)} aria-label="Ir al inicio">
-          <img src="/brand/qlc-logo.png" alt="" width="40" height="34" />
+        <button type="button" className="pnav-brand" onClick={() => select(sections[0]?.key)} aria-label={t('common.goHome')}>
+          <BrandLogo width="40" height="34" />
           <span className="pnav-brand-text">
             <b>QLC</b>
             <small>Financial Education</small>
           </span>
         </button>
-        <nav className="pnav-links" aria-label="Secciones">
+        <nav className="pnav-links" aria-label={t('common.sections')}>
           {sections.map((s) => (
             <button
               key={s.key}
@@ -38,20 +42,21 @@ export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal }) {
               {s.navLabel}
             </button>
           ))}
-          <Link className="pnav-extra" to="/trading-academy">Trading Institucional</Link>
+          <Link className="pnav-extra" to="/trading-academy">{t('common.tradingInstitutional')}</Link>
         </nav>
         <div className="pnav-actions">
-          {onLegal && <button type="button" className="pnav-ghost pnav-legal" onClick={onLegal}>Aviso</button>}
+          <LanguageSwitcher />
+          {onLegal && <button type="button" className="pnav-ghost pnav-legal" onClick={onLegal}>{t('common.legalShort')}</button>}
           {home ? (
-            <Link className="pbtn pbtn-primary pbtn-sm" to={home}>Mi plataforma</Link>
+            <Link className="pbtn pbtn-primary pbtn-sm" to={home}>{t('common.myPlatform')}</Link>
           ) : (
             <>
-              <Link className="pnav-ghost pnav-login" to="/login">Iniciar sesión</Link>
-              <Link className="pbtn pbtn-primary pbtn-sm" to="/registro">Crear cuenta</Link>
+              <Link className="pnav-ghost pnav-login" to="/login">{t('common.login')}</Link>
+              <Link className="pbtn pbtn-primary pbtn-sm" to="/registro">{t('common.register')}</Link>
             </>
           )}
           {sections.length > 0 && (
-            <button type="button" className="pnav-burger" aria-label="Abrir menú" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+            <button type="button" className="pnav-burger" aria-label={t('common.openMenu')} aria-expanded={open} onClick={() => setOpen((v) => !v)}>
               <span />
               <span />
             </button>
@@ -68,11 +73,11 @@ export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal }) {
           ))}
           <Link className="pnav-sheet-link" to="/trading-academy" style={{ '--i': sections.length }}>
             <span>★</span>
-            Trading Institucional
+            {t('common.tradingInstitutional')}
           </Link>
           <div className="pnav-sheet-actions">
-            {!home && <Link className="pbtn pbtn-ghost" to="/login">Iniciar sesión</Link>}
-            {onLegal && <button type="button" className="pbtn pbtn-ghost" onClick={onLegal}>Aviso legal</button>}
+            {!home && <Link className="pbtn pbtn-ghost" to="/login">{t('common.login')}</Link>}
+            {onLegal && <button type="button" className="pbtn pbtn-ghost" onClick={onLegal}>{t('common.legalFull')}</button>}
           </div>
         </div>
       )}
