@@ -21,6 +21,7 @@ export const es = {
     title: 'QLC · Institutional Investment Academy',
     links: { products: 'Programas', approach: '¿Por dónde comienzo?' },
     navCta: 'Explorar programas ↗',
+    thread: { label: 'Recorrido de la página', inicio: 'Inicio', productos: 'Programas', copytrading: 'Copytrading', enfoque: 'Enfoque', qlc: 'Información' },
     footerTagline: 'Educación financiera · Trading cuantitativo · Copytrading institucional',
     hero: {
       eyebrow: 'Quantum Liquidity Capital · Formación',
@@ -50,6 +51,7 @@ export const es = {
         items: ['Microestructura, liquidez y estructura del precio.', 'Estadística aplicada y diseño de reglas objetivas.', 'Backtesting, MAE, MFE y validación fuera de muestra.', 'Construcción, control y evaluación de estrategias.'],
         cta: 'Explorar curso de trading →',
       },
+      calloutEyebrow: 'Producto principal · QLC',
       calloutTitle: '¿Buscas participar en una estrategia en lugar de estudiar trading?',
       calloutBefore: 'Conoce también el ',
       calloutStrong: 'Copytrading Institucional de QLC',

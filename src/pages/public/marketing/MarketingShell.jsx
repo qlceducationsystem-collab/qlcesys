@@ -12,7 +12,17 @@ export function Eyebrow({ children, tone = '' }) {
   return <div className={`mk-eyebrow ${tone}`}>{children}</div>;
 }
 
-export function MarketingShell({ title, links = [], cta, footerTagline, children }) {
+export function MarketingFooter({ tagline }) {
+  return (
+    <div className="mk-wrap mk-foot">
+      <span>© QLC · Quantum Liquidity Capital</span>
+      <span>{tagline}</span>
+      <LegalLinks />
+    </div>
+  );
+}
+
+export function MarketingShell({ title, links = [], cta, footerTagline, staged = false, children }) {
   const { user } = useAuth();
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
@@ -24,14 +34,21 @@ export function MarketingShell({ title, links = [], cta, footerTagline, children
   }, [title]);
 
   useEffect(() => {
+    if (staged) return;
     const target = hash ? document.getElementById(hash.slice(1)) : null;
     if (target) target.scrollIntoView({ block: 'start' });
     else window.scrollTo(0, 0);
-  }, [hash, title]);
+  }, [hash, title, staged]);
+
+  useEffect(() => {
+    if (!staged) return undefined;
+    document.body.classList.add('public-locked');
+    return () => document.body.classList.remove('public-locked');
+  }, [staged]);
 
   return (
     <LeadRequestProvider>
-      <div className="mk">
+      <div className={`mk ${staged ? 'is-staged' : ''}`}>
         <header className={`mk-header ${open ? 'is-open' : ''}`}>
           <div className="mk-wrap mk-nav">
             <Link className="mk-brand" to="/" aria-label={BRAND_FULL}>
@@ -51,14 +68,12 @@ export function MarketingShell({ title, links = [], cta, footerTagline, children
             </div>
           </div>
         </header>
-        <main>{children}</main>
-        <footer className="mk-footer">
-          <div className="mk-wrap mk-foot">
-            <span>© QLC · Quantum Liquidity Capital</span>
-            <span>{footerTagline}</span>
-            <LegalLinks />
-          </div>
-        </footer>
+        <main className={staged ? 'mk-stage' : undefined}>{children}</main>
+        {!staged && (
+          <footer className="mk-footer">
+            <MarketingFooter tagline={footerTagline} />
+          </footer>
+        )}
       </div>
     </LeadRequestProvider>
   );
