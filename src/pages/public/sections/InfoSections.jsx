@@ -1,16 +1,17 @@
 import { money } from '../../../utils/format.js';
 import { responsiveImage } from '../../../utils/media.js';
+import { useI18n } from '../../../i18n/I18nContext.jsx';
 import { MoreInfo, SectionCtas, SectionHead } from './SectionParts.jsx';
 
 const hasPrice = (offer) => offer?.price !== null && offer?.price !== undefined;
-const priceLabel = (offer) => (hasPrice(offer) ? `${money(offer.price)} ${offer.currency}` : 'Precio por definir');
+const priceLabel = (offer, t) => (hasPrice(offer) ? `${money(offer.price)} ${offer.currency}` : t('public.priceTbd'));
 
-function toolsPrice(tools) {
+function toolsPrice(tools, t) {
   const priced = tools.filter(hasPrice);
-  if (!priced.length) return 'Precio por definir';
-  const min = priced.reduce((a, t) => (Number(t.price) < Number(a.price) ? t : a));
-  const same = priced.length === tools.length && priced.every((t) => Number(t.price) === Number(min.price));
-  return `${same ? '' : 'Desde '}${priceLabel(min)}`;
+  if (!priced.length) return t('public.priceTbd');
+  const min = priced.reduce((a, x) => (Number(x.price) < Number(a.price) ? x : a));
+  const same = priced.length === tools.length && priced.every((x) => Number(x.price) === Number(min.price));
+  return `${same ? '' : t('public.from')}${priceLabel(min, t)}`;
 }
 
 function SectionImage({ section }) {
@@ -24,6 +25,7 @@ function SectionImage({ section }) {
 }
 
 export function LayersSection({ section, go }) {
+  const { t } = useI18n();
   const layers = section.items || [];
   return (
     <div className="ps-container split">
@@ -32,7 +34,7 @@ export function LayersSection({ section, go }) {
         {section.secondaryText && <p className="ps-note reveal" style={{ '--r': 3 }}>{section.secondaryText}</p>}
         <SectionCtas section={section} go={go} />
       </div>
-      <ol className="layers" aria-label="Capas del patrimonio">
+      <ol className="layers" aria-label={t('public.layers')}>
         {layers.map((l, i) => (
           <li key={l.title} className="layer reveal-card" style={{ '--c': i, '--w': `${100 - (layers.length - 1 - i) * 7}%` }}>
             <span className="layer-tag">{l.tag || String(i + 1).padStart(2, '0')}</span>
@@ -48,6 +50,7 @@ export function LayersSection({ section, go }) {
 }
 
 export function FeatureSection({ section, go }) {
+  const { t } = useI18n();
   const items = section.items || [];
   return (
     <div className="ps-container features">
@@ -67,7 +70,7 @@ export function FeatureSection({ section, go }) {
       </div>
       {items.length > 4 && (
         <div className="features-more">
-          <MoreInfo label="Ver todas las funciones" title={section.title}>
+          <MoreInfo label={t('public.allFeatures')} title={section.title}>
             <ul className="modal-list">{items.map((f) => <li key={f.title}><b>{f.title}.</b> {f.text}</li>)}</ul>
           </MoreInfo>
         </div>
@@ -78,6 +81,7 @@ export function FeatureSection({ section, go }) {
 }
 
 export function AccessSection({ section, offers, go }) {
+  const { t, lang } = useI18n();
   const full = offers.find((o) => o.type === 'FULL_ANNUAL');
   const tools = offers.filter((o) => o.type === 'TOOL_ONLY');
   const [optionFull, optionTools] = section.items || [];
@@ -86,22 +90,19 @@ export function AccessSection({ section, offers, go }) {
       <SectionHead section={section} compact />
       <div className="access-grid">
         <article className="access-card is-featured reveal-card" style={{ '--c': 0 }}>
-          <span className="access-tag">{optionFull?.tag || 'Opción 1'}</span>
-          <h3>{full?.name || optionFull?.title || 'Acceso completo anual'}</h3>
-          <p>{optionFull?.text || full?.description}</p>
-          <div className="access-price">{priceLabel(full)}</div>
+          <span className="access-tag">{optionFull?.tag || t('public.option1')}</span>
+          <h3>{(lang === 'es' && full?.name) || optionFull?.title || t('public.fullAnnual')}</h3>
+          <p>{optionFull?.text || (lang === 'es' ? full?.description : '')}</p>
+          <div className="access-price">{priceLabel(full, t)}</div>
           <ul className="access-list">
-            <li>Academia con explicaciones de cada módulo</li>
-            <li>Herramientas M1–M12</li>
-            <li>Plataforma patrimonial completa</li>
-            <li>Orientación financiera personalizada en sesiones 1 a 1</li>
+            {t('public.fullIncludes').map((item) => <li key={item}>{item}</li>)}
           </ul>
         </article>
         <article className="access-card reveal-card" style={{ '--c': 1 }}>
-          <span className="access-tag">{optionTools?.tag || 'Opción 2'}</span>
-          <h3>{optionTools?.title || 'Solo herramientas'}</h3>
+          <span className="access-tag">{optionTools?.tag || t('public.option2')}</span>
+          <h3>{optionTools?.title || t('public.toolsOnly')}</h3>
           <p>{optionTools?.text}</p>
-          <div className="access-price">{toolsPrice(tools)}<small> al mes por herramienta · cancela cuando quieras</small></div>
+          <div className="access-price">{toolsPrice(tools, t)}<small>{t('public.perTool')}</small></div>
           <ul className="access-tools">
             {tools.map((t) => (
               <li key={t.code} title={t.name}><span>M{t.moduleNumber}</span></li>
@@ -115,6 +116,7 @@ export function AccessSection({ section, offers, go }) {
 }
 
 export function QlcSection({ section, go }) {
+  const { t } = useI18n();
   return (
     <div className="ps-container qlc">
       <div className="qlc-panel">
@@ -123,7 +125,7 @@ export function QlcSection({ section, go }) {
         <SectionCtas section={section} go={go} />
       </div>
       <div className="qlc-steps reveal-visual" aria-hidden="true">
-        {['Educación financiera', 'Ruta de mercados', 'Filtro de conocimientos', 'Copytrading QLC'].map((s, i) => (
+        {t('public.qlcSteps').map((s, i) => (
           <div key={s} className="qlc-step" style={{ '--c': i }}><span>{String(i + 1).padStart(2, '0')}</span>{s}</div>
         ))}
       </div>

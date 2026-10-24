@@ -1,11 +1,4 @@
-export const HERO = {
-  eyebrow: 'Educación financiera · Curso gratuito',
-  title: ['Aprende a invertir antes de aprender a ', 'arriesgar.'],
-  lead: 'Una guía paso a paso para entender cómo funciona una inversión, cómo se relacionan riesgo y rendimiento, cómo construir una cartera diversificada y por qué una estrategia de trading de alto riesgo debe ocupar solamente una parte controlada del patrimonio.',
-  note: ['La idea que debes conservar durante todo el curso:', ' no existe una inversión perfecta. Existe una estructura de patrimonio donde cada activo cumple una función diferente.'],
-};
-
-export const SECTIONS = [
+const ES = [
   {
     id: '01',
     title: '¿Qué significa realmente invertir?',
@@ -289,3 +282,290 @@ export const SECTIONS = [
     ],
   },
 ];
+
+const EN = [
+  {
+    id: '01',
+    title: 'What does investing really mean?',
+    intro: 'Investing means placing capital in an asset, instrument, project or strategy expecting a future benefit. That benefit can come from interest, dividends, price growth, rent, cash flow or the result of a business activity.',
+    blocks: [
+      {
+        type: 'cards', cols: 3, numbered: true,
+        items: [
+          ['Return', 'It is the result obtained by the capital over a period. It can be expressed in money or as a percentage. A positive return does not necessarily mean the investment was appropriate: it must always be compared with the risk taken.'],
+          ['Risk', 'It is the possibility that the result differs from what was expected, including partial or total loss of capital. The more uncertain the result, the more attention exposure management requires.'],
+          ['Horizon', 'It is the time you plan to hold the investment. A long-term goal can tolerate different fluctuations than an immediate need for liquidity.'],
+        ],
+      },
+      {
+        type: 'lesson',
+        title: 'The first rule: investing should not immediately replace your source of income',
+        paragraphs: [
+          'For most people, investments should start as a **second source of income and wealth growth**, not as the money they depend on to pay their daily expenses.',
+          'There is a huge difference between **building wealth** and trying to “become a millionaire overnight”. The second idea tends to push people toward excessive concentration, leverage and impulsive decisions. The first is built with time, contributions, discipline, reinvestment and proper risk management.',
+          'Can you live off your investments? Yes. But the goal is usually reached when invested wealth is large enough to generate income that sustainably covers a person’s expenses. **You do not start by quitting your job; you start by building wealth that may someday allow it.**',
+        ],
+        example: ['Educational example:', 'imagine your monthly expenses are 2,000 monetary units. If your investments still produce small or variable results, leaving your main source of income to depend on them needlessly increases the pressure on your capital. A more prudent structure is to keep your productive activity while you progressively build your invested wealth.'],
+      },
+      {
+        type: 'lesson',
+        title: 'Before investing: first protect what could destroy your wealth',
+        paragraphs: [
+          'A complete financial education does not start by talking about returns. It starts by talking about **protection**. Before allocating a significant part of your wealth to investments, consider how you would face events that can create extraordinary expenses.',
+          'Those protections include **major medical insurance** and **life insurance**, especially when there are financial dependents. In countries where public care may be insufficient, limited or involve long waiting times, adequate medical coverage can play a fundamental role for your wealth.',
+          'The logic is simple: it would make little sense to chase extra returns while a medical emergency, an accident or the death of the person who earns the income could force you to liquidate investments or take on debt.',
+        ],
+        example: ['Conceptual order:', 'first protect your ability to earn income and face contingencies; then build liquidity; afterwards develop investments according to your goals and the risk you can take.'],
+      },
+      {
+        type: 'lesson',
+        title: 'Wealth in layers',
+        paragraphs: ['A simple way to understand it is to think of your wealth as a structure with several layers:'],
+        list: [
+          '**Protection:** insurance and mechanisms to face events that could seriously affect your family or wealth.',
+          '**Liquidity:** money available for emergencies, needs and opportunities.',
+          '**Productive activity:** a job, profession or business that generates your main income.',
+          '**Investments:** capital allocated to growth and complementary income.',
+          '**High risk:** a limited portion allocated to opportunities with higher volatility and potential losses.',
+        ],
+        after: ['The goal is not for every layer to be the same size. The goal is that a single high-risk investment cannot endanger the whole structure.'],
+      },
+      {
+        type: 'lesson',
+        title: 'How to analyze any investment',
+        list: [
+          '**What am I buying?** Understand the asset or strategy.',
+          '**Where does the potential return come from?** Interest, dividends, appreciation, rent, business operations, etc.',
+          '**What can make me lose money?** Identify the specific risks.',
+          '**When might I need the money?** Relate the investment to your horizon.',
+          '**What percentage of my wealth does it represent?** This question introduces diversification.',
+        ],
+      },
+    ],
+  },
+  {
+    id: '02',
+    title: 'Risk and return: why no one can eliminate risk',
+    intro: 'One of the most important ideas in finance is that potential return and risk must be analyzed together. Seeking a higher return usually means accepting some combination of greater uncertainty, volatility, time or complexity.',
+    blocks: [
+      {
+        type: 'cards', cols: 2,
+        items: [
+          ['Market risk', 'The price of an asset can rise or fall due to changes in supply and demand, rates, liquidity, expectations, news or macroeconomic conditions.'],
+          ['Liquidity risk', 'An investment can have value but not be easy to sell at the desired price. Liquidity matters especially when the money may be needed quickly.'],
+          ['Operational risk', 'It includes execution errors and failures in infrastructure, technology, processes, counterparties or the operation of a strategy.'],
+          ['Leverage risk', 'Leverage lets you control a larger exposure with less margin, but it can also amplify the consequences of an adverse move.'],
+        ],
+      },
+      {
+        type: 'lesson',
+        title: 'Volatility does not automatically mean loss',
+        paragraphs: ['Volatility describes how much a price can change. A very volatile asset can rise quickly and also fall quickly. That is why a person should not look only at historical returns; they should look at how they were achieved, what exposure existed and what could happen under different conditions.'],
+        example: ['Example:', 'two strategies can show the same return over a period. One may have achieved it with moderate fluctuations and the other through highly leveraged positions. The final number is the same, but the risk profile is completely different.'],
+      },
+      { type: 'risk', label: 'Golden rule:', text: 'past performance does not eliminate market risk. With digital assets and leveraged trading, losses can be significant and no past result guarantees future results.' },
+    ],
+  },
+  {
+    id: '03',
+    title: 'Diversification: don’t put all your eggs in one basket',
+    intro: 'Diversifying means spreading capital across different assets, strategies, sectors, income sources and, when appropriate, horizons. The aim is not to avoid every loss; it is to prevent a single event from determining the result of your entire wealth.',
+    blocks: [
+      {
+        type: 'cards', cols: 3,
+        items: [
+          ['Liquidity reserve', 'Capital available for needs, contingencies and opportunities. Its role is to provide stability and avoid selling investments at a bad time because of an unexpected need.'],
+          ['Fixed income', 'Instruments that can provide relative stability and defined cash flows, although they carry their own risks such as rates, inflation, issuer and liquidity.'],
+          ['Equities', 'Stocks, funds and other instruments whose value can fluctuate. Their role in a portfolio may be related to wealth growth.'],
+          ['Digital assets', 'A specific exposure to a highly volatile market with particular risks.'],
+          ['Specialized strategies', 'Capital allocated to specific investment or trading methodologies, with defined risk and operating parameters.'],
+          ['Physical businesses', 'Companies or productive activities that can generate cash flow and offer a source of return different from financial markets.'],
+        ],
+      },
+      {
+        type: 'lesson',
+        title: 'Diversifying does not mean buying many things',
+        paragraphs: [
+          'Buying ten assets that behave almost the same does not necessarily create good diversification. The important question is **how related the risks are**. A portfolio can hold many positions and still depend too much on the same market or factor.',
+          'Diversification can also happen across **cash-flow sources**. For example, a person can combine employment or business income, financial instruments and a small allocation to higher-risk strategies.',
+        ],
+      },
+      {
+        type: 'lesson',
+        title: 'Why include a physical business?',
+        paragraphs: [
+          'Financial markets are not the only way to build wealth. A **physical business** can provide a source of cash flow tied to a productive activity: retail, services, food, manufacturing, space rental or other business activities.',
+          'This does not mean a business is automatically safe. It also carries risks: expenses, competition, staff, demand, inventory, taxes, maintenance and tied-up capital. That is precisely why it is considered another piece of diversification, not a substitute for all other investments.',
+          'The idea is to build different economic engines. While a professional or business activity can produce cash flow, a financial portfolio can seek long-term growth or income, and a small high-risk allocation can participate in more volatile opportunities.',
+        ],
+        example: ['Principle:', 'you don’t need all your assets to produce money the same way. The strength can lie in combining sources with different behaviors and risks.'],
+      },
+      {
+        type: 'lesson',
+        title: 'The final goal: for your wealth to pay your expenses',
+        paragraphs: [
+          'Financial independence is not simply having a large account. It means reaching a point where the **sustainable income produced by your wealth** is enough to cover your expenses without necessarily depending on your daily work.',
+          'That point must be the result of a process. First you work or build a productive activity; then you save and protect part of the capital; then you invest; afterwards you reinvest and grow your wealth. Over time, if your wealth becomes large enough and the income it produces is sustainable, dependence on work can decrease.',
+          'That is why quitting work too early can be a mistake. Your job, profession or business may be precisely the engine that finances the wealth that will someday let you work by choice rather than necessity.',
+        ],
+      },
+      { type: 'quote', text: '“QLC does not seek to manage all your wealth. It seeks to become a strategic allocation within it.”', source: 'Central principle of the QLC Financial Education concept document.' },
+    ],
+  },
+  {
+    id: '04',
+    title: 'Fixed income, equities and businesses: three pieces with different roles',
+    intro: 'A balanced portfolio does not need all its components to do the same thing. Its value lies precisely in each component being able to play a different role.',
+    blocks: [
+      {
+        type: 'table',
+        head: ['Type', 'Possible role', 'Potential advantages', 'Risks / disadvantages'],
+        rows: [
+          ['Fixed income', 'Relative stability and cash-flow generation', 'Greater predictability in certain instruments', 'Inflation, rates, credit, liquidity and limited return'],
+          ['Equities', 'Wealth growth', 'Participation in companies and appreciation potential', 'Volatility, market downturns and loss of capital'],
+          ['Physical businesses', 'Cash flow and productive activity', 'Operating income and diversification outside markets', 'Operations, expenses, demand, staff, competition and tied-up capital'],
+          ['Digital assets', 'Exposure to an alternative market', 'Access to a dynamic asset class', 'High volatility, variable liquidity and ecosystem-specific risks'],
+        ],
+      },
+      {
+        type: 'lesson',
+        title: 'Your portfolio must respond to your goals',
+        paragraphs: [
+          'A person who needs liquidity may prioritize different instruments than someone with a horizon of many years. Likewise, someone with variable business income may value a liquidity reserve differently than a person with more stable income.',
+          'That is why there is no universal percentage that is “the right portfolio” for everyone. An allocation must be built around the goal, horizon, capacity to absorb losses and need for liquidity.',
+        ],
+        example: ['Conceptual example:', 'think of a portfolio as a table. Liquidity, fixed income, equities, businesses and specialized strategies are different legs. They don’t all need to be the same size; what matters is that the whole structure makes sense.'],
+      },
+    ],
+  },
+  {
+    id: '05',
+    title: 'Trading: understanding what a high-risk strategy really is',
+    intro: 'Trading seeks to take advantage of price movements through buying, selling or both, depending on the market and the strategy. It can use analysis, data, position management, automation and technology tools.',
+    blocks: [
+      {
+        type: 'cards', cols: 3,
+        items: [
+          ['Analysis', 'The trader studies price, liquidity, volatility, volume, derivatives, positions and other data to build a market hypothesis.'],
+          ['Execution', 'Entries and exits matter. In fast markets, the difference between the expected and executed price can change the result.'],
+          ['Risk management', 'Position size, margin, total exposure and operating rules determine how much capital is committed.'],
+        ],
+      },
+      {
+        type: 'lesson',
+        title: 'Why social media can create a distorted image',
+        paragraphs: [
+          'Online it is common to show only winning trades, screenshots of results or promises of profitability. That does not reveal the full distribution of results, the capital exposed, the negative periods or the risk used to achieve them.',
+          'Professional trading, by contrast, must be analyzed as a **system**: methodology + data + infrastructure + execution + exposure control + discipline + evaluation.',
+        ],
+      },
+      {
+        type: 'lesson',
+        title: 'Retail versus professional infrastructure',
+        paragraphs: [
+          'Many retail traders start with limited tools, make emotional decisions, use excessive position sizes or lack a consistent process. That can put them at a disadvantage against participants with better data, technology, experience and infrastructure.',
+          'This does not mean every retail trader is destined to lose or that every professional trade wins. It means that **process and infrastructure matter**, especially when trading a fast, leveraged market.',
+        ],
+      },
+      { type: 'risk', label: 'Conclusion:', text: 'trading should not be presented as an easy way to get rich. It is a high-risk activity that requires fully understanding what capital is being exposed and under which rules.' },
+    ],
+  },
+  {
+    id: '06',
+    title: 'What place can QLC take within a portfolio?',
+    intro: 'The QLC concept starts from a simple idea: a specialized trading strategy can exist within a portfolio, but it does not need to represent all of your wealth.',
+    blocks: [
+      {
+        type: 'cards', cols: 2,
+        items: [
+          ['An allocation, not your wealth', 'QLC proposes a specific exposure with defined parameters. The conceptual goal is to prevent investors from concentrating all their wealth in a single high-risk strategy.'],
+          ['Infrastructure and technology', 'The model is built around software, automation, operating infrastructure and algorithms to execute a defined methodology.'],
+          ['Exposure control', 'QLC’s initial policy sets capital limits per main account as part of its methodology for distributing and controlling exposure.'],
+          ['Follow-up before growing', 'Increasing an allocation is not automatic. It may depend on the relationship, operating conditions, evaluation and infrastructure capacity.'],
+        ],
+      },
+      {
+        type: 'lesson',
+        title: 'Why an initial limit of 400 USDT?',
+        paragraphs: [
+          'According to the QLC concept document, the initial allocation has a minimum of **20 USDT** and a maximum of **400 USDT** per main account. The stated purpose is to keep managed capital within defined operating parameters and avoid excessive concentration of capital in a single operating account.',
+          'The educational logic behind the limit is important: when an investment is high risk, increasing capital does not necessarily improve a portfolio’s structure. There must first be a reason to increase exposure.',
+        ],
+        example: ['Key idea:', 'if a person has diversified wealth, a limited allocation to a specialized strategy can let them participate without automatically making it the center of all their wealth.'],
+      },
+      { type: 'quote', text: '“Professional management also means knowing when not to increase exposure.”', source: 'Principle included in the QLC concept document.' },
+    ],
+  },
+  {
+    id: '07',
+    title: 'How to build a portfolio step by step',
+    intro: 'Now we bring together everything you have learned. The goal is not to give you a universal formula, but to teach you a mental process for making better decisions.',
+    blocks: [
+      {
+        type: 'timeline',
+        steps: [
+          ['Assess your financial reality', 'Identify net worth, debts, income, expenses, liquidity and the capital you can really invest. Don’t start by choosing an asset; start by understanding your situation.'],
+          ['Define your goals', 'Decide whether you want to preserve capital, generate cash flow, grow over the long term or take a specific exposure to higher-risk opportunities.'],
+          ['Build a reserve', 'Liquidity prevents an immediate need from forcing you to sell an investment at a bad time.'],
+          ['Spread across categories', 'Consider fixed income, equities, digital assets, physical businesses and specialized strategies according to your goals and risk capacity.'],
+          ['Set a risk budget', 'Decide in advance how much capital can be exposed to high-volatility strategies. Don’t improvise this number after entering the market.'],
+          ['Evaluate each component', 'Review what role each investment plays, what risk it adds and whether it still makes sense within the whole portfolio.'],
+          ['Rebalance with discipline', 'A portfolio can drift from its original structure because some assets rise more than others. Reviewing it lets you decide whether the exposure is still appropriate.'],
+        ],
+      },
+      {
+        type: 'lesson',
+        title: 'Before increasing your investments, review your protections',
+        paragraphs: [
+          'An investment portfolio should be built on a reasonably protected financial base. Before thinking about increasing exposure to high-risk assets, check whether you have **major medical insurance** and, when applicable, **life insurance**, especially if other people depend on your income.',
+          'In places where public healthcare does not adequately cover certain needs or may be insufficient in an emergency, private coverage can prevent a medical event from consuming the wealth you were trying to build.',
+          'Financial education is not only about learning to earn returns. It is also about learning to **prevent a single event from destroying years of work and savings**.',
+        ],
+      },
+      {
+        type: 'lesson',
+        title: 'The professional question',
+        paragraphs: ['Instead of asking only **“how much can I earn?”**, get used to asking:'],
+        list: [
+          'How much can I lose?', 'What percentage of my wealth does it represent?', 'What role does this investment play?',
+          'What happens to my portfolio if this asset falls?', 'Do I have enough liquidity outside this position?',
+          'Am I really diversifying or just accumulating similar assets?',
+        ],
+      },
+    ],
+  },
+  {
+    id: '08',
+    title: 'The QLC philosophy: limiting exposure is also managing',
+    intro: 'The last lesson connects financial education with QLC’s operating policy: a professional strategy should not measure its success only by how much capital it manages, but also by how it controls exposure.',
+    blocks: [
+      {
+        type: 'cards', cols: 2,
+        items: [
+          ['20 USDT · initial minimum', 'The concept document sets this amount as the initial minimum within the proposed structure.'],
+          ['400 USDT · initial maximum', 'QLC sets this limit for new participants as part of its methodology for controlling and distributing exposure.'],
+        ],
+      },
+      {
+        type: 'bars',
+        items: [['Initial allocation', 25], ['Follow-up', 50], ['Evaluation', 75], ['Possible invitation', 100]],
+        note: 'The chart is illustrative and represents stages of the process, not return percentages or probabilities.',
+      },
+      {
+        type: 'timeline',
+        title: 'The growth process',
+        steps: [
+          ['Initial allocation', 'The participant starts with a limited allocation.'],
+          ['Management', 'The strategy operates within the parameters set by the infrastructure.'],
+          ['Follow-up', 'The participant can observe performance and understand the methodology.'],
+          ['Evaluation', 'The relationship, operating conditions and infrastructure capacity are evaluated.'],
+          ['Invitation', 'If appropriate, QLC may invite the participant to increase their allocation through formal communication.'],
+        ],
+      },
+      { type: 'quote', text: 'A smart portfolio does not seek to eliminate risk. It seeks to ensure that no single risk has the power to destroy the entire wealth structure.' },
+      { type: 'risk', label: 'Before making any decision:', text: 'QLC is a strategy related to digital assets and trading, so there is market risk and, depending on the operation, risk associated with leverage. The capital limit does not make the strategy safe or guarantee results.' },
+    ],
+  },
+];
+
+export const LESSONS = { es: ES, en: EN };

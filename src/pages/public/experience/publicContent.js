@@ -1,4 +1,4 @@
-export const PUBLIC_SECTIONS = [
+const ES = [
   {
     key: 'inicio',
     navLabel: 'Inicio',
@@ -98,3 +98,106 @@ export const PUBLIC_SECTIONS = [
     primaryCtaTarget: 'filtro-qlc',
   },
 ];
+
+const EN = [
+  {
+    key: 'inicio',
+    navLabel: 'Home',
+    eyebrow: 'Financial education · Free access',
+    title: 'Learn to invest before you learn to',
+    highlight: 'take risks.',
+    description:
+      'A step-by-step guide to understand how an investment works, how risk and return relate, how to build a diversified portfolio and why a high-risk strategy should take up only a controlled part of your wealth.',
+    secondaryText: 'There is no perfect investment. There is a wealth structure where each asset plays a different role.',
+    primaryCtaLabel: 'Free access',
+    primaryCtaTarget: 'curso',
+    secondaryCtaLabel: 'Discover the educational software',
+    secondaryCtaTarget: 'plataforma',
+    items: [
+      { title: '8 classes', text: 'Free access' },
+      { title: '12 modules', text: 'Full program' },
+      { title: '2 blocks', text: 'Investing and wealth' },
+    ],
+  },
+  {
+    key: 'curso',
+    navLabel: 'Financial Training',
+    navHighlight: true,
+    eyebrow: 'Free access',
+    title: 'Eight classes to build financial judgment',
+    subtitle: 'Choose a class and move at your own pace.',
+    stages: [
+      { icon: 'learn', title: 'Stage 1. Learn', text: '8 free classes to understand the fundamentals of finance, investing, diversification and risk.' },
+      { icon: 'apply', title: 'Stage 2. Apply', text: 'Subscribe to QLC Financial Education to record investments, structure your portfolio, analyze results and track your wealth.' },
+      { icon: 'track', title: 'Stage 3. Follow up', text: 'Use the records and reports to understand how your financial situation evolves and make better-informed decisions.' },
+    ],
+    items: [
+      { title: 'What does investing really mean?', text: 'Return, risk, horizon and protection.', tag: 'Class 1' },
+      { title: 'Risk and return', text: 'Why no one can eliminate risk.', tag: 'Class 2' },
+      { title: 'Diversification', text: 'Don’t put all your eggs in one basket.', tag: 'Class 3' },
+      { title: 'Fixed income, equities and businesses', text: 'Three pieces with different roles.', tag: 'Class 4' },
+      { title: 'Trading', text: 'What a high-risk strategy really is.', tag: 'Class 5' },
+      { title: 'QLC within a portfolio', text: 'An allocation, not your wealth.', tag: 'Class 6' },
+      { title: 'Building a portfolio', text: 'A step-by-step process.', tag: 'Class 7' },
+      { title: 'Limiting exposure', text: 'Is also managing.', tag: 'Class 8' },
+    ],
+  },
+  {
+    key: 'patrimonio',
+    navLabel: 'Wealth',
+    eyebrow: 'Before investing',
+    title: 'Your wealth is a layered structure',
+    description: 'Not every layer has the same goal or the same size. What matters is that a single high-risk investment cannot endanger the whole structure.',
+    secondaryText: 'First protect, then build liquidity and afterwards invest according to your goals.',
+    items: [
+      { title: 'Protection', text: 'Insurance and mechanisms to face serious events.', tag: '01' },
+      { title: 'Liquidity', text: 'Money available for emergencies and opportunities.', tag: '02' },
+      { title: 'Productive activity', text: 'A job, profession or business that generates your main income.', tag: '03' },
+      { title: 'Investments', text: 'Capital for growth and complementary income.', tag: '04' },
+      { title: 'High risk', text: 'A limited portion with higher volatility.', tag: '05' },
+    ],
+  },
+  {
+    key: 'plataforma',
+    navLabel: 'Educational Software',
+    eyebrow: 'QLC Financial Education',
+    title: 'Take your financial education to the next level.',
+    description: 'Get our educational software for an affordable fee and turn your knowledge into practical experience.',
+    secondaryText: 'Access structured educational content, practical exercises and tools to record, organize, analyze and understand your finances, your investments and how your wealth evolves.',
+    primaryCtaLabel: 'See access options',
+    primaryCtaTarget: 'acceso',
+    items: [
+      { title: 'Progressive academy', text: 'Education, tool, exercise, record and follow-up.' },
+      { title: 'My investment portfolio', text: 'Create your portfolio. Record and classify your investments by product and category, organize their structure and analyze their results, individually and as a whole.' },
+      { title: 'Reconciled wealth', text: 'Contributions and withdrawals kept separate from returns.' },
+      { title: 'Monthly closings', text: 'Monthly history downloadable as PDF.' },
+      { title: 'Annual report', text: 'What changed in your wealth and why.' },
+      { title: 'Advisory', text: 'One-on-one financial guidance with our team of experts through internal chat.' },
+    ],
+  },
+  {
+    key: 'acceso',
+    navLabel: 'Access',
+    eyebrow: 'Two ways to get it',
+    title: 'Choose how you want to use QLC Financial Education',
+    description: 'You can take the full program or get only the tools you need.',
+    primaryCtaLabel: 'Create my account',
+    primaryCtaTarget: '/registro',
+    items: [
+      { title: 'Full annual access', text: 'Academy + explanations + tools for the annual period.', tag: 'Option 1' },
+      { title: 'Tools only', text: 'Monthly subscription to each module’s tool, without the academy.', tag: 'Option 2' },
+    ],
+  },
+  {
+    key: 'qlc',
+    navLabel: 'QLC',
+    eyebrow: 'Already familiar with trading?',
+    title: 'QLC institutional copytrading',
+    description: 'QLC is a later alternative within the ecosystem, aimed at people with prior copytrading knowledge. You don’t need to know it to use the educational platform.',
+    secondaryText: 'Strategies related to digital assets and trading involve market risk. No result is guaranteed.',
+    primaryCtaLabel: 'Discover QLC institutional copytrading',
+    primaryCtaTarget: 'filtro-qlc',
+  },
+];
+
+export const PUBLIC_SECTIONS = { es: ES, en: EN };

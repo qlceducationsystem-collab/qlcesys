@@ -1,14 +1,16 @@
 import { Modal } from '../../../components/ui/Modal.jsx';
 import { LegalLinks } from '../legal/LegalPage.jsx';
+import { useI18n } from '../../../i18n/I18nContext.jsx';
 
 export function LegalNotice({ open, onClose }) {
+  const { t } = useI18n();
   return (
-    <Modal open={open} title="Aviso importante" onClose={onClose}>
+    <Modal open={open} title={t('public.notice.title')} onClose={onClose}>
       <div className="stack legal-text">
-        <p>Este sitio tiene fines exclusivamente informativos y educativos. No constituye asesoría financiera personalizada, recomendación de inversión, oferta pública ni garantía de resultados. Los activos digitales y el trading apalancado pueden implicar pérdidas significativas. Los resultados históricos o métricas públicas no garantizan resultados futuros.</p>
-        <p>Las referencias a QLC describen el concepto educativo y operativo presentado en su documentación. La estructura contractual, regulatoria y operativa de QLC deberá validarse antes de cualquier lanzamiento comercial. Cada persona debe evaluar de manera independiente su situación financiera, tolerancia al riesgo, objetivos, obligaciones y marco legal aplicable, y consultar profesionales independientes cuando corresponda.</p>
+        <p>{t('public.notice.p1')}</p>
+        <p>{t('public.notice.p2')}</p>
         <p className="small"><LegalLinks /></p>
-        <p className="small">© Quantum Liquidity Capital · Educación Financiera</p>
+        <p className="small">{t('public.notice.copyright')}</p>
       </div>
     </Modal>
   );

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AnimatedHeading } from '../../../components/public/AnimatedHeading.jsx';
 import { Modal } from '../../../components/ui/Modal.jsx';
+import { useI18n } from '../../../i18n/I18nContext.jsx';
 
 export function SectionHead({ section, as = 'h2', compact }) {
   return (
@@ -32,11 +33,12 @@ export function SectionCtas({ section, go }) {
   );
 }
 
-export function MoreInfo({ label = 'Ver más', title, children }) {
+export function MoreInfo({ label, title, children }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   return (
     <>
-      <button type="button" className="ps-more" onClick={() => setOpen(true)}>{label}</button>
+      <button type="button" className="ps-more" onClick={() => setOpen(true)}>{label || t('public.more')}</button>
       <Modal open={open} title={title} onClose={() => setOpen(false)}>{children}</Modal>
     </>
   );

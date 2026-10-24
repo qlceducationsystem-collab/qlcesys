@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useI18n } from '../../../i18n/I18nContext.jsx';
 
 const chunk = (list, size) => Array.from({ length: Math.ceil(list.length / size) }, (_, i) => list.slice(i * size, i * size + size));
 
@@ -8,8 +9,8 @@ function RichText({ text }) {
   );
 }
 
-function lessonSlides(block) {
-  const slides = chunk(block.paragraphs || [], 2).map((group, i) => ({ type: 'text', title: i ? `${block.title} (cont.)` : block.title, paragraphs: group }));
+function lessonSlides(block, cont) {
+  const slides = chunk(block.paragraphs || [], 2).map((group, i) => ({ type: 'text', title: i ? `${block.title} ${cont}` : block.title, paragraphs: group }));
   if (block.list) chunk(block.list, 5).forEach((items) => slides.push({ type: 'list', title: block.title, items }));
   if (block.after?.length) slides.push({ type: 'text', title: block.title, paragraphs: block.after });
   if (block.example) slides.push({ type: 'example', title: block.title, example: block.example });
@@ -18,7 +19,7 @@ function lessonSlides(block) {
 
 const BLOCK_SLIDES = {
   cards: (b) => chunk(b.items, 3).map((items) => ({ type: 'cards', items, numbered: b.numbered })),
-  lesson: lessonSlides,
+  lesson: (b, cont) => lessonSlides(b, cont),
   risk: (b) => [{ type: 'risk', label: b.label, text: b.text }],
   quote: (b) => [{ type: 'quote', text: b.text, source: b.source }],
   table: (b) => b.rows.map((row) => ({ type: 'compare', head: b.head, row })),
@@ -26,8 +27,8 @@ const BLOCK_SLIDES = {
   bars: (b) => [{ type: 'bars', items: b.items, note: b.note }],
 };
 
-export function buildSlides(lesson) {
-  return [{ type: 'intro', title: lesson.title, intro: lesson.intro }, ...lesson.blocks.flatMap((b) => BLOCK_SLIDES[b.type]?.(b) || [])];
+export function buildSlides(lesson, cont = '(cont.)') {
+  return [{ type: 'intro', title: lesson.title, intro: lesson.intro }, ...lesson.blocks.flatMap((b) => BLOCK_SLIDES[b.type]?.(b, cont) || [])];
 }
 
 function Slide({ slide }) {
@@ -86,8 +87,10 @@ function Slide({ slide }) {
 }
 
 export function ClassViewer({ lessons, index, onChange, onClose }) {
+  const { t } = useI18n();
   const lesson = lessons[index];
-  const slides = useMemo(() => buildSlides(lesson), [lesson]);
+  const cont = t('public.viewer.cont');
+  const slides = useMemo(() => buildSlides(lesson, cont), [lesson, cont]);
   const [position, setPosition] = useState({ index, step: 0 });
   const step = position.index === index ? Math.min(position.step, slides.length - 1) : 0;
   const setStep = (next) => setPosition((p) => {
@@ -115,19 +118,19 @@ export function ClassViewer({ lessons, index, onChange, onClose }) {
   return (
     <div className="cv" role="dialog" aria-modal="true" aria-label={lesson.title} ref={panelRef} tabIndex={-1}>
       <div className="cv-top">
-        <span className="cv-kicker">Clase {Number(lesson.id)} de {lessons.length}</span>
+        <span className="cv-kicker">{t('public.viewer.progress', { n: Number(lesson.id), total: lessons.length })}</span>
         <div className="cv-progress" aria-hidden="true"><span style={{ width: `${((step + 1) / slides.length) * 100}%` }} /></div>
-        <button type="button" className="cv-close" onClick={onClose} aria-label="Cerrar clase">×</button>
+        <button type="button" className="cv-close" onClick={onClose} aria-label={t('public.viewer.close')}>×</button>
       </div>
       <div className="cv-body" key={`${index}-${step}`} aria-live="polite">
         <Slide slide={slides[step]} />
       </div>
       <div className="cv-nav">
-        <button type="button" className="pbtn pbtn-ghost" disabled={step === 0} onClick={() => setStep(step - 1)}>← Anterior</button>
+        <button type="button" className="pbtn pbtn-ghost" disabled={step === 0} onClick={() => setStep(step - 1)}>{t('public.viewer.prev')}</button>
         <span className="cv-count">{step + 1} / {slides.length}</span>
-        {!last && <button type="button" className="pbtn pbtn-primary" onClick={() => setStep(step + 1)}>Siguiente →</button>}
-        {last && index < lessons.length - 1 && <button type="button" className="pbtn pbtn-primary" onClick={() => onChange(index + 1)}>Clase {index + 2} →</button>}
-        {last && index === lessons.length - 1 && <button type="button" className="pbtn pbtn-primary" onClick={onClose}>Terminar</button>}
+        {!last && <button type="button" className="pbtn pbtn-primary" onClick={() => setStep(step + 1)}>{t('public.viewer.next')}</button>}
+        {last && index < lessons.length - 1 && <button type="button" className="pbtn pbtn-primary" onClick={() => onChange(index + 1)}>{t('public.viewer.nextClass', { n: index + 2 })}</button>}
+        {last && index === lessons.length - 1 && <button type="button" className="pbtn pbtn-primary" onClick={onClose}>{t('public.viewer.finish')}</button>}
       </div>
     </div>
   );

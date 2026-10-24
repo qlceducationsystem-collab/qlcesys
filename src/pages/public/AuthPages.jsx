@@ -6,7 +6,7 @@ import { Button } from '../../components/ui/Button.jsx';
 import { CodeInput, Field, FormError, Input } from '../../components/ui/Form.jsx';
 import { useI18n } from '../../i18n/I18nContext.jsx';
 import { BRAND_FULL } from '../../components/layout/Brand.jsx';
-import { LEGAL_DOCS, LEGAL_VERSION } from './legal/legalContent.js';
+import { LEGAL_PATHS, LEGAL_VERSION } from './legal/legalContent.js';
 
 function AuthCard({ title, subtitle, children, footer, wide }) {
   return (
@@ -108,7 +108,7 @@ export function Register() {
         <Field label={t('auth.confirmPassword')}><Input type="password" required minLength={8} autoComplete="new-password" {...f.bind('confirm')} /></Field>
         <label className="check legal-check">
           <input type="checkbox" required checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
-          <span>{t('auth.register.acceptBefore')}<Link to={LEGAL_DOCS.terminos.path} target="_blank" rel="noopener">{t('common.terms')}</Link>{t('auth.register.acceptAnd')}<Link to={LEGAL_DOCS.privacidad.path} target="_blank" rel="noopener">{t('common.privacy')}</Link>.</span>
+          <span>{t('auth.register.acceptBefore')}<Link to={LEGAL_PATHS.terminos} target="_blank" rel="noopener">{t('common.terms')}</Link>{t('auth.register.acceptAnd')}<Link to={LEGAL_PATHS.privacidad} target="_blank" rel="noopener">{t('common.privacy')}</Link>.</span>
         </label>
         <FormError error={local || f.state.error} />
         <Button type="submit" loading={f.state.busy}>{t('auth.register.submit')}</Button>

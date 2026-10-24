@@ -6,9 +6,10 @@ import { BrandLogo } from '../layout/BrandLogo.jsx';
 import { BRAND_NAME, BRAND_TAGLINE } from '../layout/Brand.jsx';
 import { LanguageSwitcher } from '../ui/LanguageSwitcher.jsx';
 
-export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal }) {
+export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal, extraLink }) {
   const { user } = useAuth();
   const { t } = useI18n();
+  const extra = extraLink || { to: '/trading-academy', label: t('common.tradingInstitutional') };
   const [open, setOpen] = useState(false);
   const home = user ? (user.role === 'ADMIN' ? '/admin' : '/app') : null;
 
@@ -43,7 +44,7 @@ export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal }) {
               {s.navLabel}
             </button>
           ))}
-          <Link className="pnav-extra" to="/trading-academy">{t('common.tradingInstitutional')}</Link>
+          <Link className="pnav-extra" to={extra.to}>{extra.label}</Link>
         </nav>
         <div className="pnav-actions">
           <LanguageSwitcher />
@@ -72,9 +73,9 @@ export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal }) {
               {s.navLabel}
             </button>
           ))}
-          <Link className="pnav-sheet-link" to="/trading-academy" style={{ '--i': sections.length }}>
+          <Link className="pnav-sheet-link" to={extra.to} style={{ '--i': sections.length }}>
             <span>★</span>
-            {t('common.tradingInstitutional')}
+            {extra.label}
           </Link>
           <div className="pnav-sheet-actions">
             {!home && <Link className="pbtn pbtn-ghost" to="/login">{t('common.login')}</Link>}

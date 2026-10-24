@@ -1,9 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { IntroReveal } from '../../../components/public/IntroReveal.jsx';
-import { PublicNavbar } from '../../../components/public/PublicNavbar.jsx';
+import { useCallback, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { BRAND_FULL } from '../../../components/layout/Brand.jsx';
-import { SectionStage } from '../../../components/public/SectionStage.jsx';
+import { StagedShell, useStagedSections } from '../../../components/public/StagedShell.jsx';
 import { HeroSection } from '../sections/HeroSection.jsx';
 import { CourseSection } from '../sections/CourseSection.jsx';
 import { AccessSection, FeatureSection, GenericSection, LayersSection, QlcSection } from '../sections/InfoSections.jsx';
@@ -23,29 +21,11 @@ const RENDERERS = {
 export default function PublicExperience() {
   const content = usePublicContent();
   const sections = content.sections;
-  const [params, setParams] = useSearchParams();
   const navigate = useNavigate();
   const [filterOpen, setFilterOpen] = useState(false);
   const [legalOpen, setLegalOpen] = useState(false);
-
-  const requested = params.get('s');
-  const activeKey = sections.some((s) => s.key === requested) ? requested : sections[0]?.key;
+  const { activeKey, select } = useStagedSections(sections, BRAND_FULL);
   const byKey = useMemo(() => Object.fromEntries(sections.map((s) => [s.key, s])), [sections]);
-
-  useEffect(() => {
-    document.body.classList.add('public-locked');
-    return () => document.body.classList.remove('public-locked');
-  }, []);
-
-
-  useEffect(() => {
-    const section = byKey[activeKey];
-    if (section) document.title = `${section.navLabel} · ${BRAND_FULL}`;
-  }, [activeKey, byKey]);
-
-  const select = useCallback((key) => {
-    if (key && key !== activeKey) setParams(key === sections[0]?.key ? {} : { s: key });
-  }, [activeKey, sections, setParams]);
 
   const go = useCallback((target) => {
     if (!target) return;
@@ -63,19 +43,9 @@ export default function PublicExperience() {
   };
 
   return (
-    <div className="public-shell">
-      <IntroReveal />
-      <PublicNavbar sections={sections} activeKey={activeKey} onSelect={select} onLegal={() => setLegalOpen(true)} />
-      <main className="public-stage" id="contenido">
-        {activeKey && <SectionStage activeKey={activeKey} render={render} />}
-        <nav className="stage-dots" aria-label="Secciones">
-          {sections.map((s) => (
-            <button key={s.key} type="button" aria-label={s.navLabel} className={s.key === activeKey ? 'is-active' : ''} onClick={() => select(s.key)} />
-          ))}
-        </nav>
-      </main>
+    <StagedShell sections={sections} activeKey={activeKey} onSelect={select} render={render} onLegal={() => setLegalOpen(true)}>
       <CopytradingFilter open={filterOpen} onClose={() => setFilterOpen(false)} />
       <LegalNotice open={legalOpen} onClose={() => setLegalOpen(false)} />
-    </div>
+    </StagedShell>
   );
 }

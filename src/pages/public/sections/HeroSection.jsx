@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
 import { preloadImage, responsiveImage } from '../../../utils/media.js';
+import { useI18n } from '../../../i18n/I18nContext.jsx';
 import { MoreInfo, SectionCtas, SectionHead } from './SectionParts.jsx';
 
 const FALLBACK_IMAGE = { url: '/brand/qlc-logo.png', width: 516, height: 445 };
 
 export function HeroSection({ section, go }) {
+  const { t } = useI18n();
   const image = section.image || FALLBACK_IMAGE;
   const img = responsiveImage(image.url, [480, 640, 960]);
 
@@ -19,7 +21,7 @@ export function HeroSection({ section, go }) {
         {section.secondaryText && (
           <div className="hero-note reveal" style={{ '--r': 3 }}>
             <span className="hero-note-text">{section.secondaryText}</span>
-            <MoreInfo title="La idea central del curso">
+            <MoreInfo title={t('public.heroIdea')}>
               <p className="muted">{section.secondaryText}</p>
             </MoreInfo>
           </div>

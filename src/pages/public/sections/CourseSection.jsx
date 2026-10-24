@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { SECTIONS as LESSONS } from '../courseContent.js';
+import { LESSONS as LESSONS_BY_LANG } from '../courseContent.js';
+import { useI18n } from '../../../i18n/I18nContext.jsx';
 import { ClassViewer } from './ClassViewer.jsx';
 import { SectionHead } from './SectionParts.jsx';
 
@@ -10,8 +11,9 @@ const STAGE_ICONS = {
 };
 
 function CourseStages({ stages }) {
+  const { t } = useI18n();
   return (
-    <ol className="course-stages reveal" style={{ '--r': 2 }} aria-label="Etapas del programa">
+    <ol className="course-stages reveal" style={{ '--r': 2 }} aria-label={t('public.stages')}>
       {stages.map((s) => (
         <li key={s.title}>
           <span className="course-stage-icon" aria-hidden="true">
@@ -25,8 +27,10 @@ function CourseStages({ stages }) {
 }
 
 export function CourseSection({ section }) {
+  const { t, lang } = useI18n();
   const [openIndex, setOpenIndex] = useState(null);
-  const classes = section.items?.length ? section.items : LESSONS.map((l) => ({ title: l.title, tag: `Clase ${Number(l.id)}` }));
+  const LESSONS = LESSONS_BY_LANG[lang] || LESSONS_BY_LANG.es;
+  const classes = section.items?.length ? section.items : LESSONS.map((l) => ({ title: l.title, tag: t('public.classTag', { n: Number(l.id) }) }));
 
   return (
     <div className="ps-container course">
@@ -41,10 +45,10 @@ export function CourseSection({ section }) {
         {classes.map((c, i) => (
           <button key={c.title} type="button" className="course-card reveal-card" style={{ '--c': i }} onClick={() => setOpenIndex(i)}>
             <span className="course-num">{String(i + 1).padStart(2, '0')}</span>
-            <span className="course-tag">{c.tag || `Clase ${i + 1}`}</span>
+            <span className="course-tag">{c.tag || t('public.classTag', { n: i + 1 })}</span>
             <b>{c.title}</b>
             {c.text && <span className="course-text">{c.text}</span>}
-            <span className="course-open" aria-hidden="true">Abrir clase →</span>
+            <span className="course-open" aria-hidden="true">{t('public.openClass')}</span>
           </button>
         ))}
       </div>

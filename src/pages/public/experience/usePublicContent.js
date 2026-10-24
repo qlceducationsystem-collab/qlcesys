@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../../api/client.js';
+import { useI18n } from '../../../i18n/I18nContext.jsx';
 import { PUBLIC_SECTIONS } from './publicContent.js';
 
 const OFFERS_KEY = 'qlc_public_offers';
@@ -45,5 +46,6 @@ export function usePublicOffers() {
 
 export function usePublicContent() {
   const offers = usePublicOffers();
-  return { sections: PUBLIC_SECTIONS, offers };
+  const { lang } = useI18n();
+  return { sections: PUBLIC_SECTIONS[lang] || PUBLIC_SECTIONS.es, offers };
 }
