@@ -20,7 +20,7 @@ export default function AssetDetail() {
       {(a) => (
         <>
           <Link className="btn-secondary back" to={`${basePath}/cartera`}>{tr('← Mi cartera')}</Link>
-          <PageHeader kicker={`Mi cartera · ${a.category.name}`} title={a.name} subtitle={a.institution || tr('Historial del producto por periodo')} />
+          <PageHeader kicker={tr('Mi cartera · {category}', { category: tr(a.category.name) })} title={a.name} subtitle={a.institution || tr('Historial del producto por periodo')} />
           <Card title={tr('Capital final por periodo')}>
             <BarChart data={a.history.map((h) => ({ label: `${shortMonth(h.month)} ${String(h.year).slice(2)}`, value: h.final }))} />
           </Card>

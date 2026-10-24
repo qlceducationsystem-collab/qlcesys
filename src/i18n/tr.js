@@ -1,4 +1,7 @@
 import { PAGES_EN } from './locales/pages.en.js';
+import { ACADEMY_EN } from './locales/academy.en.js';
+
+const EN = { ...ACADEMY_EN, ...PAGES_EN };
 
 let current = 'es';
 
@@ -8,6 +11,6 @@ export const setTrLang = (lang) => {
 
 export function tr(text, vars) {
   if (typeof text !== 'string') return text;
-  const value = current === 'en' ? PAGES_EN[text] ?? PAGES_EN[text.trim()] ?? text : text;
+  const value = current === 'en' ? EN[text] ?? EN[text.trim()] ?? text : text;
   return vars ? value.replace(/\{(\w+)\}/g, (_, k) => (vars[k] ?? `{${k}}`)) : value;
 }

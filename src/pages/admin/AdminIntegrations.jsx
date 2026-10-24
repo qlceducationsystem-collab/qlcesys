@@ -75,7 +75,7 @@ function IntegrationCard({ item, canManage, onChanged }) {
         <div className="form-actions">
           {item.status !== 'DISCONNECTED' && <Button variant="secondary" onClick={() => setConfirm(true)}>{tr('Desconectar')}</Button>}
           {item.service === 'GMAIL' && item.status === 'CONNECTED' && <Button variant="secondary" loading={state.busy} onClick={test}>{tr('Enviar correo de prueba')}</Button>}
-          <Button loading={state.busy} onClick={connect}>{item.status === 'DISCONNECTED' ? `Conectar ${meta.name}` : 'Reconectar'}</Button>
+          <Button loading={state.busy} onClick={connect}>{item.status === 'DISCONNECTED' ? tr('Conectar {name}', { name: meta.name }) : tr('Reconectar')}</Button>
         </div>
       )}
       <ConfirmDialog open={confirm} title={tr('Desconectar {name}', { name: meta.name })} danger confirmLabel={tr('Desconectar')} loading={state.busy}

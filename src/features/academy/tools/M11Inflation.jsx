@@ -36,7 +36,7 @@ function ScenarioForm({ initial, sources, onSubmit, onCancel, busy, error }) {
   const preview = useMemo(() => inflationScenario(toBody(f)), [f]);
   const sourceOptions = [
     ...sources.assets.map((a) => ({ value: `A:${a.id}`, label: tr('Inversión · {name} ({amount})', { name: a.name, amount: money(a.capital) }) })),
-    ...sources.goals.map((g) => ({ value: `G:${g.id}`, label: `Meta · ${g.name} (${money(g.targetAmount)})` })),
+    ...sources.goals.map((g) => ({ value: `G:${g.id}`, label: tr('Meta · {name} ({amount})', { name: g.name, amount: money(g.targetAmount) }) })),
   ];
   const pickSource = (e) => {
     const value = e.target.value;

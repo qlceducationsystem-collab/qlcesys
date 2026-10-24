@@ -60,7 +60,7 @@ function PaymentModal({ debt, onClose, onDone }) {
   return (
     <Modal
       open
-      title={`Confirmar pago · ${debt.name}`}
+      title={tr('Confirmar pago · {name}', { name: debt.name })}
       onClose={onClose}
       footer={<><Button variant="secondary" onClick={onClose}>{tr('Cancelar')}</Button><Button loading={action.busy} onClick={submit} disabled={!Number(f.amount)}>{tr('Confirmar pago real')}</Button></>}
     >

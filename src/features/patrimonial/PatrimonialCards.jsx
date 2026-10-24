@@ -103,7 +103,7 @@ export function Block2Summary({ patrimonial, academy }) {
     <Card title={tr('Bloque 2 · Organización patrimonial')} actions={<Link className="btn-secondary" to={`${basePath}/academia`}>{tr('Ver módulos')}</Link>}>
       <div className="mini-steps">
         {academy.block2.map((m) => (
-          <span key={m.number} className={`mini-step state-${m.state}`} title={m.title}>{m.state === 'COMPLETED' ? '✓' : m.number}</span>
+          <span key={m.number} className={`mini-step state-${m.state}`} title={tr(m.title)}>{m.state === 'COMPLETED' ? '✓' : m.number}</span>
         ))}
       </div>
       <ProgressBar value={academy.block2ProgressPct} label={tr('Progreso del bloque 2')} />

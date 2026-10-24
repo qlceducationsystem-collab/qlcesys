@@ -121,7 +121,7 @@ function PortfolioBody({ summary, categories, reload }) {
         const cat = byCat.get(c.code);
         const items = portfolio.products.filter((p) => p.categoryCode === c.code);
         return (
-          <Card key={c.code} title={c.name} actions={<span className="badge">{items.length} {items.length === 1 ? 'producto' : 'productos'} · {pct(cat.share)}{' '}{tr('de la cartera')}</span>}>
+          <Card key={c.code} title={c.name} actions={<span className="badge">{items.length} {tr(items.length === 1 ? 'producto' : 'productos')} · {pct(cat.share)}{' '}{tr('de la cartera')}</span>}>
             {items.map((p) => (
               <ProductCard key={p.positionId} p={p} basePath={basePath} writable={writable}
                 onEdit={() => setForm({ product: p })} onDelete={() => setPending({ kind: 'delete', product: p })} />

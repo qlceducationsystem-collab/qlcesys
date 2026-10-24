@@ -38,11 +38,11 @@ function AcademyCard({ academy }) {
     <Card title={tr('Academia · Bloque 1')} actions={<Link className="btn-secondary" to={`${basePath}/academia`}>{tr('Ver programa')}</Link>}>
       <div className="mini-steps">
         {academy.block1.map((m) => (
-          <span key={m.number} className={`mini-step state-${m.state}`} title={`${m.title} · ${MODULE_STATE[m.state].label}`}>{m.state === 'COMPLETED' ? '✓' : m.number}</span>
+          <span key={m.number} className={`mini-step state-${m.state}`} title={`${tr(m.title)} · ${MODULE_STATE[m.state].label}`}>{m.state === 'COMPLETED' ? '✓' : m.number}</span>
         ))}
       </div>
       <ProgressBar value={academy.progressPct} label={tr('Progreso del bloque 1')} />
-      <p className="muted small">{academy.progressPct}% completado{academy.next ? ` · Siguiente: M${academy.next.number} ${academy.next.title}` : ''}</p>
+      <p className="muted small">{academy.progressPct}{tr('% completado')}{academy.next ? tr(' · Siguiente: M{n} {title}', { n: academy.next.number, title: tr(academy.next.title) }) : ''}</p>
       {academy.next && <Link className="btn-primary" to={modulePath(basePath, academy.next.number)}>{tr('Continuar')}</Link>}
     </Card>
   );
