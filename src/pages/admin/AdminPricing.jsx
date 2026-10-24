@@ -52,7 +52,7 @@ function OfferEditor({ offer, onSaved, canEdit }) {
       <ConfirmDialog
         open={confirm}
         title="Confirmar cambio de precio"
-        message="El cambio se aplica a nuevas compras y queda registrado en la auditoría."
+        message="El cambio se aplica a nuevas compras."
         details={[
           { field: 'Precio', from: priceText(offer), to: f.price === '' ? 'Precio por definir' : `${money(f.price)} ${f.currency}` },
           { field: 'Estado', from: offer.active ? 'Activo' : 'Inactivo', to: f.active ? 'Activo' : 'Inactivo' },

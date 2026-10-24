@@ -57,17 +57,11 @@ export default function AdminDashboard() {
             <StatGrid>
               <StatCard label="Pagos simulados aprobados" value={count(m.payments.approved)} deltaTone="up" />
               <StatCard label="Pagos simulados rechazados" value={count(m.payments.rejected)} />
-              <StatCard label="Visitas a la página pública" value={count(m.publicViews.total)} delta={`${m.publicViews.uniqueSessions} sesiones únicas`} />
               <StatCard label="Pagos pendientes" value={count(m.payments.pending)} />
             </StatGrid>
-            <div className="layout even">
-              <Card title="Visitas públicas por día">
-                <BarChart data={m.series.publicViews.map((d, i) => ({ label: dayLabel(d.date, i), value: d.count, hint: d.date }))} format={count} />
-              </Card>
-              <Card title="Registros e inicios de sesión">
-                <BarChart data={m.series.logins.map((d, i) => ({ label: dayLabel(d.date, i), value: d.count + m.series.registrations[i].count, hint: `${d.count} inicios · ${m.series.registrations[i].count} registros` }))} format={count} />
-              </Card>
-            </div>
+            <Card title="Registros e inicios de sesión">
+              <BarChart data={m.series.logins.map((d, i) => ({ label: dayLabel(d.date, i), value: d.count + m.series.registrations[i].count, hint: `${d.count} inicios · ${m.series.registrations[i].count} registros` }))} format={count} />
+            </Card>
             <div className="layout">
               <Card title="Módulos iniciados y completados · Bloque 1"><ModuleFunnel modules={m.modules.filter((x) => x.module <= 6)} /></Card>
               <Card title="Tipo de acceso elegido">
@@ -94,12 +88,6 @@ export default function AdminDashboard() {
                 ]} />
               </Card>
             </div>
-            <Card title="Secciones públicas visitadas">
-              <DataTable rowKey="key" rows={m.sections} empty="Sin visitas registradas" columns={[
-                { key: 'key', label: 'Sección' },
-                { key: 'count', label: 'Visitas', align: 'right' },
-              ]} />
-            </Card>
           </>
         )}
       </AsyncView>

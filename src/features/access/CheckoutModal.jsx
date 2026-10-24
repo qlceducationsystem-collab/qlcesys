@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { api, trackEvent } from '../../api/client.js';
+import { useState } from 'react';
+import { api } from '../../api/client.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { Modal } from '../../components/ui/Modal.jsx';
 import { Button } from '../../components/ui/Button.jsx';
@@ -62,10 +62,6 @@ export function CheckoutModal({ offer, onClose, onCompleted }) {
   const [method, setMethod] = useState('CARD');
   const [attempt, setAttempt] = useState(null);
   const [state, setState] = useState({ busy: false, error: null });
-
-  useEffect(() => {
-    trackEvent('PAYMENT_MODAL_OPEN', { offer: offer.code });
-  }, [offer.code]);
 
   const run = async (fn) => {
     setState({ busy: true, error: null });

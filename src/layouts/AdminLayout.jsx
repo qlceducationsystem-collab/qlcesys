@@ -22,7 +22,6 @@ const NAV = [
   { to: '/admin/pagos', icon: '⇄', label: 'Pagos de prueba' },
   { group: 'Sistema' },
   { to: '/admin/integraciones', icon: '⚙', label: 'Integraciones' },
-  { to: '/admin/bitacora', icon: '≡', label: 'Auditoría' },
   { to: '/admin/equipo', icon: '◈', label: 'Administradores', full: true },
 ];
 

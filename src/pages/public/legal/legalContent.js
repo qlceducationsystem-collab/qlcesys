@@ -34,7 +34,7 @@ export const LEGAL_DOCS = {
         'Responderemos en los plazos que establezca la legislación aplicable.',
       ]],
       ['Seguridad', [
-        'Aplicamos medidas administrativas, técnicas y físicas razonables: cifrado de secretos, contraseñas con hash, verificación en dos pasos obligatoria, control de accesos por rol y registro de auditoría de cambios administrativos.',
+        'Aplicamos medidas administrativas, técnicas y físicas razonables: cifrado de secretos, contraseñas con hash, verificación en dos pasos obligatoria y control de accesos por rol.',
       ]],
       ['Cookies y almacenamiento local', [
         'Usamos almacenamiento del navegador únicamente para mantener tu sesión, recordar preferencias de navegación y medir visitas de forma anónima. No usamos cookies publicitarias de terceros.',

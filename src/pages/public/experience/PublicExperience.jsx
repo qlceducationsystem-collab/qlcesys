@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { trackEvent } from '../../../api/client.js';
 import { IntroReveal } from '../../../components/public/IntroReveal.jsx';
 import { PublicNavbar } from '../../../components/public/PublicNavbar.jsx';
 import { BRAND_FULL } from '../../../components/layout/Brand.jsx';
@@ -28,7 +27,6 @@ export default function PublicExperience() {
   const navigate = useNavigate();
   const [filterOpen, setFilterOpen] = useState(false);
   const [legalOpen, setLegalOpen] = useState(false);
-  const tracked = useRef(new Set());
 
   const requested = params.get('s');
   const activeKey = sections.some((s) => s.key === requested) ? requested : sections[0]?.key;
@@ -36,15 +34,9 @@ export default function PublicExperience() {
 
   useEffect(() => {
     document.body.classList.add('public-locked');
-    trackEvent('PUBLIC_PAGE_VIEW');
     return () => document.body.classList.remove('public-locked');
   }, []);
 
-  useEffect(() => {
-    if (!activeKey || tracked.current.has(activeKey)) return;
-    tracked.current.add(activeKey);
-    trackEvent('PUBLIC_SECTION_VIEW', { section: activeKey });
-  }, [activeKey]);
 
   useEffect(() => {
     const section = byKey[activeKey];

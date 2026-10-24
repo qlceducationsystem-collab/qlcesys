@@ -7,7 +7,7 @@ import { ADMIN_LEVELS } from '../../utils/labels.js';
 import { Card, PageHeader } from '../../components/ui/Card.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { ConfirmDialog, Modal } from '../../components/ui/Modal.jsx';
-import { Field, FormError, Input, Select, Textarea } from '../../components/ui/Form.jsx';
+import { Field, FormError, Input, Select } from '../../components/ui/Form.jsx';
 import { AsyncView } from '../../components/ui/States.jsx';
 import { DataTable } from '../../components/ui/DataTable.jsx';
 
@@ -43,37 +43,35 @@ const DIALOGS = {
     message: a.isActive ? `${a.name} no podrá iniciar sesión hasta que lo reactives.` : `${a.name} podrá volver a iniciar sesión.`,
     confirmLabel: a.isActive ? 'Inactivar' : 'Reactivar',
     danger: a.isActive,
-    run: (reason) => api.patch(`/admin/admins/${a.id}/status`, { isActive: !a.isActive, reason }),
+    run: () => api.patch(`/admin/admins/${a.id}/status`, { isActive: !a.isActive }),
   }),
   password: (a) => ({
     title: 'Cambiar contraseña',
     message: `Asigna una nueva contraseña a ${a.name}. Compártela por un canal seguro.`,
     confirmLabel: 'Guardar contraseña',
-    run: (reason, password) => api.post(`/admin/admins/${a.id}/password`, { password, reason }),
+    run: (password) => api.post(`/admin/admins/${a.id}/password`, { password }),
   }),
   delete: (a) => ({
     title: 'Eliminar administrador',
-    message: `Se eliminará definitivamente la cuenta de ${a.name} (${a.email}). Los registros de auditoría se conservan.`,
+    message: `Se eliminará definitivamente la cuenta de ${a.name} (${a.email}).`,
     confirmLabel: 'Eliminar',
     danger: true,
-    run: (reason) => api.del(`/admin/admins/${a.id}`, { reason }),
+    run: () => api.del(`/admin/admins/${a.id}`),
   }),
 };
 
 function AdminAction({ dialog, onClose, onDone }) {
-  const [reason, setReason] = useState('');
   const [password, setPassword] = useState({ value: '', confirm: '' });
   const [state, setState] = useState({ busy: false, error: null });
   const config = DIALOGS[dialog.kind](dialog.admin);
   const needsPassword = dialog.kind === 'password';
 
   const confirm = async () => {
-    if (!reason.trim()) return setState({ busy: false, error: { message: 'Indica el motivo' } });
     if (needsPassword && password.value.length < 8) return setState({ busy: false, error: { message: 'La contraseña debe tener al menos 8 caracteres' } });
     if (needsPassword && password.value !== password.confirm) return setState({ busy: false, error: { message: 'Las contraseñas no coinciden' } });
     setState({ busy: true, error: null });
     try {
-      await config.run(reason.trim(), password.value);
+      await config.run(password.value);
       onDone();
     } catch (error) {
       setState({ busy: false, error });
@@ -89,7 +87,6 @@ function AdminAction({ dialog, onClose, onDone }) {
             <Field label="Confirmar contraseña"><Input type="password" minLength={8} autoComplete="new-password" value={password.confirm} onChange={(e) => setPassword({ ...password, confirm: e.target.value })} /></Field>
           </>
         )}
-        <Field label="Motivo (obligatorio)"><Textarea rows={2} maxLength={500} value={reason} onChange={(e) => setReason(e.target.value)} /></Field>
         <FormError error={state.error} />
       </div>
     </ConfirmDialog>
@@ -104,7 +101,7 @@ export default function AdminTeam() {
   const [err, setErr] = useState(null);
   const changeLevel = async (a, adminLevel) => {
     if (!window.confirm(`¿Cambiar el nivel de ${a.name} a ${ADMIN_LEVELS[adminLevel]}?`)) return;
-    try { await api.patch(`/admin/admins/${a.id}/level`, { adminLevel, reason: 'Cambio de nivel administrativo' }); res.reload(); } catch (e) { setErr(e); }
+    try { await api.patch(`/admin/admins/${a.id}/level`, { adminLevel }); res.reload(); } catch (e) { setErr(e); }
   };
   const isSelf = (a) => a.id === user.id;
   return (

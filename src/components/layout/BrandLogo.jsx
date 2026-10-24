@@ -2,17 +2,17 @@ import { useState } from 'react';
 import { useI18n } from '../../i18n/I18nContext.jsx';
 
 export const LOGOS = {
-  es: '/brand/qlc-logo.png',
-  en: '/brand/qlc-logo-en.png',
+  es: '/brand/qlc-logo-es.mp4',
+  en: '/brand/qlc-logo-en.mp4',
 };
 
-const FALLBACK = LOGOS.es;
+const FALLBACK = '/brand/qlc-logo.png';
 const isVideo = (src) => /\.(mp4|webm|ogg|mov)$/i.test(src);
 
 export function BrandLogo({ alt = '', className = '', width, height }) {
   const { lang } = useI18n();
   const [failed, setFailed] = useState({});
-  const wanted = LOGOS[lang] || FALLBACK;
+  const wanted = LOGOS[lang] || LOGOS.es;
   const src = failed[wanted] ? FALLBACK : wanted;
   const onError = () => src !== FALLBACK && setFailed((f) => ({ ...f, [src]: true }));
 
@@ -22,11 +22,14 @@ export function BrandLogo({ alt = '', className = '', width, height }) {
         key={src}
         className={`brand-logo ${className}`}
         src={src}
+        poster={FALLBACK}
         width={width}
         height={height}
         autoPlay
+        loop
         muted
         playsInline
+        disablePictureInPicture
         preload="auto"
         aria-label={alt || undefined}
         aria-hidden={alt ? undefined : true}

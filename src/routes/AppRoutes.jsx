@@ -42,7 +42,6 @@ const ADMIN_PAGES = [
   ['archivos', page(() => import('../pages/admin/AdminModuleFiles.jsx'))],
   ['integraciones', page(() => import('../pages/admin/AdminIntegrations.jsx'))],
   ['citas', page(() => import('../pages/admin/AdminAppointments.jsx'))],
-  ['bitacora', page(() => import('../pages/admin/AdminAudit.jsx'))],
   ['equipo', page(() => import('../pages/admin/AdminTeam.jsx'))],
 ];
 

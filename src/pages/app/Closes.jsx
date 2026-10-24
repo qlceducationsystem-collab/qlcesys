@@ -6,7 +6,7 @@ import { dateTime, money, periodLabel } from '../../utils/format.js';
 import { Card, Notice, PageHeader, Pill } from '../../components/ui/Card.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { ConfirmDialog } from '../../components/ui/Modal.jsx';
-import { Field, FormError, Textarea } from '../../components/ui/Form.jsx';
+import { FormError } from '../../components/ui/Form.jsx';
 import { AsyncView } from '../../components/ui/States.jsx';
 import { DataTable } from '../../components/ui/DataTable.jsx';
 import { Money, ReconciliationBanner, Roi } from '../../components/finance/Finance.jsx';
@@ -16,7 +16,6 @@ function CurrentPeriodClose({ onClosed }) {
   const { api, period, canEdit, isFullAdmin, reloadPeriods } = useWorkspace();
   const { summary: s } = usePeriodSummary();
   const [dialog, setDialog] = useState(null);
-  const [reason, setReason] = useState('');
   const [state, setState] = useState({ busy: false, error: null });
   const [newOpen, setNewOpen] = useState(false);
   if (!s) return null;
@@ -26,9 +25,8 @@ function CurrentPeriodClose({ onClosed }) {
     setState({ busy: true, error: null });
     try {
       if (dialog === 'close') await api.post(`/periods/${period.id}/close`);
-      else await api.post(`/periods/${period.id}/reopen`, { reason });
+      else await api.post(`/periods/${period.id}/reopen`);
       setDialog(null);
-      setReason('');
       await reloadPeriods(period.id);
       onClosed();
       setState({ busy: false, error: null });
@@ -71,14 +69,13 @@ function CurrentPeriodClose({ onClosed }) {
       <ConfirmDialog
         open={dialog === 'reopen'}
         title={`Reabrir ${periodLabel(period)}`}
-        message="La revisión actual del corte se conserva como histórico y el cambio queda registrado en la bitácora administrativa."
+        message="La revisión actual del corte se conserva como histórico."
         confirmLabel="Reabrir"
         danger
         loading={state.busy}
-        onConfirm={() => reason.trim().length > 0 && run()}
+        onConfirm={run}
         onClose={() => setDialog(null)}
       >
-        <Field label="Motivo de la corrección (obligatorio)"><Textarea value={reason} onChange={(e) => setReason(e.target.value)} /></Field>
         <FormError error={state.error} />
       </ConfirmDialog>
       {newOpen && <NewPeriodModal open onClose={() => setNewOpen(false)} />}

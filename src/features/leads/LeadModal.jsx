@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { api, sessionId } from '../../api/client.js';
+import { api } from '../../api/client.js';
 import { Modal } from '../../components/ui/Modal.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { Field, FormError, Input, Select, Textarea } from '../../components/ui/Form.jsx';
@@ -29,7 +29,7 @@ function LeadForm({ interest, onClose }) {
     if (!accepted) return setState({ busy: false, error: { message: 'Debes aceptar el Aviso de privacidad' }, done: false });
     setState({ busy: true, error: null, done: false });
     try {
-      await api.post('/public/leads', { ...f, acceptPrivacy: true, sourcePath: location.pathname, sessionId: sessionId() });
+      await api.post('/public/leads', { ...f, acceptPrivacy: true, sourcePath: location.pathname });
       setState({ busy: false, error: null, done: true });
     } catch (error) {
       setState({ busy: false, error, done: false });

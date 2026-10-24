@@ -1,6 +1,5 @@
 const BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 const TOKEN_KEY = 'qlc_token';
-const SESSION_KEY = 'qlc_session';
 
 export class ApiError extends Error {
   constructor(status, message, details) {
@@ -21,24 +20,14 @@ const safeStorage = (storage) => ({
 });
 
 const local = safeStorage(window.localStorage);
-const session = safeStorage(window.sessionStorage);
 
 export const tokenStore = { get: () => local.get(TOKEN_KEY), set: (t) => local.set(TOKEN_KEY, t || null) };
-
-export function sessionId() {
-  let id = session.get(SESSION_KEY);
-  if (!id) {
-    id = (crypto.randomUUID?.() || `${Date.now()}${Math.random()}`).replace(/[^a-z0-9]/gi, '').slice(0, 32);
-    session.set(SESSION_KEY, id);
-  }
-  return id;
-}
 
 let onUnauthorized = () => {};
 export const setUnauthorizedHandler = (fn) => { onUnauthorized = fn; };
 
 function headers(clientId, json = true) {
-  const h = { 'X-Session-Id': sessionId() };
+  const h = {};
   if (json) h['Content-Type'] = 'application/json';
   const token = tokenStore.get();
   if (token) h.Authorization = `Bearer ${token}`;
@@ -63,7 +52,6 @@ async function request(method, path, { body, clientId, form } = {}) {
       method,
       headers: headers(clientId, !form),
       body: form || (body === undefined ? undefined : JSON.stringify(body)),
-      keepalive: path === '/public/events',
     });
   } catch {
     throw new ApiError(0, 'No se pudo conectar con el servidor');
@@ -101,6 +89,3 @@ export function createApi(clientId = null) {
 }
 
 export const api = createApi();
-
-export const trackEvent = (event, metadata) =>
-  api.post('/public/events', { event, sessionId: sessionId(), path: window.location.pathname, metadata }).catch(() => null);
