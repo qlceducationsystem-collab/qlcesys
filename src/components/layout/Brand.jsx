@@ -1,13 +1,17 @@
 import { Link } from 'react-router-dom';
 import { BrandLogo } from './BrandLogo.jsx';
 
-export function Brand({ to = '/', sub = 'FINANCIAL EDUCATION' }) {
+export const BRAND_NAME = 'QLC';
+export const BRAND_TAGLINE = 'Institutional Investment Academy';
+export const BRAND_FULL = `${BRAND_NAME} · ${BRAND_TAGLINE}`;
+
+export function Brand({ to = '/' }) {
   return (
     <Link to={to} className="brand">
-      <BrandLogo className="brand-mark" alt="QLC" width="43" height="43" />
+      <BrandLogo className="brand-mark" alt={BRAND_NAME} width="43" height="43" />
       <div>
-        <div className="brand-name">QLC</div>
-        <span>{sub}</span>
+        <div className="brand-name">{BRAND_NAME}</div>
+        <span>{BRAND_TAGLINE}</span>
       </div>
     </Link>
   );
@@ -15,7 +19,7 @@ export function Brand({ to = '/', sub = 'FINANCIAL EDUCATION' }) {
 
 export const Disclaimer = () => (
   <div className="footer-note">
-    QLC Financial Education · Herramienta educativa y de organización financiera. No constituye asesoría financiera
+    {BRAND_FULL} · Herramienta educativa y de organización financiera. No constituye asesoría financiera
     personalizada ni garantiza rendimientos.
   </div>
 );

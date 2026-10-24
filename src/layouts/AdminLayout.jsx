@@ -38,7 +38,7 @@ export function AdminLayout() {
     <div className={`app ${menuOpen ? 'menu-open' : ''}`}>
       <aside className="sidebar">
         <div className="sidebar-top">
-          <Brand to="/admin" sub="PANEL ADMINISTRATIVO" />
+          <Brand to="/admin" />
           <button type="button" className="icon-btn menu-toggle" onClick={() => setMenuOpen((v) => !v)} aria-label="Abrir menú" aria-expanded={menuOpen}>{menuOpen ? '×' : '☰'}</button>
         </div>
         <nav className="nav">

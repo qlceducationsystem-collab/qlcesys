@@ -5,12 +5,13 @@ import { challengeStore, useAuth } from '../../context/AuthContext.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { CodeInput, Field, FormError, Input } from '../../components/ui/Form.jsx';
 import { useI18n } from '../../i18n/I18nContext.jsx';
+import { BRAND_FULL } from '../../components/layout/Brand.jsx';
 import { LEGAL_DOCS, LEGAL_VERSION } from './legal/legalContent.js';
 
 function AuthCard({ title, subtitle, children, footer, wide }) {
   return (
     <div className={`auth-card ${wide ? 'wide' : ''}`}>
-      <div className="section-kicker">QLC Financial Education</div>
+      <div className="section-kicker">{BRAND_FULL}</div>
       <h1>{title}</h1>
       {subtitle && <p className="subtitle">{subtitle}</p>}
       {children}

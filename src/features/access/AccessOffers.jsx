@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import { date } from '../../utils/format.js';
 import { Pill } from '../../components/ui/Card.jsx';
 import { Button } from '../../components/ui/Button.jsx';
+import { BRAND_FULL } from '../../components/layout/Brand.jsx';
 import { CheckoutModal, offerPrice } from './CheckoutModal.jsx';
 
 const TOOL_LABELS = {
@@ -30,7 +31,7 @@ export function AccessOffers({ title = 'Dos formas de adquirir QLC Financial Edu
   return (
     <section className={`offers ${compact ? 'is-compact' : ''}`}>
       <header className="offers-head">
-        <div className="section-kicker">QLC Financial Education</div>
+        <div className="section-kicker">{BRAND_FULL}</div>
         <h2>{title}</h2>
         <p className="muted">Elige el programa completo o adquiere únicamente las herramientas que necesitas. Los datos que registres siempre se conservan.</p>
       </header>

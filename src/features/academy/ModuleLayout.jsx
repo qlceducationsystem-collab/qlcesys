@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom';
 import { useWorkspace } from '../../context/WorkspaceContext.jsx';
 import { BLOCK_TITLES, MODULE_STATE } from '../../utils/labels.js';
 import { ProgressBar } from '../../components/ui/Card.jsx';
+import { BRAND_FULL } from '../../components/layout/Brand.jsx';
 import { modulePath } from './useAcademy.js';
 
 function StepLink({ to, number, title, state, end }) {
@@ -54,7 +55,7 @@ export function ModuleLayout({ overview, block = 1, kicker, title, subtitle, act
     <div className="ml">
       <header className="ml-header">
         <div className="ml-crumbs">
-          <span>QLC Financial Education</span>
+          <span>{BRAND_FULL}</span>
           <span aria-hidden="true">/</span>
           <span>Bloque {block}</span>
           {kicker && (<><span aria-hidden="true">/</span><b>{kicker}</b></>)}

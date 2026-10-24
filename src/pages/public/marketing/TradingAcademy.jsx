@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { LeadButton } from '../../../features/leads/LeadModal.jsx';
 import { CopytradingButton } from '../experience/CopytradingFilter.jsx';
 import { Eyebrow, MarketingShell } from './MarketingShell.jsx';
+import { BRAND_FULL } from '../../../components/layout/Brand.jsx';
 import { APPROACHES, AUDIENCE, COPY_POINTS, KNOWLEDGE, PROGRAM, REQUIREMENTS, TRADING_FAQ, TRADING_MODULES } from './tradingContent.js';
 
 const FACT_ICONS = {
@@ -88,9 +89,7 @@ function QuantVisual() {
 export default function TradingAcademy() {
   return (
     <MarketingShell
-      title="Institutional Trading Academy · QLC"
-      brandTitle="Institutional"
-      brandSub="Trading Academy · QLC"
+      title={`Trading Academy · ${BRAND_FULL}`}
       links={LINKS}
       cta={<LeadButton interest="TRADING_ACADEMY" className="mk-btn mk-primary mk-sm">Solicitar información ↗</LeadButton>}
       footerTagline="Formación cuantitativa · Gestión del riesgo · Disciplina"

@@ -23,8 +23,6 @@ export default function QlcHome() {
   return (
     <MarketingShell
       title={t('home.title')}
-      brandTitle="QLC"
-      brandSub="Institutional Investment Academy"
       links={[{ href: '#productos', label: t('home.links.products') }, { href: '#enfoque', label: t('home.links.approach') }]}
       cta={<a className="mk-btn mk-primary mk-sm" href="#productos">{t('home.navCta')}</a>}
       footerTagline={t('home.footerTagline')}

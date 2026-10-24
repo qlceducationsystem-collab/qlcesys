@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useI18n } from '../../i18n/I18nContext.jsx';
 import { BrandLogo } from '../layout/BrandLogo.jsx';
+import { BRAND_NAME, BRAND_TAGLINE } from '../layout/Brand.jsx';
 import { LanguageSwitcher } from '../ui/LanguageSwitcher.jsx';
 
 export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal }) {
@@ -26,8 +27,8 @@ export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal }) {
         <button type="button" className="pnav-brand" onClick={() => select(sections[0]?.key)} aria-label={t('common.goHome')}>
           <BrandLogo width="40" height="34" />
           <span className="pnav-brand-text">
-            <b>QLC</b>
-            <small>Financial Education</small>
+            <b>{BRAND_NAME}</b>
+            <small>{BRAND_TAGLINE}</small>
           </span>
         </button>
         <nav className="pnav-links" aria-label={t('common.sections')}>

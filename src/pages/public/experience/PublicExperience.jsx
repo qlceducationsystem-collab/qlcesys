@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { trackEvent } from '../../../api/client.js';
 import { IntroReveal } from '../../../components/public/IntroReveal.jsx';
 import { PublicNavbar } from '../../../components/public/PublicNavbar.jsx';
+import { BRAND_FULL } from '../../../components/layout/Brand.jsx';
 import { SectionStage } from '../../../components/public/SectionStage.jsx';
 import { HeroSection } from '../sections/HeroSection.jsx';
 import { CourseSection } from '../sections/CourseSection.jsx';
@@ -47,7 +48,7 @@ export default function PublicExperience() {
 
   useEffect(() => {
     const section = byKey[activeKey];
-    if (section) document.title = `${section.navLabel} · QLC Financial Education`;
+    if (section) document.title = `${section.navLabel} · ${BRAND_FULL}`;
   }, [activeKey, byKey]);
 
   const select = useCallback((key) => {

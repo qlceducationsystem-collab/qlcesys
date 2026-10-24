@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useI18n } from '../../../i18n/I18nContext.jsx';
+import { BRAND_FULL } from '../../../components/layout/Brand.jsx';
 import { LEGAL_DOCS, LEGAL_UPDATED } from './legalContent.js';
 
 export function LegalLinks({ className = '' }) {
@@ -17,7 +18,7 @@ export function LegalLinks({ className = '' }) {
 export default function LegalPage({ doc }) {
   const content = LEGAL_DOCS[doc];
   useEffect(() => {
-    document.title = `${content.title} · QLC Financial Education`;
+    document.title = `${content.title} · ${BRAND_FULL}`;
     window.scrollTo(0, 0);
   }, [content.title]);
 
@@ -28,7 +29,7 @@ export default function LegalPage({ doc }) {
           <NavLink key={key} to={d.path} className={({ isActive }) => (isActive ? 'is-active' : '')}>{d.label}</NavLink>
         ))}
       </nav>
-      <div className="section-kicker">QLC Financial Education</div>
+      <div className="section-kicker">{BRAND_FULL}</div>
       <h1>{content.title}</h1>
       <p className="small muted">Última actualización: {LEGAL_UPDATED}</p>
       <p className="subtitle">{content.intro}</p>

@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext.jsx';
 import { useI18n } from '../../../i18n/I18nContext.jsx';
 import { BrandLogo } from '../../../components/layout/BrandLogo.jsx';
+import { BRAND_FULL, BRAND_NAME, BRAND_TAGLINE } from '../../../components/layout/Brand.jsx';
 import { LanguageSwitcher } from '../../../components/ui/LanguageSwitcher.jsx';
 import { LeadRequestProvider } from '../../../features/leads/LeadModal.jsx';
 import { LegalLinks } from '../legal/LegalPage.jsx';
@@ -11,7 +12,7 @@ export function Eyebrow({ children, tone = '' }) {
   return <div className={`mk-eyebrow ${tone}`}>{children}</div>;
 }
 
-export function MarketingShell({ title, brandTitle, brandSub, links = [], cta, footerTagline, children }) {
+export function MarketingShell({ title, links = [], cta, footerTagline, children }) {
   const { user } = useAuth();
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
@@ -33,9 +34,9 @@ export function MarketingShell({ title, brandTitle, brandSub, links = [], cta, f
       <div className="mk">
         <header className={`mk-header ${open ? 'is-open' : ''}`}>
           <div className="mk-wrap mk-nav">
-            <Link className="mk-brand" to="/" aria-label="QLC · Institutional Investment Academy">
+            <Link className="mk-brand" to="/" aria-label={BRAND_FULL}>
               <BrandLogo width="42" height="36" />
-              <span><strong>{brandTitle}</strong><small>{brandSub}</small></span>
+              <span><strong>{BRAND_NAME}</strong><small>{BRAND_TAGLINE}</small></span>
             </Link>
             <nav className="mk-links" aria-label={t('common.mainNav')}>
               {links.map((l) => (l.to
