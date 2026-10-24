@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { BrandLogo } from '../../components/layout/BrandLogo.jsx';
 import { BRAND_FULL } from '../../components/layout/Brand.jsx';
+import { tr } from '../../i18n/tr.js';
 
 const CURRENT_VERSION = typeof __APP_VERSION__ === 'undefined' ? null : __APP_VERSION__;
 const CHECK_EVERY_MS = 5 * 60 * 1000;
@@ -90,12 +91,12 @@ export function UpdatePrompt() {
       <div className="update-inner">
         <BrandLogo className="update-logo" width="40" height="40" />
         <div className="update-copy">
-          <b id="update-title">{reason === 'LOAD_ERROR' ? 'Hay una versión más reciente' : 'Nueva versión disponible'}</b>
+          <b id="update-title">{reason === 'LOAD_ERROR' ? tr('Hay una versión más reciente') : tr('Nueva versión disponible')}</b>
           <span id="update-text">Borra la caché y recarga para ver la última versión de {BRAND_FULL}.</span>
         </div>
         <div className="update-actions">
-          <button type="button" className="update-primary" onClick={update} disabled={busy}>{busy ? 'Actualizando…' : 'Actualizar'}</button>
-          <button type="button" className="update-close" onClick={snooze} aria-label="Recordarme más tarde">×</button>
+          <button type="button" className="update-primary" onClick={update} disabled={busy}>{busy ? tr('Actualizando…') : tr('Actualizar')}</button>
+          <button type="button" className="update-close" onClick={snooze} aria-label={tr('Recordarme más tarde')}>×</button>
         </div>
       </div>
     </div>

@@ -1,31 +1,38 @@
 import { Link } from 'react-router-dom';
+import { useI18n } from '../../i18n/I18nContext.jsx';
+import { tr } from '../../i18n/tr.js';
 
-export const Loading = ({ text = 'Cargando información…' }) => (
-  <div className="state state-loading" role="status">
-    <span className="spinner" aria-hidden="true" />
-    <span>{text}</span>
-  </div>
-);
+export function Loading({ text }) {
+  const { t } = useI18n();
+  return (
+    <div className="state state-loading" role="status">
+      <span className="spinner" aria-hidden="true" />
+      <span>{tr(text) || t('app.states.loading')}</span>
+    </div>
+  );
+}
 
-export function Empty({ title = 'Aún no hay información', text, action }) {
+export function Empty({ title, text, action }) {
+  const { t } = useI18n();
   return (
     <div className="state state-empty">
       <div className="state-icon" aria-hidden="true">◇</div>
-      <h3>{title}</h3>
-      {text && <p>{text}</p>}
+      <h3>{tr(title) || t('app.states.emptyTitle')}</h3>
+      {text && <p>{tr(text)}</p>}
       {action}
     </div>
   );
 }
 
 export function ErrorState({ error, onRetry }) {
+  const { t } = useI18n();
   const status = error?.status;
   if (status === 401) {
     return (
       <div className="state state-error">
-        <h3>Tu sesión expiró</h3>
-        <p>Inicia sesión nuevamente para continuar.</p>
-        <Link className="btn-primary" to="/login">Iniciar sesión</Link>
+        <h3>{t('app.states.expiredTitle')}</h3>
+        <p>{t('app.states.expiredText')}</p>
+        <Link className="btn-primary" to="/login">{t('app.states.login')}</Link>
       </div>
     );
   }
@@ -33,16 +40,16 @@ export function ErrorState({ error, onRetry }) {
     return (
       <div className="state state-forbidden">
         <div className="state-icon" aria-hidden="true">🔒</div>
-        <h3>Acceso restringido</h3>
-        <p>{error.message}</p>
+        <h3>{t('app.states.forbidden')}</h3>
+        <p>{tr(error.message)}</p>
       </div>
     );
   }
   return (
     <div className="state state-error" role="alert">
-      <h3>No se pudo cargar la información</h3>
-      <p>{error?.message || 'Error inesperado'}</p>
-      {onRetry && <button className="btn-secondary" onClick={onRetry}>Reintentar</button>}
+      <h3>{t('app.states.errorTitle')}</h3>
+      <p>{tr(error?.message) || t('app.states.unexpected')}</p>
+      {onRetry && <button className="btn-secondary" onClick={onRetry}>{t('app.states.retry')}</button>}
     </div>
   );
 }

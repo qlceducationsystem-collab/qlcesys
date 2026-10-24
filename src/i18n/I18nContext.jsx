@@ -1,6 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { es } from './locales/es.js';
 import { en } from './locales/en.js';
+import { setFormatLocale } from '../utils/format.js';
+import { applyLabels } from '../utils/labels.js';
+import { setTrLang } from './tr.js';
 
 export const LANGUAGES = [
   { code: 'es', label: 'Español', short: 'ES' },
@@ -31,6 +34,9 @@ const I18nContext = createContext(null);
 
 export function I18nProvider({ children }) {
   const [lang, setLangState] = useState(initialLang);
+  setFormatLocale(lang);
+  applyLabels(lang);
+  setTrLang(lang);
 
   useEffect(() => {
     document.documentElement.lang = lang;

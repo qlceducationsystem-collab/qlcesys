@@ -11,6 +11,7 @@ import { DataTable } from '../../../components/ui/DataTable.jsx';
 import { Pill } from '../../../components/ui/Card.jsx';
 import { ErrorState, Loading } from '../../../components/ui/States.jsx';
 import { MetricCard, MetricGrid, RealBadge, ToolCard } from '../ResultParts.jsx';
+import { tr } from '../../../i18n/tr.js';
 
 const EMPTY = { name: '', productType: 'RENTA_FIJA', capital: '', horizon: 'MEDIANO', liquidityLevel: 'MEDIA', perceivedRisk: 'MEDIO' };
 const RISK_TONE = { BAJO: '', MEDIO: '', ALTO: 'warn', MUY_ALTO: 'bad' };
@@ -21,17 +22,17 @@ function ProductForm({ initial, onSubmit, onCancel, busy, error }) {
   return (
     <form className="stack" onSubmit={(e) => { e.preventDefault(); onSubmit(f); }}>
       <div className="form-grid cols-3">
-        <Field label="Nombre del producto"><Input required maxLength={120} placeholder="Ej. CETES, BTC, casa, negocio" value={f.name} onChange={set('name')} /></Field>
-        <Field label="Tipo"><Select value={f.productType} onChange={set('productType')} options={options.productTypes} /></Field>
-        <Field label="Capital actual"><MoneyInput required min="0.01" value={f.capital} onChange={set('capital')} placeholder="0" /></Field>
-        <Field label="Horizonte"><Select value={f.horizon} onChange={set('horizon')} options={options.horizons} /></Field>
-        <Field label="Liquidez"><Select value={f.liquidityLevel} onChange={set('liquidityLevel')} options={options.liquidity} /></Field>
-        <Field label="Riesgo percibido"><Select value={f.perceivedRisk} onChange={set('perceivedRisk')} options={options.risk} /></Field>
+        <Field label={tr('Nombre del producto')}><Input required maxLength={120} placeholder={tr('Ej. CETES, BTC, casa, negocio')} value={f.name} onChange={set('name')} /></Field>
+        <Field label={tr('Tipo')}><Select value={f.productType} onChange={set('productType')} options={options.productTypes} /></Field>
+        <Field label={tr('Capital actual')}><MoneyInput required min="0.01" value={f.capital} onChange={set('capital')} placeholder="0" /></Field>
+        <Field label={tr('Horizonte')}><Select value={f.horizon} onChange={set('horizon')} options={options.horizons} /></Field>
+        <Field label={tr('Liquidez')}><Select value={f.liquidityLevel} onChange={set('liquidityLevel')} options={options.liquidity} /></Field>
+        <Field label={tr('Riesgo percibido')}><Select value={f.perceivedRisk} onChange={set('perceivedRisk')} options={options.risk} /></Field>
       </div>
       <FormError error={error} />
       <div className="form-actions">
-        {onCancel && <Button type="button" variant="secondary" onClick={onCancel}>Cancelar</Button>}
-        <Button type="submit" loading={busy}>{onCancel ? 'Guardar cambios' : 'Agregar a mi mapa'}</Button>
+        {onCancel && <Button type="button" variant="secondary" onClick={onCancel}>{tr('Cancelar')}</Button>}
+        <Button type="submit" loading={busy}>{onCancel ? tr('Guardar cambios') : tr('Agregar a mi mapa')}</Button>
       </div>
     </form>
   );
@@ -78,45 +79,45 @@ export function M2ProductMap({ onSaved }) {
   return (
     <div className="tool">
       {canEdit && (
-        <ToolCard step="1" title="Agregar producto o activo" description="Registra cada producto individualmente. Alimentará Mi cartera, Allocation y Patrimonio." aside={<RealBadge />}>
+        <ToolCard step="1" title={tr('Agregar producto o activo')} description={tr('Registra cada producto individualmente. Alimentará Mi cartera, Allocation y Patrimonio.')} aside={<RealBadge />}>
           <ProductForm key={formKey} initial={EMPTY} onSubmit={add} busy={state.busy && !editing} error={!editing ? state.error : null} />
         </ToolCard>
       )}
       <MetricGrid>
-        <MetricCard label="Productos registrados" value={products.length} />
-        <MetricCard label="Capital identificado" value={money(total)} />
+        <MetricCard label={tr('Productos registrados')} value={products.length} />
+        <MetricCard label={tr('Capital identificado')} value={money(total)} />
         <MetricCard
-          label="Inversiones por desglosar"
+          label={tr('Inversiones por desglosar')}
           value={money(pendingInvestments)}
           tone={pendingInvestments > 0 ? 'warn' : 'good'}
-          hint={pending ? 'Del diagnóstico del Módulo 1' : 'Completa el Módulo 1 para comparar'}
+          hint={pending ? tr('Del diagnóstico del Módulo 1') : tr('Completa el Módulo 1 para comparar')}
           explanation="El Módulo 1 registró tus inversiones como cifra global. Aquí la descompones en productos sin duplicarla."
         />
       </MetricGrid>
-      <ToolCard step="2" title="Mapa de productos registrados" description="Producto individual → categoría → Mi cartera → Allocation → Patrimonio.">
+      <ToolCard step="2" title={tr('Mapa de productos registrados')} description={tr('Producto individual → categoría → Mi cartera → Allocation → Patrimonio.')}>
         <DataTable
           rowKey="assetId"
           rows={products}
-          empty="Aún no registras productos. Agrega el primero para construir tu mapa."
+          empty={tr('Aún no registras productos. Agrega el primero para construir tu mapa.')}
           columns={[
-            { key: 'name', label: 'Producto', render: (p) => <b>{p.name}</b> },
-            { key: 'productType', label: 'Tipo', render: (p) => PRODUCT_TYPES[p.productType] },
-            { key: 'capital', label: 'Capital', align: 'right', render: (p) => money(p.capital) },
-            { key: 'horizon', label: 'Horizonte', render: (p) => HORIZONS[p.horizon] },
-            { key: 'liquidityLevel', label: 'Liquidez', render: (p) => LIQUIDITY_LEVELS[p.liquidityLevel] },
-            { key: 'perceivedRisk', label: 'Riesgo', render: (p) => <Pill variant={RISK_TONE[p.perceivedRisk]}>{PERCEIVED_RISK[p.perceivedRisk]}</Pill> },
-            ...(canEdit ? [{ key: 'x', label: 'Acciones', align: 'right', render: (p) => (
+            { key: 'name', label: tr('Producto'), render: (p) => <b>{tr(p.name)}</b> },
+            { key: 'productType', label: tr('Tipo'), render: (p) => PRODUCT_TYPES[p.productType] },
+            { key: 'capital', label: tr('Capital'), align: 'right', render: (p) => money(p.capital) },
+            { key: 'horizon', label: tr('Horizonte'), render: (p) => HORIZONS[p.horizon] },
+            { key: 'liquidityLevel', label: tr('Liquidez'), render: (p) => LIQUIDITY_LEVELS[p.liquidityLevel] },
+            { key: 'perceivedRisk', label: 'Riesgo', render: (p) => <Pill variant={RISK_TONE[p.perceivedRisk]}>{tr(PERCEIVED_RISK[p.perceivedRisk])}</Pill> },
+            ...(canEdit ? [{ key: 'x', label: tr('Acciones'), align: 'right', render: (p) => (
               <div className="row-actions">
-                <button type="button" className="btn-link" onClick={() => setEditing(p)}>Editar</button>
-                <button type="button" className="btn-link danger" onClick={() => setRemoving(p)}>Eliminar</button>
+                <button type="button" className="btn-link" onClick={() => setEditing(p)}>{tr('Editar')}</button>
+                <button type="button" className="btn-link danger" onClick={() => setRemoving(p)}>{tr('Eliminar')}</button>
               </div>
             ) }] : []),
           ]}
         />
-        <p className="small muted">Estos productos ya aparecen en <Link to={`${basePath}/cartera`}>Mi cartera</Link> y en <Link to={`${basePath}/allocation`}>Allocation</Link>.</p>
+        <p className="small muted">{tr('Estos productos ya aparecen en')}{' '}<Link to={`${basePath}/cartera`}>{tr('Mi cartera')}</Link>{' '}{tr('y en')}{' '}<Link to={`${basePath}/allocation`}>{tr('Allocation')}</Link>.</p>
       </ToolCard>
       {editing && (
-        <ToolCard title={`Editar · ${editing.name}`}>
+        <ToolCard title={tr('Editar · {title}', { title: editing.name })}>
           <ProductForm
             initial={{ name: editing.name, productType: editing.productType, capital: editing.capital, horizon: editing.horizon, liquidityLevel: editing.liquidityLevel, perceivedRisk: editing.perceivedRisk }}
             onSubmit={update}
@@ -129,9 +130,9 @@ export function M2ProductMap({ onSaved }) {
       <ConfirmDialog
         open={!!removing}
         title={`Eliminar ${removing?.name || ''}`}
-        message="El producto se quitará de tu mapa, de Mi cartera y de Allocation del periodo actual."
+        message={tr('El producto se quitará de tu mapa, de Mi cartera y de Allocation del periodo actual.')}
         danger
-        confirmLabel="Eliminar"
+        confirmLabel={tr('Eliminar')}
         loading={state.busy}
         onConfirm={remove}
         onClose={() => setRemoving(null)}

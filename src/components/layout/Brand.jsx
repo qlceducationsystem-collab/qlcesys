@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { BrandLogo } from './BrandLogo.jsx';
+import { useI18n } from '../../i18n/I18nContext.jsx';
 
 export const BRAND_NAME = 'QLC';
 export const BRAND_TAGLINE = 'Institutional Investment Academy';
@@ -17,9 +18,7 @@ export function Brand({ to = '/' }) {
   );
 }
 
-export const Disclaimer = () => (
-  <div className="footer-note">
-    {BRAND_FULL} · Herramienta educativa y de organización financiera. No constituye asesoría financiera
-    personalizada ni garantiza rendimientos.
-  </div>
-);
+export function Disclaimer() {
+  const { t } = useI18n();
+  return <div className="footer-note">{BRAND_FULL} · {t('common.disclaimer')}</div>;
+}

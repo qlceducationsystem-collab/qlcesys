@@ -6,6 +6,7 @@ import { AdminClientWorkspace, AdminLayout } from '../layouts/AdminLayout.jsx';
 import { AuthLayout } from '../layouts/PublicLayout.jsx';
 import { Empty, Loading } from '../components/ui/States.jsx';
 import { RequireAuth } from './guards.jsx';
+import { useI18n } from '../i18n/I18nContext.jsx';
 import PublicExperience from '../pages/public/experience/PublicExperience.jsx';
 import { ForgotPassword, Login, Register, TwoFactorSetup } from '../pages/public/AuthPages.jsx';
 
@@ -51,7 +52,10 @@ const routesFor = (pages) =>
 const LegalPage = page(() => import('../pages/public/legal/LegalPage.jsx'));
 const TradingAcademy = page(() => import('../pages/public/marketing/TradingAcademy.jsx'));
 
-const NotFound = () => <Empty title="Página no encontrada" text="La dirección no existe." />;
+function NotFound() {
+  const { t } = useI18n();
+  return <Empty title={t('app.notFoundTitle')} text={t('app.notFoundText')} />;
+}
 
 function LegacyEducationRedirect() {
   const { search } = useLocation();

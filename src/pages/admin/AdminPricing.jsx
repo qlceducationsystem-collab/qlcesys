@@ -8,8 +8,9 @@ import { Button } from '../../components/ui/Button.jsx';
 import { ConfirmDialog } from '../../components/ui/Modal.jsx';
 import { Field, FormError, Input, MoneyInput } from '../../components/ui/Form.jsx';
 import { AsyncView } from '../../components/ui/States.jsx';
+import { tr } from '../../i18n/tr.js';
 
-const priceText = (o) => (o.price === null ? 'Precio por definir' : `${money(o.price)} ${o.currency}`);
+const priceText = (o) => (o.price === null ? tr('Precio por definir') : `${money(o.price)} ${o.currency}`);
 
 function OfferEditor({ offer, onSaved, canEdit }) {
   const [f, setF] = useState({ name: offer.name, description: offer.description || '', price: offer.price ?? '', currency: offer.currency, accessDays: offer.accessDays ?? '', active: offer.active });
@@ -36,26 +37,26 @@ function OfferEditor({ offer, onSaved, canEdit }) {
   return (
     <article className={`price-card ${offer.type === 'FULL_ANNUAL' ? 'is-featured' : ''}`}>
       <header>
-        <span className="price-code">{offer.type === 'FULL_ANNUAL' ? 'Acceso completo anual' : `Herramienta M${offer.moduleNumber}`}</span>
-        <Pill variant={offer.active ? '' : 'muted'}>{offer.active ? 'Activo' : 'Inactivo'}</Pill>
+        <span className="price-code">{offer.type === 'FULL_ANNUAL' ? tr('Acceso completo anual') : `Herramienta M${offer.moduleNumber}`}</span>
+        <Pill variant={offer.active ? '' : 'muted'}>{offer.active ? tr('Activo') : tr('Inactivo')}</Pill>
       </header>
       <strong className="price-current">{priceText(offer)}</strong>
       <div className="form-grid cols-2">
-        <Field label="Nombre" full><Input value={f.name} onChange={set('name')} disabled={!canEdit} /></Field>
-        <Field label="Precio" hint="Vacío = Precio por definir"><MoneyInput value={f.price} onChange={set('price')} disabled={!canEdit} placeholder="Por definir" /></Field>
-        <Field label="Moneda"><Input maxLength={3} value={f.currency} onChange={set('currency')} disabled={!canEdit} /></Field>
-        <Field label={offer.type === 'FULL_ANNUAL' ? 'Días de acceso' : 'Días por mensualidad'}><Input type="number" min="1" value={f.accessDays} onChange={set('accessDays')} disabled={!canEdit} /></Field>
-        <label className="check"><input type="checkbox" checked={f.active} onChange={set('active')} disabled={!canEdit} /> Disponible para compra</label>
+        <Field label={tr('Nombre')} full><Input value={f.name} onChange={set('name')} disabled={!canEdit} /></Field>
+        <Field label={tr('Precio')} hint={tr('Vacío = Precio por definir')}><MoneyInput value={f.price} onChange={set('price')} disabled={!canEdit} placeholder={tr('Por definir')} /></Field>
+        <Field label={tr('Moneda')}><Input maxLength={3} value={f.currency} onChange={set('currency')} disabled={!canEdit} /></Field>
+        <Field label={offer.type === 'FULL_ANNUAL' ? tr('Días de acceso') : tr('Días por mensualidad')}><Input type="number" min="1" value={f.accessDays} onChange={set('accessDays')} disabled={!canEdit} /></Field>
+        <label className="check"><input type="checkbox" checked={f.active} onChange={set('active')} disabled={!canEdit} />{' '}{tr('Disponible para compra')}</label>
       </div>
       <FormError error={state.error} />
-      {canEdit && <Button onClick={() => setConfirm(true)}>Guardar</Button>}
+      {canEdit && <Button onClick={() => setConfirm(true)}>{tr('Guardar')}</Button>}
       <ConfirmDialog
         open={confirm}
-        title="Confirmar cambio de precio"
-        message="El cambio se aplica a nuevas compras."
+        title={tr('Confirmar cambio de precio')}
+        message={tr('El cambio se aplica a nuevas compras.')}
         details={[
-          { field: 'Precio', from: priceText(offer), to: f.price === '' ? 'Precio por definir' : `${money(f.price)} ${f.currency}` },
-          { field: 'Estado', from: offer.active ? 'Activo' : 'Inactivo', to: f.active ? 'Activo' : 'Inactivo' },
+          { field: tr('Precio'), from: priceText(offer), to: f.price === '' ? tr('Precio por definir') : `${money(f.price)} ${f.currency}` },
+          { field: tr('Estado'), from: offer.active ? tr('Activo') : tr('Inactivo'), to: f.active ? tr('Activo') : tr('Inactivo') },
         ]}
         loading={state.busy}
         onConfirm={save}
@@ -71,15 +72,15 @@ export default function AdminPricing() {
   const canEdit = user?.adminLevel === 'FULL';
   return (
     <>
-      <PageHeader kicker="Comercial" title="Precios y accesos" subtitle="Los precios provienen de la base de datos. Ninguno está escrito en el código." />
-      <Notice>Si un precio no está configurado, la plataforma muestra “Precio por definir” y el entorno de pruebas permite simular la compra.</Notice>
+      <PageHeader kicker={tr('Comercial')} title={tr('Precios y accesos')} subtitle={tr('Los precios provienen de la base de datos. Ninguno está escrito en el código.')} />
+      <Notice>{tr('Si un precio no está configurado, la plataforma muestra “Precio por definir” y el entorno de pruebas permite simular la compra.')}</Notice>
       <AsyncView {...res} onRetry={res.reload}>
         {(offers) => (
           <>
-            <Card title="Acceso completo anual">
+            <Card title={tr('Acceso completo anual')}>
               <div className="price-grid single">{offers.filter((o) => o.type === 'FULL_ANNUAL').map((o) => <OfferEditor key={`${o.code}-${o.price}-${o.active}`} offer={o} onSaved={res.reload} canEdit={canEdit} />)}</div>
             </Card>
-            <Card title="Solo herramientas · suscripción mensual por módulo">
+            <Card title={tr('Solo herramientas · suscripción mensual por módulo')}>
               <div className="price-grid">{offers.filter((o) => o.type === 'TOOL_ONLY').map((o) => <OfferEditor key={`${o.code}-${o.price}-${o.active}`} offer={o} onSaved={res.reload} canEdit={canEdit} />)}</div>
             </Card>
           </>

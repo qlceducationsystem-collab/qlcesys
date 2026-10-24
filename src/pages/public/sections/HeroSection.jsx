@@ -1,18 +1,9 @@
-import { useEffect } from 'react';
-import { preloadImage, responsiveImage } from '../../../utils/media.js';
+import { BrandLogo } from '../../../components/layout/BrandLogo.jsx';
 import { useI18n } from '../../../i18n/I18nContext.jsx';
 import { MoreInfo, SectionCtas, SectionHead } from './SectionParts.jsx';
 
-const FALLBACK_IMAGE = { url: '/brand/qlc-logo.png', width: 516, height: 445 };
-
 export function HeroSection({ section, go }) {
   const { t } = useI18n();
-  const image = section.image || FALLBACK_IMAGE;
-  const img = responsiveImage(image.url, [480, 640, 960]);
-
-  useEffect(() => {
-    if (section.image) preloadImage(section.image.url, 640);
-  }, [section.image]);
 
   return (
     <div className="ps-container ps-hero">
@@ -31,15 +22,7 @@ export function HeroSection({ section, go }) {
       <div className="hero-visual reveal-visual">
         <div className="hero-card">
           <div className="hero-media">
-            <img
-              {...img}
-              sizes="(max-width: 820px) 70vw, 520px"
-              alt={section.image ? section.title : 'Quantum Liquidity Capital'}
-              width={image.width || 600}
-              height={image.height || 600}
-              fetchpriority="high"
-              decoding="async"
-            />
+            <BrandLogo alt="Quantum Liquidity Capital" />
             <span className="hero-glow" aria-hidden="true" />
           </div>
           {section.items?.length > 0 && (

@@ -8,6 +8,7 @@ import { Button } from '../../../components/ui/Button.jsx';
 import { Field, FormError, MoneyInput, Select } from '../../../components/ui/Form.jsx';
 import { Loading, ErrorState } from '../../../components/ui/States.jsx';
 import { MetricCard, MetricGrid, RealBadge, ToolCard } from '../ResultParts.jsx';
+import { tr } from '../../../i18n/tr.js';
 
 const EMPTY = {
   income: '', expenses: '', debtPayment: '', monthlyInvestment: '',
@@ -25,20 +26,20 @@ const monthsTone = (m) => (m === null ? '' : m >= 6 ? 'good' : m >= 3 ? 'warn' :
 
 function Results({ result }) {
   return (
-    <ToolCard step="4" title="Resultado del diagnóstico" description="Tu línea base. Así estás hoy." aside={<RealBadge />}>
+    <ToolCard step="4" title={tr('Resultado del diagnóstico')} description={tr('Tu línea base. Así estás hoy.')} aside={<RealBadge />}>
       <MetricGrid>
         <MetricCard
-          label="Tasa de ahorro"
+          label={tr('Tasa de ahorro')}
           value={pct(result.savingRate)}
           tone={levelTone[result.savingLevel?.key]}
-          hint={result.savingLevel?.label || 'Registra tus ingresos'}
-          explanation={`Qué significa: de cada $100 que recibes quedan ${result.savingRate === null ? '—' : `$${result.savingRate.toFixed(2)}`} después de gastos y deudas. Por qué importa: es el motor para acumular patrimonio.`}
+          hint={result.savingLevel?.label || tr('Registra tus ingresos')}
+          explanation={tr('Qué significa: de cada $100 que recibes quedan {amount} después de gastos y deudas. Por qué importa: es el motor para acumular patrimonio.', { amount: result.savingRate === null ? '—' : `$${result.savingRate.toFixed(2)}` })}
         />
-        <MetricCard label="Patrimonio neto" value={money(result.netWorth)} tone={result.netWorth >= 0 ? 'good' : 'bad'} hint="Activos − deudas" explanation="Responde: si sumo todo lo que tengo y resto lo que debo, ¿cuánto realmente tengo?" />
-        <MetricCard label="Liquidez" value={result.liquidityMonths === null ? 'N/D' : `${result.liquidityMonths.toFixed(1)} meses`} tone={monthsTone(result.liquidityMonths)} hint="Meses de gastos cubiertos" explanation="Responde: si mañana dejo de recibir ingresos, ¿cuánto tiempo puedo pagar mis gastos? Patrimonio no es lo mismo que liquidez." />
-        <MetricCard label="Inversión / patrimonio" value={pct(result.investmentToNetWorth)} hint="Peso actual de inversiones" explanation="Qué parte de tu patrimonio neto está invertida. Lo profundizarás en Allocation (Módulo 3)." />
-        <MetricCard label="Deuda / patrimonio" value={pct(result.debtToNetWorth)} hint="Nivel relativo de deuda" explanation="Indicador educativo, no una calificación. El análisis completo de deudas requiere tasa, plazo y tipo de deuda." />
-        <MetricCard label="Flujo disponible" value={money(result.freeCashFlow)} tone={result.freeCashFlow >= 0 ? 'good' : 'bad'} hint="Después de gastos, deuda e inversión" explanation="Lo que queda después de cumplir tu plan financiero del mes." />
+        <MetricCard label={tr('Patrimonio neto')} value={money(result.netWorth)} tone={result.netWorth >= 0 ? 'good' : 'bad'} hint={tr('Activos − deudas')} explanation="Responde: si sumo todo lo que tengo y resto lo que debo, ¿cuánto realmente tengo?" />
+        <MetricCard label={tr('Liquidez')} value={result.liquidityMonths === null ? 'N/D' : tr('{n} meses', { n: result.liquidityMonths.toFixed(1) })} tone={monthsTone(result.liquidityMonths)} hint={tr('Meses de gastos cubiertos')} explanation="Responde: si mañana dejo de recibir ingresos, ¿cuánto tiempo puedo pagar mis gastos? Patrimonio no es lo mismo que liquidez." />
+        <MetricCard label={tr('Inversión / patrimonio')} value={pct(result.investmentToNetWorth)} hint={tr('Peso actual de inversiones')} explanation="Qué parte de tu patrimonio neto está invertida. Lo profundizarás en Allocation (Módulo 3)." />
+        <MetricCard label={tr('Deuda / patrimonio')} value={pct(result.debtToNetWorth)} hint={tr('Nivel relativo de deuda')} explanation="Indicador educativo, no una calificación. El análisis completo de deudas requiere tasa, plazo y tipo de deuda." />
+        <MetricCard label={tr('Flujo disponible')} value={money(result.freeCashFlow)} tone={result.freeCashFlow >= 0 ? 'good' : 'bad'} hint={tr('Después de gastos, deuda e inversión')} explanation="Lo que queda después de cumplir tu plan financiero del mes." />
       </MetricGrid>
     </ToolCard>
   );
@@ -85,33 +86,33 @@ export function M1Diagnosis({ onSaved }) {
             </div>
           </ToolCard>
         ))}
-        <ToolCard step="3" title="Liquidez y perfil" description="Cuánto tiempo podrías cubrir tus gastos y tu tolerancia al riesgo.">
+        <ToolCard step="3" title={tr('Liquidez y perfil')} description={tr('Cuánto tiempo podrías cubrir tus gastos y tu tolerancia al riesgo.')}>
           <div className="form-grid cols-2">
-            <Field label="Fondo disponible para emergencias" hint="Parte de tu efectivo reservada para imprevistos.">
+            <Field label={tr('Fondo disponible para emergencias')} hint={tr('Parte de tu efectivo reservada para imprevistos.')}>
               <MoneyInput value={values.emergencyFund} onChange={set('emergencyFund')} placeholder="0" disabled={!canEdit} />
             </Field>
-            <Field label="Tolerancia al riesgo">
+            <Field label={tr('Tolerancia al riesgo')}>
               <Select value={values.riskTolerance} onChange={set('riskTolerance')} options={options.tolerance} disabled={!canEdit} />
             </Field>
-            <Field label="Objetivo financiero principal" full>
+            <Field label={tr('Objetivo financiero principal')} full>
               <Select value={values.mainGoal} onChange={set('mainGoal')} options={options.goals} disabled={!canEdit} />
             </Field>
           </div>
         </ToolCard>
-        <ToolCard title="¿A dónde va esta información?" description="No se crea una base separada: tus datos alimentan la plataforma.">
+        <ToolCard title={tr('¿A dónde va esta información?')} description={tr('No se crea una base separada: tus datos alimentan la plataforma.')}>
           <ul className="flow-links">
-            <li><Link to={basePath}>Inicio</Link><span>Resumen de tu situación</span></li>
-            <li><Link to={`${basePath}/ingresos-gastos`}>Ingresos y gastos</Link><span>Ingreso, gastos y pago de deudas</span></li>
-            <li><Link to={`${basePath}/patrimonio`}>Patrimonio</Link><span>Activos, deudas y patrimonio neto</span></li>
-            <li><Link to={`${basePath}/cartera`}>Mi cartera</Link><span>Liquidez e inversiones por desglosar</span></li>
-            <li><Link to={`${basePath}/proteccion`}>Protección</Link><span>Meses de liquidez</span></li>
+            <li><Link to={basePath}>{tr('Inicio')}</Link><span>{tr('Resumen de tu situación')}</span></li>
+            <li><Link to={`${basePath}/ingresos-gastos`}>{tr('Ingresos y gastos')}</Link><span>{tr('Ingreso, gastos y pago de deudas')}</span></li>
+            <li><Link to={`${basePath}/patrimonio`}>{tr('Patrimonio')}</Link><span>{tr('Activos, deudas y patrimonio neto')}</span></li>
+            <li><Link to={`${basePath}/cartera`}>{tr('Mi cartera')}</Link><span>{tr('Liquidez e inversiones por desglosar')}</span></li>
+            <li><Link to={`${basePath}/proteccion`}>{tr('Protección')}</Link><span>{tr('Meses de liquidez')}</span></li>
           </ul>
         </ToolCard>
       </div>
       <FormError error={state.error} />
       {canEdit && (
         <div className="tool-actions">
-          <Button type="submit" loading={state.busy}>{shown ? 'Actualizar diagnóstico' : 'Generar diagnóstico'}</Button>
+          <Button type="submit" loading={state.busy}>{shown ? tr('Actualizar diagnóstico') : tr('Generar diagnóstico')}</Button>
         </div>
       )}
       {shown && <Results result={shown} />}

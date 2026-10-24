@@ -1,4 +1,5 @@
 import { money, pct } from '../../utils/format.js';
+import { tr } from '../../i18n/tr.js';
 
 const READING_TONE = { EQUILIBRADA: 'good', MODERADA: 'info', CONCENTRADA: 'warn', MUY_CONCENTRADA: 'bad' };
 
@@ -15,7 +16,7 @@ export function AllocationBars({ allocation, format = money }) {
     <div className="alloc-bars">
       {allocation.shares.map((s) => (
         <div key={s.key} className={`alloc-row ${s.amount > 0 ? '' : 'is-empty'}`}>
-          <div className="alloc-row-head"><span>{s.label}</span><b>{pct(s.share)}</b></div>
+          <div className="alloc-row-head"><span>{tr(s.label)}</span><b>{pct(s.share)}</b></div>
           <div className="alloc-track"><span style={{ width: `${s.share}%` }} /></div>
           <small>{format(s.amount)}</small>
         </div>
@@ -25,26 +26,25 @@ export function AllocationBars({ allocation, format = money }) {
 }
 
 export function ReadingCard({ reading }) {
-  if (!reading) return <div className="reading is-empty">Registra productos para obtener la lectura educativa.</div>;
+  if (!reading) return <div className="reading is-empty">{tr('Registra productos para obtener la lectura educativa.')}</div>;
   return (
     <div className={`reading tone-${READING_TONE[reading.key]}`}>
       <div className="reading-head">
-        <span>Lectura educativa</span>
-        <strong>{reading.label}</strong>
+        <span>{tr('Lectura educativa')}</span>
+        <strong>{tr(reading.label)}</strong>
         <em>{reading.score} / 100</em>
       </div>
       <ul className="reading-parts">
         {PARTS.map(([key, label, weight]) => (
           <li key={key}>
-            <span>{label} <small>({weight})</small></span>
+            <span>{tr(label)} <small>({weight})</small></span>
             <span className="reading-meter"><span style={{ width: `${reading.parts[key]}%` }} /></span>
-            <b>{reading.parts[key]}</b>
+            <b>{tr(reading.parts[key])}</b>
           </li>
         ))}
       </ul>
       <p className="reading-note">
-        “Equilibrada” no significa cartera recomendada, segura ni correcta. Significa únicamente que la estructura presenta una distribución
-        relativamente diversificada y sin una concentración dominante según los parámetros educativos definidos por QLC.
+        {tr('“Equilibrada” no significa cartera recomendada, segura ni correcta. Significa únicamente que la estructura presenta una distribución relativamente diversificada y sin una concentración dominante según los parámetros educativos definidos por QLC.')}
       </p>
     </div>
   );

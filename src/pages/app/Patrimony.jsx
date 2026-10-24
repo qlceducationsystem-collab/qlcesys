@@ -9,6 +9,7 @@ import { BarChart, DistributionBars } from '../../components/charts/Charts.jsx';
 import { ClosedNotice, PatrimonyBreakdown, ReconciliationBanner } from '../../components/finance/Finance.jsx';
 import { RequirePeriod } from '../../features/periods/PeriodControls.jsx';
 import { PROTECTION_TYPES } from '../../utils/labels.js';
+import { tr } from '../../i18n/tr.js';
 
 function PatrimonyBody({ s, history }) {
   const b = s.balanceSheet;
@@ -22,51 +23,51 @@ function PatrimonyBody({ s, history }) {
 
   return (
     <>
-      <PageHeader title="Patrimonio" subtitle="Activos − pasivos = patrimonio neto" />
+      <PageHeader title={tr('Patrimonio')} subtitle={tr('Activos − pasivos = patrimonio neto')} />
       <ClosedNotice />
       <StatGrid>
-        <StatCard label="Activos" value={money(b.assets)} />
-        <StatCard label="Pasivos" value={money(b.liabilities)} />
-        <StatCard label="Patrimonio neto" value={money(b.netWorth)} accent />
-        <StatCard label="Variación del periodo" value={<span className={tone(s.patrimony.variation)}>{signedMoney(s.patrimony.variation)}</span>} delta="Patrimonio final − inicial" />
+        <StatCard label={tr('Activos')} value={money(b.assets)} />
+        <StatCard label={tr('Pasivos')} value={money(b.liabilities)} />
+        <StatCard label={tr('Patrimonio neto')} value={money(b.netWorth)} accent />
+        <StatCard label={tr('Variación del periodo')} value={<span className={tone(s.patrimony.variation)}>{signedMoney(s.patrimony.variation)}</span>} delta={tr('Patrimonio final − inicial')} />
       </StatGrid>
       <ReconciliationBanner reconciliation={s.reconciliation} />
 
       <div className="layout">
         <PatrimonyBreakdown patrimony={s.patrimony} roi={s.portfolio.global.roi} />
         <div className="stack">
-          <Card title="Activos">
+          <Card title={tr('Activos')}>
             <Row label="Inversiones (Mi cartera)" value={money(b.investments)} />
             {s.protection.byType.map((p) => <Row key={p.key} label={PROTECTION_TYPES[p.key]} value={money(p.amount)} />)}
-            <Row label="Total activos" value={money(b.assets)} />
+            <Row label={tr('Total activos')} value={money(b.assets)} />
           </Card>
-          <Card title="Pasivos">
-            {s.debts.items.length === 0 && <p className="muted small">Sin deudas registradas.</p>}
+          <Card title={tr('Pasivos')}>
+            {s.debts.items.length === 0 && <p className="muted small">{tr('Sin deudas registradas.')}</p>}
             {s.debts.items.map((d) => <Row key={d.id} label={d.name} value={money(d.balance)} />)}
-            <Row label="Total pasivos" value={money(b.liabilities)} />
+            <Row label={tr('Total pasivos')} value={money(b.liabilities)} />
           </Card>
         </div>
       </div>
 
       <div className="layout">
-        <Card title="Distribución de inversiones por categoría">
+        <Card title={tr('Distribución de inversiones por categoría')}>
           <DistributionBars items={s.portfolio.categories.map((c) => ({ key: c.code, label: c.name, value: c.final, share: c.share }))} />
         </Card>
-        <Card title="Evolución mensual del patrimonio neto">
+        <Card title={tr('Evolución mensual del patrimonio neto')}>
           <BarChart data={history.map((h) => ({ label: `${shortMonth(h.month)} ${String(h.year).slice(2)}`, value: h.netWorth }))} />
         </Card>
       </div>
 
-      <Card title="Evolución anual">
+      <Card title={tr('Evolución anual')}>
         <DataTable
           rowKey="year"
           rows={annual}
           columns={[
-            { key: 'year', label: 'Año' },
-            { key: 'opening', label: 'Patrimonio inicial', align: 'right', render: (r) => money(r.opening) },
-            { key: 'final', label: 'Patrimonio final', align: 'right', render: (r) => money(r.final) },
-            { key: 'growth', label: 'Crecimiento', align: 'right', render: (r) => <span className={tone(r.growth)}>{pct(r.growth, { signed: true })}</span> },
-            { key: 'netWorth', label: 'Patrimonio neto', align: 'right', render: (r) => money(r.netWorth) },
+            { key: 'year', label: tr('Año') },
+            { key: 'opening', label: tr('Patrimonio inicial'), align: 'right', render: (r) => money(r.opening) },
+            { key: 'final', label: tr('Patrimonio final'), align: 'right', render: (r) => money(r.final) },
+            { key: 'growth', label: tr('Crecimiento'), align: 'right', render: (r) => <span className={tone(r.growth)}>{pct(r.growth, { signed: true })}</span> },
+            { key: 'netWorth', label: tr('Patrimonio neto'), align: 'right', render: (r) => money(r.netWorth) },
           ]}
         />
       </Card>

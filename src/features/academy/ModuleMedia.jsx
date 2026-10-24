@@ -3,6 +3,7 @@ import { useWorkspace } from '../../context/WorkspaceContext.jsx';
 import { responsiveImage } from '../../utils/media.js';
 import { Button } from '../../components/ui/Button.jsx';
 import { FormError } from '../../components/ui/Form.jsx';
+import { tr } from '../../i18n/tr.js';
 
 function DriveItem({ item }) {
   const { api } = useWorkspace();
@@ -25,8 +26,8 @@ function DriveItem({ item }) {
   return (
     <div className="media-item">
       <span className="media-icon" aria-hidden="true">{item.fileType === 'VIDEO' ? '▶' : '▤'}</span>
-      <span className="media-name">{item.name}</span>
-      <Button variant="secondary" loading={state.busy} onClick={load}>{item.fileType === 'VIDEO' ? 'Reproducir' : 'Abrir documento'}</Button>
+      <span className="media-name">{tr(item.name)}</span>
+      <Button variant="secondary" loading={state.busy} onClick={load}>{item.fileType === 'VIDEO' ? 'Reproducir' : tr('Abrir documento')}</Button>
       <FormError error={state.error} />
     </div>
   );
@@ -36,7 +37,7 @@ export function ModuleMedia({ items = [] }) {
   if (!items.length) return null;
   return (
     <section className="module-media">
-      <h3>Material del módulo</h3>
+      <h3>{tr('Material del módulo')}</h3>
       {items.map((item) =>
         item.fileType === 'IMAGE' ? (
           <img key={item.id} className="media-image" {...responsiveImage(item.url, [480, 800, 1200])} sizes="(max-width: 900px) 100vw, 800px" alt={item.name} loading="lazy" />

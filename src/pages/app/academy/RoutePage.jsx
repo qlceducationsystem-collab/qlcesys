@@ -7,6 +7,7 @@ import { ErrorState, Loading } from '../../../components/ui/States.jsx';
 import { Pill } from '../../../components/ui/Card.jsx';
 import { ModuleLayout } from '../../../features/academy/ModuleLayout.jsx';
 import { useAcademy } from '../../../features/academy/useAcademy.js';
+import { tr } from '../../../i18n/tr.js';
 
 const ROUTES = [
   {
@@ -52,34 +53,34 @@ export default function RoutePage() {
   };
 
   return (
-    <ModuleLayout overview={a} kicker="Selección de ruta" title="¿Cómo quieres continuar tu educación?" subtitle="Ya conoces tu situación financiera, tus productos y la estructura de tu cartera.">
+    <ModuleLayout overview={a} kicker={tr('Selección de ruta')} title={tr('¿Cómo quieres continuar tu educación?')} subtitle={tr('Ya conoces tu situación financiera, tus productos y la estructura de tu cartera.')}>
       <div className="notice">
-        <b>Importante:</b> la Ruta de Mercados es <span className="gold-text">opcional</span>. Sus módulos son educativos e informativos. No necesitas operar, hacer trading ni utilizar estrategias de QLC para continuar con tu educación financiera.
+        <b>{tr('Importante:')}</b>{' '}{tr('la Ruta de Mercados es')}{' '}<span className="gold-text">{tr('opcional')}</span>{tr('. Sus módulos son educativos e informativos. No necesitas operar, hacer trading ni utilizar estrategias de QLC para continuar con tu educación financiera.')}
       </div>
-      {!a.routeAvailable && <div className="notice gold">Completa el Módulo 3 para elegir tu ruta.</div>}
+      {!a.routeAvailable && <div className="notice gold">{tr('Completa el Módulo 3 para elegir tu ruta.')}</div>}
       <FormError error={state.error} />
       <div className="route-grid">
         {ROUTES.map((r) => (
           <article key={r.key} className={`route-card ${a.route === r.key ? 'is-selected' : ''} ${r.key === 'MARKETS' ? 'is-markets' : 'is-patrimonial'}`}>
             <div className="route-top">
-              <span className="route-badge">{r.badge}</span>
-              {a.route === r.key && <Pill>Ruta seleccionada</Pill>}
+              <span className="route-badge">{tr(r.badge)}</span>
+              {a.route === r.key && <Pill>{tr('Ruta seleccionada')}</Pill>}
             </div>
-            <h2>{r.title}</h2>
-            <p className="muted">{r.text}</p>
+            <h2>{tr(r.title)}</h2>
+            <p className="muted">{tr(r.text)}</p>
             <ul className="route-modules">
-              {r.modules.map(([n, t, d]) => (<li key={n}><span>{n}</span><div><b>{t}</b><small>{d}</small></div></li>))}
+              {r.modules.map(([n, t, d]) => (<li key={n}><span>{n}</span><div><b>{tr(t)}</b><small>{tr(d)}</small></div></li>))}
             </ul>
             {canEdit && (
               <Button variant={r.key === 'MARKETS' ? 'primary' : 'secondary'} disabled={!a.routeAvailable} loading={state.busy === r.key} onClick={() => choose(r.key)}>
-                {r.cta} →
+                {tr(r.cta)} →
               </Button>
             )}
-            <p className="small muted">{r.note}</p>
+            <p className="small muted">{tr(r.note)}</p>
           </article>
         ))}
       </div>
-      <p className="center small muted">Puedes estudiar la Ruta de Mercados por conocimiento aunque nunca tengas intención de operar. Podrás cambiar de ruta más adelante.</p>
+      <p className="center small muted">{tr('Puedes estudiar la Ruta de Mercados por conocimiento aunque nunca tengas intención de operar. Podrás cambiar de ruta más adelante.')}</p>
     </ModuleLayout>
   );
 }

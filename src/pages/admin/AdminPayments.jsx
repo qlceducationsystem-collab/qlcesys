@@ -8,6 +8,7 @@ import { Card, PageHeader, Pill, StatCard, StatGrid } from '../../components/ui/
 import { Select } from '../../components/ui/Form.jsx';
 import { AsyncView } from '../../components/ui/States.jsx';
 import { DataTable } from '../../components/ui/DataTable.jsx';
+import { tr } from '../../i18n/tr.js';
 
 const statusOptions = [{ value: '', label: 'Todos' }, ...Object.entries(PAYMENT_STATUS).map(([value, label]) => ({ value, label }))];
 
@@ -19,26 +20,26 @@ export default function AdminPayments() {
   return (
     <>
       <PageHeader
-        kicker="Comercial"
-        title="Pagos de prueba"
-        subtitle="Intentos de pago registrados en Neon por el proveedor simulado."
-        actions={<Select className="month" value={status} onChange={(e) => setStatus(e.target.value)} options={statusOptions} aria-label="Estado" />}
+        kicker={tr('Comercial')}
+        title={tr('Pagos de prueba')}
+        subtitle={tr('Intentos de pago registrados en Neon por el proveedor simulado.')}
+        actions={<Select className="month" value={status} onChange={(e) => setStatus(e.target.value)} options={statusOptions} aria-label={tr('Estado')} />}
       />
       <StatGrid cols={3}>
-        <StatCard label="Aprobados" value={by('APPROVED')} />
-        <StatCard label="Rechazados" value={by('REJECTED')} />
-        <StatCard label="Pendientes" value={by('PENDING')} />
+        <StatCard label={tr('Aprobados')} value={by('APPROVED')} />
+        <StatCard label={tr('Rechazados')} value={by('REJECTED')} />
+        <StatCard label={tr('Pendientes')} value={by('PENDING')} />
       </StatGrid>
       <Card>
         <AsyncView {...res} onRetry={res.reload}>
           {(list) => (
-            <DataTable rows={list} empty="Sin intentos de pago." columns={[
-              { key: 'createdAt', label: 'Fecha', render: (a) => dateTime(a.createdAt) },
-              { key: 'user', label: 'Cliente', render: (a) => <Link to={`/admin/clientes/${a.user.id}`}>{a.user.name}<span className="small block">{a.user.email}</span></Link> },
-              { key: 'offer', label: 'Producto', render: (a) => a.offer?.name },
-              { key: 'amount', label: 'Monto', align: 'right', render: (a) => (a.amount === null ? 'Por definir' : `${money(a.amount)} ${a.currency}`) },
-              { key: 'provider', label: 'Proveedor', render: (a) => (a.provider === 'MOCK' ? 'Simulado' : a.provider) },
-              { key: 'status', label: 'Estado', render: (a) => <Pill variant={a.status === 'APPROVED' ? '' : a.status === 'REJECTED' ? 'bad' : 'warn'}>{PAYMENT_STATUS[a.status]}</Pill> },
+            <DataTable rows={list} empty={tr('Sin intentos de pago.')} columns={[
+              { key: 'createdAt', label: tr('Fecha'), render: (a) => dateTime(a.createdAt) },
+              { key: 'user', label: tr('Cliente'), render: (a) => <Link to={`/admin/clientes/${a.user.id}`}>{tr(a.user.name)}<span className="small block">{a.user.email}</span></Link> },
+              { key: 'offer', label: tr('Producto'), render: (a) => a.offer?.name },
+              { key: 'amount', label: tr('Monto'), align: 'right', render: (a) => (a.amount === null ? tr('Por definir') : `${money(a.amount)} ${a.currency}`) },
+              { key: 'provider', label: tr('Proveedor'), render: (a) => (a.provider === 'MOCK' ? 'Simulado' : a.provider) },
+              { key: 'status', label: tr('Estado'), render: (a) => <Pill variant={a.status === 'APPROVED' ? '' : a.status === 'REJECTED' ? 'bad' : 'warn'}>{tr(PAYMENT_STATUS[a.status])}</Pill> },
             ]} />
           )}
         </AsyncView>

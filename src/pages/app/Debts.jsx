@@ -10,6 +10,7 @@ import { RecordManager } from '../../features/records/RecordManager.jsx';
 import { RequirePeriod } from '../../features/periods/PeriodControls.jsx';
 import { modulePath } from '../../features/academy/useAcademy.js';
 import { DEBT_TYPES, options } from '../../utils/labels.js';
+import { tr } from '../../i18n/tr.js';
 
 const STATUS = { ACTIVE: 'Activa', PAID: 'Liquidada' };
 
@@ -20,17 +21,17 @@ const fields = [
   { name: 'balance', label: 'Saldo al cierre del periodo', type: 'money', display: money },
   { name: 'payment', label: 'Pago mensual planeado', type: 'money', display: money },
   { name: 'fees', label: 'Cargos mensuales', type: 'money', display: money, required: false },
-  { name: 'annualRate', label: 'Tasa anual (%)', type: 'money', display: (v) => (v === null || v === '' ? 'Pendiente' : `${v}%`), required: false, hint: 'Déjala vacía si no la conoces: se mostrará como pendiente, no como 0%.' },
+  { name: 'annualRate', label: 'Tasa anual (%)', type: 'money', display: (v) => (v === null || v === '' ? tr('Pendiente') : `${v}%`), required: false, hint: tr('Déjala vacía si no la conoces: se mostrará como pendiente, no como 0%.') },
   { name: 'status', label: 'Estado', type: 'select', options: Object.entries(STATUS).map(([value, label]) => ({ value, label })), display: (v) => STATUS[v], default: 'ACTIVE' },
 ];
 
 const columns = [
-  { key: 'name', label: 'Deuda', render: (d) => <>{d.name}<span className="small block">{DEBT_TYPES[d.type]}{d.lender ? ` · ${d.lender}` : ''}</span></> },
+  { key: 'name', label: 'Deuda', render: (d) => <>{tr(d.name)}<span className="small block">{tr(DEBT_TYPES[d.type])}{d.lender ? ` · ${d.lender}` : ''}</span></> },
   { key: 'balance', label: 'Saldo', align: 'right', render: (d) => money(d.balance) },
   { key: 'payment', label: 'Pago', align: 'right', render: (d) => money(d.payment) },
-  { key: 'annualRate', label: 'Tasa anual', align: 'right', render: (d) => (d.rateKnown ? pct(d.annualRate) : <Pill variant="warn">Pendiente</Pill>) },
+  { key: 'annualRate', label: 'Tasa anual', align: 'right', render: (d) => (d.rateKnown ? pct(d.annualRate) : <Pill variant="warn">{tr('Pendiente')}</Pill>) },
   { key: 'monthlyCost', label: 'Interés + cargos est.', align: 'right', render: (d) => money(d.monthlyCost) },
-  { key: 'status', label: 'Estado', render: (d) => <Pill variant={d.status === 'PAID' ? '' : 'warn'}>{STATUS[d.status]}</Pill> },
+  { key: 'status', label: 'Estado', render: (d) => <Pill variant={d.status === 'PAID' ? '' : 'warn'}>{tr(STATUS[d.status])}</Pill> },
 ];
 
 function Body() {
@@ -39,24 +40,24 @@ function Body() {
   const hist = useAsync(() => api.get('/periods/history'), [api, period?.id]);
   return (
     <>
-      <PageHeader title="Deudas" subtitle="Registro de obligaciones y costo del dinero" />
+      <PageHeader title={tr('Deudas')} subtitle={tr('Registro de obligaciones y costo del dinero')} />
       <ClosedNotice />
       {s && (
         <StatGrid>
-          <StatCard label="Deuda total" value={money(s.debts.totalBalance)} accent />
-          <StatCard label="Pagos del periodo" value={money(s.debts.totalPayment)} />
-          <StatCard label="Costo financiero mensual estimado" value={money(s.debts.totalMonthlyCost)} delta={s.debts.ratesIncomplete ? 'Incompleto: hay tasas pendientes' : 'Intereses + cargos'} />
-          <StatCard label="Impacto en patrimonio neto" value={money(-s.debts.totalBalance)} delta="Las deudas son pasivos, no inversiones" />
+          <StatCard label={tr('Deuda total')} value={money(s.debts.totalBalance)} accent />
+          <StatCard label={tr('Pagos del periodo')} value={money(s.debts.totalPayment)} />
+          <StatCard label={tr('Costo financiero mensual estimado')} value={money(s.debts.totalMonthlyCost)} delta={s.debts.ratesIncomplete ? tr('Incompleto: hay tasas pendientes') : tr('Intereses + cargos')} />
+          <StatCard label={tr('Impacto en patrimonio neto')} value={money(-s.debts.totalBalance)} delta={tr('Las deudas son pasivos, no inversiones')} />
         </StatGrid>
       )}
-      <RecordManager endpoint="/debts" title="Obligaciones" addLabel="+ Registrar deuda" fields={fields} columns={columns}
+      <RecordManager endpoint="/debts" title={tr('Obligaciones')} addLabel={tr('+ Registrar deuda')} fields={fields} columns={columns}
         select={(d) => d.items} rowId={(r) => r.balanceId} onChanged={() => { reload(); hist.reload(); }}
         toForm={(d) => ({ name: d.name, type: d.type, lender: d.lender || '', balance: d.balance, payment: d.payment, fees: d.fees, annualRate: d.annualRate ?? '', status: d.status })}
-        emptyText="Sin deudas registradas en este periodo." />
-      <Card title="Evolución de la deuda total">
+        emptyText={tr('Sin deudas registradas en este periodo.')} />
+      <Card title={tr('Evolución de la deuda total')}>
         <BarChart data={(hist.data || []).map((h) => ({ label: `${shortMonth(h.month)} ${String(h.year).slice(2)}`, value: h.debt }))} />
       </Card>
-      <Notice>Analiza tus obligaciones con el <Link to={modulePath(basePath, 9)}>Módulo 9</Link> desde la academia. Herramienta educativa y de organización. Una deuda reduce el patrimonio neto y tiene un costo financiero; el cálculo del costo mensual es una aproximación.</Notice>
+      <Notice>{tr('Analiza tus obligaciones con el')}{' '}<Link to={modulePath(basePath, 9)}>{tr('Módulo 9')}</Link> desde la academia. Herramienta educativa y de organización. Una deuda reduce el patrimonio neto y tiene un costo financiero; el cálculo del costo mensual es una aproximación.</Notice>
     </>
   );
 }

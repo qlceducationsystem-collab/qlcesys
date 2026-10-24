@@ -9,6 +9,7 @@ import { ConfirmDialog } from '../../components/ui/Modal.jsx';
 import { FormError } from '../../components/ui/Form.jsx';
 import { AsyncView } from '../../components/ui/States.jsx';
 import { DataTable } from '../../components/ui/DataTable.jsx';
+import { tr } from '../../i18n/tr.js';
 
 const TYPES = { IMAGE: 'Imagen', VIDEO: 'Video', DOCUMENT: 'Documento' };
 const PROVIDERS = { CLOUDINARY: 'Cloudinary', GOOGLE_DRIVE: 'Google Drive' };
@@ -48,44 +49,44 @@ export default function AdminModuleFiles() {
 
   return (
     <>
-      <PageHeader kicker="Contenido" title="Academia / archivos" subtitle="Imágenes en Cloudinary · videos y documentos en Google Drive. Neon guarda solo los metadatos." />
-      <div className="segmented wide" role="group" aria-label="Módulo">
-        {Array.from({ length: 12 }, (_, i) => i + 1).map((n) => <button key={n} type="button" className={moduleNumber === n ? 'is-active' : ''} onClick={() => setModuleNumber(n)}>Módulo {n}</button>)}
+      <PageHeader kicker={tr('Contenido')} title={tr('Academia / archivos')} subtitle={tr('Imágenes en Cloudinary · videos y documentos en Google Drive. Neon guarda solo los metadatos.')} />
+      <div className="segmented wide" role="group" aria-label={tr('Módulo')}>
+        {Array.from({ length: 12 }, (_, i) => i + 1).map((n) => <button key={n} type="button" className={moduleNumber === n ? 'is-active' : ''} onClick={() => setModuleNumber(n)}>{tr('Módulo')}{' '}{n}</button>)}
       </div>
-      <Notice>Los videos de contenido de pago no se hacen públicos: se entregan desde el servidor solo a usuarios con acceso completo, mediante enlaces temporales.</Notice>
+      <Notice>{tr('Los videos de contenido de pago no se hacen públicos: se entregan desde el servidor solo a usuarios con acceso completo, mediante enlaces temporales.')}</Notice>
       <Card
-        title={`Archivos del Módulo ${moduleNumber}`}
+        title={tr('Archivos del Módulo {n}', { n: moduleNumber })}
         actions={canEdit && (
           <>
             <input ref={fileRef} type="file" hidden onChange={(e) => { if (e.target.files[0]) upload(e.target.files[0]); e.target.value = ''; }} />
-            <Button loading={state.busy} onClick={() => fileRef.current?.click()}>+ Subir archivo</Button>
+            <Button loading={state.busy} onClick={() => fileRef.current?.click()}>{tr('+ Subir archivo')}</Button>
           </>
         )}
       >
         <FormError error={state.error} />
         <AsyncView {...res} onRetry={res.reload}>
           {(items) => (
-            <DataTable rows={items} empty="Este módulo todavía no tiene archivos." columns={[
+            <DataTable rows={items} empty={tr('Este módulo todavía no tiene archivos.')} columns={[
               { key: 'position', label: '#', render: (m) => m.position + 1 },
-              { key: 'name', label: 'Archivo', render: (m) => <><b>{m.name}</b><span className="small block">{m.mimeType}</span></> },
-              { key: 'fileType', label: 'Tipo', render: (m) => TYPES[m.fileType] },
-              { key: 'provider', label: 'Almacenamiento', render: (m) => PROVIDERS[m.provider] },
+              { key: 'name', label: tr('Archivo'), render: (m) => <><b>{tr(m.name)}</b><span className="small block">{tr(m.mimeType)}</span></> },
+              { key: 'fileType', label: tr('Tipo'), render: (m) => TYPES[m.fileType] },
+              { key: 'provider', label: tr('Almacenamiento'), render: (m) => PROVIDERS[m.provider] },
               { key: 'size', label: 'Tamaño', align: 'right', render: (m) => size(m.size) },
-              { key: 'active', label: 'Estado', render: (m) => <Pill variant={m.active ? '' : 'muted'}>{m.active ? 'Activo' : 'Inactivo'}</Pill> },
+              { key: 'active', label: tr('Estado'), render: (m) => <Pill variant={m.active ? '' : 'muted'}>{m.active ? tr('Activo') : tr('Inactivo')}</Pill> },
               { key: 'createdAt', label: 'Subido', render: (m) => dateTime(m.createdAt) },
-              { key: 'x', label: 'Acciones', align: 'right', render: (m) => (
+              { key: 'x', label: tr('Acciones'), align: 'right', render: (m) => (
                 <div className="row-actions">
-                  <button type="button" className="btn-link" onClick={() => open(m)}>Ver</button>
+                  <button type="button" className="btn-link" onClick={() => open(m)}>{tr('Ver')}</button>
                   {canEdit && <button type="button" className="btn-link" onClick={() => run(() => api.patch(`/admin/module-media/${m.id}`, { active: !m.active }))}>{m.active ? 'Desactivar' : 'Activar'}</button>}
-                  {canEdit && <button type="button" className="btn-link danger" onClick={() => setRemoving(m)}>Eliminar</button>}
+                  {canEdit && <button type="button" className="btn-link danger" onClick={() => setRemoving(m)}>{tr('Eliminar')}</button>}
                 </div>
               ) },
             ]} />
           )}
         </AsyncView>
       </Card>
-      <ConfirmDialog open={!!removing} title="Eliminar archivo" danger confirmLabel="Eliminar" loading={state.busy}
-        message={`Se eliminará “${removing?.name}” también del proveedor de almacenamiento.`}
+      <ConfirmDialog open={!!removing} title={tr('Eliminar archivo')} danger confirmLabel={tr('Eliminar')} loading={state.busy}
+        message={tr('Se eliminará “{name}” también del proveedor de almacenamiento.', { name: removing?.name })}
         onConfirm={() => run(async () => { await api.del(`/admin/module-media/${removing.id}`); setRemoving(null); })}
         onClose={() => setRemoving(null)} />
     </>

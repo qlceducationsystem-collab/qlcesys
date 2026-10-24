@@ -8,6 +8,7 @@ import { Card, PageHeader, Pill } from '../../components/ui/Card.jsx';
 import { Input } from '../../components/ui/Form.jsx';
 import { AsyncView } from '../../components/ui/States.jsx';
 import { DataTable } from '../../components/ui/DataTable.jsx';
+import { tr } from '../../i18n/tr.js';
 
 export const accessPill = (access) => (
   <Pill variant={access.mode === 'FULL' ? '' : access.mode === 'TOOLS' ? 'info' : 'muted'}>
@@ -22,25 +23,25 @@ export default function AdminClients() {
 
   return (
     <>
-      <PageHeader kicker="Clientes" title="Clientes" subtitle="Selecciona un cliente para ver o gestionar su información sobre los mismos registros." />
-      <Card title="Lista de clientes" actions={
+      <PageHeader kicker={tr('Clientes')} title={tr('Clientes')} subtitle={tr('Selecciona un cliente para ver o gestionar su información sobre los mismos registros.')} />
+      <Card title={tr('Lista de clientes')} actions={
         <form className="search" onSubmit={(e) => { e.preventDefault(); setTerm(q); }}>
-          <Input placeholder="Buscar por nombre o correo" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Buscar cliente" />
+          <Input placeholder={tr('Buscar por nombre o correo')} value={q} onChange={(e) => setQ(e.target.value)} aria-label={tr('Buscar cliente')} />
         </form>
       }>
         <AsyncView {...clients} onRetry={clients.reload}>
           {(list) => (
-            <DataTable rows={list} empty="Sin clientes registrados." columns={[
-              { key: 'name', label: 'Cliente', render: (c) => <>{c.name}<span className="small block">{c.email}</span></> },
-              { key: 'access', label: 'Acceso', render: (c) => accessPill(c.access) },
-              { key: 'modules', label: 'Módulos completados', render: (c) => `${c.completedModules} / 6` },
-              { key: 'periods', label: 'Periodos / cortes', render: (c) => `${c.counts.periods} / ${c.counts.monthlyCloses}` },
-              { key: 'lastLoginAt', label: 'Último acceso', render: (c) => dateTime(c.lastLoginAt) },
-              { key: 'createdAt', label: 'Registro', render: (c) => date(c.createdAt) },
-              { key: 'x', label: 'Acciones', render: (c) => (
+            <DataTable rows={list} empty={tr('Sin clientes registrados.')} columns={[
+              { key: 'name', label: tr('Cliente'), render: (c) => <>{tr(c.name)}<span className="small block">{c.email}</span></> },
+              { key: 'access', label: tr('Acceso'), render: (c) => accessPill(c.access) },
+              { key: 'modules', label: tr('Módulos completados'), render: (c) => `${c.completedModules} / 6` },
+              { key: 'periods', label: tr('Periodos / cortes'), render: (c) => `${c.counts.periods} / ${c.counts.monthlyCloses}` },
+              { key: 'lastLoginAt', label: tr('Último acceso'), render: (c) => dateTime(c.lastLoginAt) },
+              { key: 'createdAt', label: tr('Registro'), render: (c) => date(c.createdAt) },
+              { key: 'x', label: tr('Acciones'), render: (c) => (
                 <div className="row-actions">
-                  <Link className="btn-link" to={`/admin/clientes/${c.id}`}>Detalle</Link>
-                  <Link className="btn-secondary" to={`/admin/clientes/${c.id}/app`}>Ver / gestionar como cliente</Link>
+                  <Link className="btn-link" to={`/admin/clientes/${c.id}`}>{tr('Detalle')}</Link>
+                  <Link className="btn-secondary" to={`/admin/clientes/${c.id}/app`}>{tr('Ver / gestionar como cliente')}</Link>
                 </div>
               ) },
             ]} />

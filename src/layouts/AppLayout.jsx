@@ -7,21 +7,23 @@ import { PeriodSelector } from '../features/periods/PeriodControls.jsx';
 import { AccessOffers } from '../features/access/AccessOffers.jsx';
 import { SecurityNavButton } from '../features/security/AccountSecurity.jsx';
 import { ACCESS_MODES, ADMIN_LEVELS } from '../utils/labels.js';
+import { useI18n } from '../i18n/I18nContext.jsx';
+import { LanguageSwitcher } from '../components/ui/LanguageSwitcher.jsx';
 
 export const NAV = [
-  { to: '', icon: '⌂', label: 'Inicio', end: true },
-  { to: 'academia', icon: '▤', label: 'Academia', free: true },
-  { to: 'cartera', icon: '◈', label: 'Mi cartera' },
-  { to: 'patrimonio', icon: '◫', label: 'Patrimonio' },
-  { to: 'ingresos-gastos', icon: '↕', label: 'Ingresos y gastos' },
-  { to: 'proteccion', icon: '▣', label: 'Protección financiera' },
-  { to: 'deudas', icon: '⊟', label: 'Deudas' },
-  { to: 'negocios', icon: '▥', label: 'Negocios y flujo' },
-  { to: 'allocation', icon: '◉', label: 'Allocation' },
-  { to: 'movimientos', icon: '⇄', label: 'Movimientos patrimoniales' },
-  { to: 'cortes', icon: '▧', label: 'Cortes mensuales' },
-  { to: 'informe-anual', icon: '◎', label: 'Informe anual' },
-  { to: 'asesoria', icon: '◌', label: 'Asesoría personalizada' },
+  { to: '', icon: '⌂', label: 'home', end: true },
+  { to: 'academia', icon: '▤', label: 'academy', free: true },
+  { to: 'cartera', icon: '◈', label: 'portfolio' },
+  { to: 'patrimonio', icon: '◫', label: 'patrimony' },
+  { to: 'ingresos-gastos', icon: '↕', label: 'cashflow' },
+  { to: 'proteccion', icon: '▣', label: 'protection' },
+  { to: 'deudas', icon: '⊟', label: 'debts' },
+  { to: 'negocios', icon: '▥', label: 'business' },
+  { to: 'allocation', icon: '◉', label: 'allocation' },
+  { to: 'movimientos', icon: '⇄', label: 'movements' },
+  { to: 'cortes', icon: '▧', label: 'closes' },
+  { to: 'informe-anual', icon: '◎', label: 'annual' },
+  { to: 'asesoria', icon: '◌', label: 'advisory' },
 ];
 
 const FREE_PATHS = ['/academia', '/acceso'];
@@ -37,6 +39,7 @@ function AccessGate() {
 export function AppLayout() {
   const { user, logout, hasAccess, access } = useAuth();
   const { basePath, isAdminView, client, canEdit } = useWorkspace();
+  const { t, lang } = useI18n();
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const relative = location.pathname.slice(basePath.length);
@@ -54,26 +57,27 @@ export function AppLayout() {
       <aside className="sidebar">
         <div className="sidebar-top">
           <Brand to={basePath} />
-          <button type="button" className="icon-btn menu-toggle" onClick={() => setMenuOpen((v) => !v)} aria-label="Abrir menú" aria-expanded={menuOpen}>
+          <button type="button" className="icon-btn menu-toggle" onClick={() => setMenuOpen((v) => !v)} aria-label={t('app.openMenu')} aria-expanded={menuOpen}>
             {menuOpen ? '×' : '☰'}
           </button>
         </div>
         <nav className="nav">
           {NAV.map((n) => (
             <NavLink key={n.to} to={n.to ? `${basePath}/${n.to}` : basePath} end={n.end} className={({ isActive }) => (isActive ? 'active' : '')}>
-              <span className="ico">{n.icon}</span>{n.label}
-              {!isAdminView && !hasAccess && !n.free && <span className="nav-lock" aria-label="Requiere acceso">🔒</span>}
+              <span className="ico">{n.icon}</span>{t(`app.nav.${n.label}`)}
+              {!isAdminView && !hasAccess && !n.free && <span className="nav-lock" aria-label={t('app.requiresAccess')}>🔒</span>}
             </NavLink>
           ))}
           {!isAdminView && (
-            <NavLink to={`${basePath}/acceso`} className={({ isActive }) => (isActive ? 'active' : '')}><span className="ico">◇</span>Mi acceso</NavLink>
+            <NavLink to={`${basePath}/acceso`} className={({ isActive }) => (isActive ? 'active' : '')}><span className="ico">◇</span>{t('app.myAccess')}</NavLink>
           )}
-          {isAdminView && <Link to="/admin"><span className="ico">←</span>Panel administrativo</Link>}
+          {isAdminView && <Link to="/admin"><span className="ico">←</span>{t('app.adminPanel')}</Link>}
           {!isAdminView && <SecurityNavButton />}
-          <button type="button" className="nav-logout" onClick={logout}><span className="ico">⎋</span>Cerrar sesión</button>
+          <button type="button" className="nav-logout" onClick={logout}><span className="ico">⎋</span>{t('app.logout')}</button>
         </nav>
+        <div className="sidebar-lang"><LanguageSwitcher /></div>
         <div className="userbox">
-          {user?.role === 'ADMIN' ? 'Administrador' : 'Usuario'}: {user?.name}
+          {user?.role === 'ADMIN' ? t('app.admin') : t('app.user')}: {user?.name}
           <br />
           <span>{isAdminView ? ADMIN_LEVELS[user?.adminLevel] : ACCESS_MODES[access.mode]}</span>
         </div>
@@ -83,16 +87,16 @@ export function AppLayout() {
         {isAdminView && (
           <div className="admin-banner">
             <span>
-              Gestionando como cliente: <b>{client?.name || '…'}</b> {client?.email && <span className="muted">· {client.email}</span>}
-              {!canEdit && <span className="pill warn">Solo visualización</span>}
+              {t('app.managingAs')} <b>{client?.name || '…'}</b> {client?.email && <span className="muted">· {client.email}</span>}
+              {!canEdit && <span className="pill warn">{t('app.viewOnly')}</span>}
             </span>
-            <Link to="/admin/clientes" className="btn-secondary">Salir de la vista del cliente</Link>
+            <Link to="/admin/clientes" className="btn-secondary">{t('app.exitClient')}</Link>
           </div>
         )}
         {(hasAccess || isAdminView) && !relative.startsWith('/academia') && !relative.startsWith('/acceso') && (
           <div className="topbar"><PeriodSelector /></div>
         )}
-        <div className="page-enter" key={location.pathname}>{gated ? <AccessGate /> : <Outlet />}</div>
+        <div className="page-enter" key={`${location.pathname}-${lang}`}>{gated ? <AccessGate /> : <Outlet />}</div>
         <Disclaimer />
       </main>
     </div>

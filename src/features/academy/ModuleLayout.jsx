@@ -4,6 +4,7 @@ import { BLOCK_TITLES, MODULE_STATE } from '../../utils/labels.js';
 import { ProgressBar } from '../../components/ui/Card.jsx';
 import { BRAND_FULL } from '../../components/layout/Brand.jsx';
 import { modulePath } from './useAcademy.js';
+import { tr } from '../../i18n/tr.js';
 
 function StepLink({ to, number, title, state, end }) {
   const meta = MODULE_STATE[state] || MODULE_STATE.AVAILABLE;
@@ -11,8 +12,8 @@ function StepLink({ to, number, title, state, end }) {
     <NavLink to={to} end={end} className={({ isActive }) => `ml-step tone-${meta.tone} ${isActive ? 'is-active' : ''}`}>
       <span className="ml-step-n" aria-hidden="true">{state === 'COMPLETED' ? '✓' : number}</span>
       <span className="ml-step-text">
-        <b>{title}</b>
-        <small>{meta.label}</small>
+        <b>{tr(title)}</b>
+        <small>{tr(meta.label)}</small>
       </span>
     </NavLink>
   );
@@ -23,13 +24,13 @@ export function ModuleNav({ overview }) {
   const [m1, m2, m3, m4, m5, m6] = overview.block1;
   const step = (m) => <StepLink key={m.number} to={modulePath(basePath, m.number)} number={m.number} title={m.title} state={m.state} />;
   return (
-    <nav className="ml-nav" aria-label="Módulos de la academia">
-      <div className="ml-nav-group">Bloque 1 · {BLOCK_TITLES[1]}</div>
+    <nav className="ml-nav" aria-label={tr('Módulos de la academia')}>
+      <div className="ml-nav-group">Bloque 1 · {tr(BLOCK_TITLES[1])}</div>
       {[m1, m2, m3].map(step)}
       <StepLink
         to={`${basePath}/academia/ruta`}
         number="R"
-        title="Selección de ruta"
+        title={tr('Selección de ruta')}
         state={overview.route ? 'COMPLETED' : overview.routeAvailable ? 'AVAILABLE' : 'LOCKED_ORDER'}
       />
       {overview.route !== 'PATRIMONIAL' && (
@@ -37,13 +38,13 @@ export function ModuleNav({ overview }) {
           <StepLink
             to={`${basePath}/academia/filtro`}
             number="F"
-            title="Filtro de mercados"
+            title={tr('Filtro de mercados')}
             state={overview.filter.passed ? 'COMPLETED' : overview.route === 'MARKETS' || overview.access.mode === 'TOOLS' ? 'AVAILABLE' : 'LOCKED_ROUTE'}
           />
           {[m4, m5, m6].map(step)}
         </>
       )}
-      <div className="ml-nav-group">Bloque 2 · {BLOCK_TITLES[2]}</div>
+      <div className="ml-nav-group">Bloque 2 · {tr(BLOCK_TITLES[2])}</div>
       {overview.block2.map(step)}
     </nav>
   );
@@ -55,21 +56,21 @@ export function ModuleLayout({ overview, block = 1, kicker, title, subtitle, act
     <div className="ml">
       <header className="ml-header">
         <div className="ml-crumbs">
-          <span>{BRAND_FULL}</span>
+          <span>{tr(BRAND_FULL)}</span>
           <span aria-hidden="true">/</span>
-          <span>Bloque {block}</span>
-          {kicker && (<><span aria-hidden="true">/</span><b>{kicker}</b></>)}
+          <span>Bloque {tr(block)}</span>
+          {kicker && (<><span aria-hidden="true">/</span><b>{tr(kicker)}</b></>)}
         </div>
         <div className="ml-title-row">
           <div>
-            <h1>{title}</h1>
-            {subtitle && <p className="subtitle">{subtitle}</p>}
+            <h1>{tr(title)}</h1>
+            {subtitle && <p className="subtitle">{tr(subtitle)}</p>}
           </div>
-          {actions}
+          {tr(actions)}
         </div>
         <div className="ml-progress">
-          <ProgressBar value={progress} label={`Progreso del bloque ${block}`} />
-          <span>{progress}% del bloque {block}</span>
+          <ProgressBar value={progress} label={tr('Progreso del bloque {n}', { n: block })} />
+          <span>{progress}{tr('% del bloque')}{' '}{tr(block)}</span>
         </div>
       </header>
       <div className="ml-body">

@@ -10,6 +10,7 @@ import { ConfirmDialog } from '../../components/ui/Modal.jsx';
 import { FormError } from '../../components/ui/Form.jsx';
 import { AsyncView } from '../../components/ui/States.jsx';
 import { DataTable } from '../../components/ui/DataTable.jsx';
+import { tr } from '../../i18n/tr.js';
 
 const META = {
   DRIVE: { name: 'Google Drive', icon: '▲', purpose: 'Videos y documentos de la academia. Permiso limitado a los archivos creados por la aplicación.' },
@@ -45,7 +46,7 @@ function IntegrationCard({ item, canManage, onChanged }) {
   const test = () => run(async () => {
     const res = await api.post('/admin/integrations/gmail/test');
     onChanged();
-    return res.sent ? 'Correo de prueba enviado a tu cuenta.' : `No se envió: ${res.error}`;
+    return res.sent ? tr('Correo de prueba enviado a tu cuenta.') : tr('No se envió: {error}', { error: res.error });
   });
 
   return (
@@ -53,32 +54,32 @@ function IntegrationCard({ item, canManage, onChanged }) {
       <header>
         <span className="integration-icon" aria-hidden="true">{meta.icon}</span>
         <div>
-          <h3>{meta.name}</h3>
-          <Pill variant={variant}>{label}</Pill>
+          <h3>{tr(meta.name)}</h3>
+          <Pill variant={variant}>{tr(label)}</Pill>
         </div>
       </header>
-      <p className="muted">{meta.purpose}</p>
+      <p className="muted">{tr(meta.purpose)}</p>
       {!item.configured ? (
-        <div className="notice gold">Configuración de Google pendiente en el servidor. Define GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI y TOKEN_ENCRYPTION_KEY.</div>
+        <div className="notice gold">{tr('Configuración de Google pendiente en el servidor. Define GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI y TOKEN_ENCRYPTION_KEY.')}</div>
       ) : (
         <dl className="integration-meta">
-          <div><dt>Cuenta conectada</dt><dd>{item.email || '—'}</dd></div>
-          <div><dt>Fecha de conexión</dt><dd>{dateTime(item.connectedAt)}</dd></div>
-          <div><dt>Última sincronización</dt><dd>{dateTime(item.lastSyncAt)}</dd></div>
-          {item.lastError && <div><dt>Último error</dt><dd className="down">{item.lastError}</dd></div>}
+          <div><dt>{tr('Cuenta conectada')}</dt><dd>{item.email || '—'}</dd></div>
+          <div><dt>{tr('Fecha de conexión')}</dt><dd>{dateTime(item.connectedAt)}</dd></div>
+          <div><dt>{tr('Última sincronización')}</dt><dd>{dateTime(item.lastSyncAt)}</dd></div>
+          {item.lastError && <div><dt>{tr('Último error')}</dt><dd className="down">{tr(item.lastError)}</dd></div>}
         </dl>
       )}
       <FormError error={state.error} />
-      {state.info && <p className="small up">{state.info}</p>}
+      {state.info && <p className="small up">{tr(state.info)}</p>}
       {canManage && item.configured && (
         <div className="form-actions">
-          {item.status !== 'DISCONNECTED' && <Button variant="secondary" onClick={() => setConfirm(true)}>Desconectar</Button>}
-          {item.service === 'GMAIL' && item.status === 'CONNECTED' && <Button variant="secondary" loading={state.busy} onClick={test}>Enviar correo de prueba</Button>}
+          {item.status !== 'DISCONNECTED' && <Button variant="secondary" onClick={() => setConfirm(true)}>{tr('Desconectar')}</Button>}
+          {item.service === 'GMAIL' && item.status === 'CONNECTED' && <Button variant="secondary" loading={state.busy} onClick={test}>{tr('Enviar correo de prueba')}</Button>}
           <Button loading={state.busy} onClick={connect}>{item.status === 'DISCONNECTED' ? `Conectar ${meta.name}` : 'Reconectar'}</Button>
         </div>
       )}
-      <ConfirmDialog open={confirm} title={`Desconectar ${meta.name}`} danger confirmLabel="Desconectar" loading={state.busy}
-        message="Se revocará el acceso y se eliminará el token cifrado. Los archivos existentes en Drive no se borran." onConfirm={disconnect} onClose={() => setConfirm(false)} />
+      <ConfirmDialog open={confirm} title={tr('Desconectar {name}', { name: meta.name })} danger confirmLabel={tr('Desconectar')} loading={state.busy}
+        message={tr('Se revocará el acceso y se eliminará el token cifrado. Los archivos existentes en Drive no se borran.')} onConfirm={disconnect} onClose={() => setConfirm(false)} />
     </article>
   );
 }
@@ -100,25 +101,25 @@ export default function AdminIntegrations() {
 
   return (
     <>
-      <PageHeader kicker="Sistema" title="Integraciones" subtitle="Conexiones OAuth 2.0 administradas por el servidor. Los tokens se guardan cifrados y nunca llegan al navegador." />
-      {flash && <Notice variant={flash.ok ? '' : 'gold'}>{flash.text}</Notice>}
+      <PageHeader kicker={tr('Sistema')} title={tr('Integraciones')} subtitle={tr('Conexiones OAuth 2.0 administradas por el servidor. Los tokens se guardan cifrados y nunca llegan al navegador.')} />
+      {flash && <Notice variant={flash.ok ? '' : 'gold'}>{tr(flash.text)}</Notice>}
       <AsyncView {...res} onRetry={res.reload}>
         {(d) => (
           <>
             <div className="integration-grid">
               {d.items.map((item) => <IntegrationCard key={item.service} item={item} canManage={user?.adminLevel === 'FULL'} onChanged={res.reload} />)}
             </div>
-            <Card title="URI de redirección autorizada">
-              <code className="code-line">{d.redirectUri}</code>
-              <p className="small muted">Regístrala en Google Cloud Console dentro del cliente OAuth.</p>
+            <Card title={tr('URI de redirección autorizada')}>
+              <code className="code-line">{tr(d.redirectUri)}</code>
+              <p className="small muted">{tr('Regístrala en Google Cloud Console dentro del cliente OAuth.')}</p>
             </Card>
-            <Card title="Últimos correos del sistema">
-              <DataTable rows={d.emails} empty="Sin envíos registrados." columns={[
-                { key: 'createdAt', label: 'Fecha', render: (e) => dateTime(e.createdAt) },
-                { key: 'to', label: 'Destinatario' },
-                { key: 'subject', label: 'Asunto' },
-                { key: 'status', label: 'Estado', render: (e) => <Pill variant={e.status === 'SENT' ? '' : 'bad'}>{e.status === 'SENT' ? 'Enviado' : 'Fallido'}</Pill> },
-                { key: 'error', label: 'Detalle', render: (e) => e.error || '—' },
+            <Card title={tr('Últimos correos del sistema')}>
+              <DataTable rows={d.emails} empty={tr('Sin envíos registrados.')} columns={[
+                { key: 'createdAt', label: tr('Fecha'), render: (e) => dateTime(e.createdAt) },
+                { key: 'to', label: tr('Destinatario') },
+                { key: 'subject', label: tr('Asunto') },
+                { key: 'status', label: tr('Estado'), render: (e) => <Pill variant={e.status === 'SENT' ? '' : 'bad'}>{e.status === 'SENT' ? tr('Enviado') : tr('Fallido')}</Pill> },
+                { key: 'error', label: tr('Detalle'), render: (e) => e.error || '—' },
               ]} />
             </Card>
           </>

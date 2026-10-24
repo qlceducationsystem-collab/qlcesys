@@ -19,6 +19,7 @@ import { M9Obligations } from '../../../features/academy/tools/M9Obligations.jsx
 import { M10NetReturn } from '../../../features/academy/tools/M10NetReturn.jsx';
 import { M11Inflation } from '../../../features/academy/tools/M11Inflation.jsx';
 import { M12AnnualReview } from '../../../features/academy/tools/M12AnnualReview.jsx';
+import { tr } from '../../../i18n/tr.js';
 
 const TOOLS = {
   1: M1Diagnosis, 2: M2ProductMap, 3: M3PortfolioBuilder, 4: M4RiskSimulator, 5: M5TradeSimulator, 6: M6ProfessionalSimulator,
@@ -31,8 +32,8 @@ function Lesson({ module }) {
     <div className="lesson-view">
       {module.lesson.map((s) => (
         <section key={s.title} className="lesson-block">
-          <h3>{s.title}</h3>
-          {s.paragraphs.map((p, i) => <p key={i}>{p}</p>)}
+          <h3>{tr(s.title)}</h3>
+          {s.paragraphs.map((p, i) => <p key={i}>{tr(p)}</p>)}
         </section>
       ))}
       <ModuleMedia items={module.media} />
@@ -67,24 +68,24 @@ function Progress({ module, onDone }) {
   };
 
   return (
-    <ToolCard title="Ejercicio y registro" description={module.exerciseGuide?.prompt || 'Registra tus conclusiones y marca el módulo como completado cuando termines.'}>
-      {module.exerciseGuide?.steps && <ol className="exercise-steps">{module.exerciseGuide.steps.map((s) => <li key={s}>{s}</li>)}</ol>}
-      <Field label="Tu registro">
-        <Textarea value={exercise} onChange={(e) => setExercise(e.target.value)} maxLength={5000} disabled={!canEdit} placeholder="Escribe tus respuestas y conclusiones" />
+    <ToolCard title={tr('Ejercicio y registro')} description={module.exerciseGuide?.prompt || tr('Registra tus conclusiones y marca el módulo como completado cuando termines.')}>
+      {module.exerciseGuide?.steps && <ol className="exercise-steps">{module.exerciseGuide.steps.map((s) => <li key={s}>{tr(s)}</li>)}</ol>}
+      <Field label={tr('Tu registro')}>
+        <Textarea value={exercise} onChange={(e) => setExercise(e.target.value)} maxLength={5000} disabled={!canEdit} placeholder={tr('Escribe tus respuestas y conclusiones')} />
       </Field>
       <FormError error={state.error} />
-      {state.saved && <p className="small up">Avance guardado.</p>}
+      {state.saved && <p className="small up">{tr('Avance guardado.')}</p>}
       {canEdit && (
         <div className="form-actions">
-          <Button variant="secondary" loading={state.busy} onClick={() => save('IN_PROGRESS')}>Guardar avance</Button>
-          <Button loading={state.busy} onClick={() => save('COMPLETED')}>{module.status === 'COMPLETED' ? 'Actualizar registro' : 'Completar módulo'}</Button>
+          <Button variant="secondary" loading={state.busy} onClick={() => save('IN_PROGRESS')}>{tr('Guardar avance')}</Button>
+          <Button loading={state.busy} onClick={() => save('COMPLETED')}>{module.status === 'COMPLETED' ? tr('Actualizar registro') : tr('Completar módulo')}</Button>
         </div>
       )}
       {module.number === 6 && module.status === 'COMPLETED' && (
-        <p className="muted small">Completaste la Ruta de Mercados. Continúa con la educación patrimonial en el Módulo 7. No estás obligado a operar ni a utilizar QLC.</p>
+        <p className="muted small">{tr('Completaste la Ruta de Mercados. Continúa con la educación patrimonial en el Módulo 7. No estás obligado a operar ni a utilizar QLC.')}</p>
       )}
       {module.number === 12 && module.status === 'COMPLETED' && (
-        <p className="muted small">Completaste los 12 módulos del programa. Tu revisión anual queda guardada en tu historial patrimonial.</p>
+        <p className="muted small">{tr('Completaste los 12 módulos del programa. Tu revisión anual queda guardada en tu historial patrimonial.')}</p>
       )}
     </ToolCard>
   );
@@ -101,9 +102,9 @@ export default function ModulePage() {
   if (overview.error) return <ErrorState error={overview.error} onRetry={overview.reload} />;
   if (mod.error) {
     return (
-      <ModuleLayout overview={overview.data} block={number > 6 ? 2 : 1} kicker={`Módulo ${number}`} title="Módulo no disponible">
+      <ModuleLayout overview={overview.data} block={number > 6 ? 2 : 1} kicker={tr('Módulo {n}', { n: number })} title={tr('Módulo no disponible')}>
         <ErrorState error={mod.error} />
-        <div className="form-actions"><Link className="btn-secondary" to={`${basePath}/academia`}>Volver a la academia</Link></div>
+        <div className="form-actions"><Link className="btn-secondary" to={`${basePath}/academia`}>{tr('Volver a la academia')}</Link></div>
       </ModuleLayout>
     );
   }
@@ -118,14 +119,14 @@ export default function ModulePage() {
     <ModuleLayout
       overview={overview.data}
       block={m.block}
-      kicker={`Módulo ${number}`}
+      kicker={tr('Módulo {n}', { n: number })}
       title={`${m.title}`}
       subtitle={m.tool?.question}
-      actions={<Pill variant={m.status === 'COMPLETED' ? '' : 'warn'}>{m.status === 'COMPLETED' ? 'Completado' : m.status === 'IN_PROGRESS' ? 'En curso' : 'Sin iniciar'}</Pill>}
+      actions={<Pill variant={m.status === 'COMPLETED' ? '' : 'warn'}>{m.status === 'COMPLETED' ? 'Completado' : m.status === 'IN_PROGRESS' ? tr('En curso') : tr('Sin iniciar')}</Pill>}
     >
       <div className="tabs" role="tablist">
         {tabs.map(([key, label]) => (
-          <button key={key} type="button" role="tab" aria-selected={active === key} className={active === key ? 'is-active' : ''} onClick={() => setTab(key)}>{label}</button>
+          <button key={key} type="button" role="tab" aria-selected={active === key} className={active === key ? 'is-active' : ''} onClick={() => setTab(key)}>{tr(label)}</button>
         ))}
       </div>
       <div className="tab-panel" key={active}>
@@ -133,8 +134,8 @@ export default function ModulePage() {
         {active === 'herramienta' && (
           <>
             <div className="tool-intro">
-              <div><span className="section-kicker">Herramienta</span><h2>{m.tool?.name}</h2></div>
-              {m.mode === 'TOOL_ONLY' && <ul className="essentials">{m.essentials.map((e) => <li key={e}>{e}</li>)}</ul>}
+              <div><span className="section-kicker">{tr('Herramienta')}</span><h2>{tr(m.tool?.name)}</h2></div>
+              {m.mode === 'TOOL_ONLY' && <ul className="essentials">{m.essentials.map((e) => <li key={e}>{tr(e)}</li>)}</ul>}
             </div>
             {m.mode === 'TOOL_ONLY' && m.riskNotes.map((n) => <RiskNote key={n}>{n}</RiskNote>)}
             <Tool onSaved={refresh} />

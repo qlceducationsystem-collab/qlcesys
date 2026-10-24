@@ -7,6 +7,7 @@ import { FormError } from '../../../components/ui/Form.jsx';
 import { ErrorState, Loading } from '../../../components/ui/States.jsx';
 import { ModuleLayout } from '../../../features/academy/ModuleLayout.jsx';
 import { modulePath, useAcademy } from '../../../features/academy/useAcademy.js';
+import { tr } from '../../../i18n/tr.js';
 
 const QUESTIONS = [
   { id: 'q1', group: 'A · Conceptos básicos de trading', text: '¿Qué significa abrir una posición LONG?', options: [['1', 'Buscar beneficiarse de una subida del precio.'], ['0a', 'Buscar beneficiarse únicamente de una caída del precio.'], ['0b', 'Mantener el dinero fuera del mercado.']] },
@@ -43,47 +44,47 @@ export default function MarketFilterPage() {
   };
 
   return (
-    <ModuleLayout overview={a} kicker="Ruta de Mercados" title="¿Estás preparado para la Ruta de Mercados?" subtitle="No evaluamos si eres rentable ni si sabes desarrollar estrategias; únicamente si tienes la base para comprender los Módulos 4–6.">
+    <ModuleLayout overview={a} kicker={tr('Ruta de Mercados')} title={tr('¿Estás preparado para la Ruta de Mercados?')} subtitle="No evaluamos si eres rentable ni si sabes desarrollar estrategias; únicamente si tienes la base para comprender los Módulos 4–6.">
       {a.filter.passed && !result && (
         <div className="filter-result is-pass">
           <b>✓ Filtro aprobado{a.filter.last ? ` el ${date(a.filter.last.createdAt)}` : ''}.</b>
-          <span>Tienes la base necesaria para continuar con la Ruta de Mercados.</span>
-          <Link className="btn-primary" to={modulePath(basePath, 4)}>Ir al Módulo 4 →</Link>
+          <span>{tr('Tienes la base necesaria para continuar con la Ruta de Mercados.')}</span>
+          <Link className="btn-primary" to={modulePath(basePath, 4)}>{tr('Ir al Módulo 4 →')}</Link>
         </div>
       )}
       <form className="filter-form" onSubmit={submit}>
         {QUESTIONS.map((q, i) => (
           <fieldset key={q.id} className="filter-q">
-            {q.group && <div className="filter-group">{q.group}</div>}
-            <legend><span>{i + 1}.</span> {q.text}</legend>
+            {q.group && <div className="filter-group">{tr(q.group)}</div>}
+            <legend><span>{i + 1}.</span> {tr(q.text)}</legend>
             <div className="filter-options">
               {q.options.map(([value, label]) => (
                 <label key={value} className={answers[q.id] === value ? 'is-selected' : ''}>
                   <input type="radio" name={q.id} value={value} checked={answers[q.id] === value} onChange={() => setAnswers({ ...answers, [q.id]: value })} disabled={!canEdit} />
-                  <span>{label}</span>
+                  <span>{tr(label)}</span>
                 </label>
               ))}
             </div>
           </fieldset>
         ))}
         <FormError error={state.error} />
-        {canEdit && <Button type="submit" disabled={!complete} loading={state.busy}>{complete ? 'Evaluar conocimientos →' : 'Responde las 6 preguntas'}</Button>}
+        {canEdit && <Button type="submit" disabled={!complete} loading={state.busy}>{complete ? tr('Evaluar conocimientos →') : tr('Responde las 6 preguntas')}</Button>}
       </form>
       {result && (
         <div className={`filter-result ${result.passed ? 'is-pass' : 'is-fail'}`} role="status">
           {result.passed ? (
             <>
-              <b>✓ Filtro aprobado.</b>
-              <span>Tienes la base necesaria para continuar con la Ruta de Mercados. Trading {result.tradingScore}/3 · Exchange {result.exchangeScore}/3.</span>
-              <Link className="btn-primary" to={modulePath(basePath, 4)}>Comenzar Módulo 4 →</Link>
+              <b>{tr('✓ Filtro aprobado.')}</b>
+              <span>{tr('Tienes la base necesaria para continuar con la Ruta de Mercados. Trading')}{' '}{result.tradingScore}/3 · Exchange {result.exchangeScore}/3.</span>
+              <Link className="btn-primary" to={modulePath(basePath, 4)}>{tr('Comenzar Módulo 4 →')}</Link>
             </>
           ) : (
             <>
-              <b>⚠ Antes de continuar, te recomendamos reforzar los conceptos básicos.</b>
-              <span>Los Módulos 4–6 utilizan conceptos operativos. No necesitas ser profesional, pero sí comprender cómo funciona un exchange y los fundamentos del trading. Puedes continuar con la educación patrimonial (Módulos 7–12) y volver a esta ruta cuando tengas la base necesaria.</span>
+              <b>{tr('⚠ Antes de continuar, te recomendamos reforzar los conceptos básicos.')}</b>
+              <span>{tr('Los Módulos 4–6 utilizan conceptos operativos. No necesitas ser profesional, pero sí comprender cómo funciona un exchange y los fundamentos del trading. Puedes continuar con la educación patrimonial (Módulos 7–12) y volver a esta ruta cuando tengas la base necesaria.')}</span>
               <div className="form-actions">
-                <Button variant="secondary" onClick={() => { setResult(null); setAnswers({}); }}>Intentar de nuevo</Button>
-                <Link className="btn-secondary" to={`${basePath}/academia/ruta`}>Ver rutas</Link>
+                <Button variant="secondary" onClick={() => { setResult(null); setAnswers({}); }}>{tr('Intentar de nuevo')}</Button>
+                <Link className="btn-secondary" to={`${basePath}/academia/ruta`}>{tr('Ver rutas')}</Link>
               </div>
             </>
           )}

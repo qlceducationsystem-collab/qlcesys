@@ -6,12 +6,13 @@ import { ConfirmDialog, Modal } from '../../components/ui/Modal.jsx';
 import { Field, FormError, FormGrid, Input, MoneyInput, Select, Textarea } from '../../components/ui/Form.jsx';
 import { DataTable } from '../../components/ui/DataTable.jsx';
 import { ErrorState, Loading } from '../../components/ui/States.jsx';
+import { tr } from '../../i18n/tr.js';
 
 const emptyValues = (fields) => Object.fromEntries(fields.map((f) => [f.name, f.default ?? '']));
 
 function FieldInput({ field, value, onChange }) {
   const common = { value: value ?? '', onChange: (e) => onChange(e.target.value), required: field.required !== false, name: field.name };
-  if (field.type === 'select') return <Select {...common} options={field.options} placeholder="Selecciona…" />;
+  if (field.type === 'select') return <Select {...common} options={field.options} placeholder={tr('Selecciona…')} />;
   if (field.type === 'money') return <MoneyInput {...common} />;
   if (field.type === 'textarea') return <Textarea {...common} required={false} />;
   return <Input type={field.type || 'text'} maxLength={field.maxLength || 200} {...common} />;
@@ -49,8 +50,8 @@ export function RecordForm({ fields, initial, onSubmit, onCancel, submitLabel = 
       </FormGrid>
       <FormError error={state.error} />
       <div className="form-actions">
-        <Button type="button" variant="secondary" onClick={onCancel}>Cancelar</Button>
-        <Button type="submit" loading={state.saving}>{submitLabel}</Button>
+        <Button type="button" variant="secondary" onClick={onCancel}>{tr('Cancelar')}</Button>
+        <Button type="submit" loading={state.saving}>{tr(submitLabel)}</Button>
       </div>
     </form>
   );
@@ -103,12 +104,12 @@ export function RecordManager({ endpoint, title, addLabel = "+ Agregar", fields,
   const actionCol = writable
     ? [{
         key: '_actions',
-        label: 'Acciones',
+        label: tr('Acciones'),
         align: 'right',
         render: (r) => (
           <div className="row-actions">
-            <button className="btn-link" onClick={() => setEditing({ row: r })}>Editar</button>
-            <button className="btn-link danger" onClick={() => setPending({ kind: 'delete', row: r })}>Eliminar</button>
+            <button className="btn-link" onClick={() => setEditing({ row: r })}>{tr('Editar')}</button>
+            <button className="btn-link danger" onClick={() => setPending({ kind: 'delete', row: r })}>{tr('Eliminar')}</button>
           </div>
         ),
       }]
@@ -117,8 +118,8 @@ export function RecordManager({ endpoint, title, addLabel = "+ Agregar", fields,
   return (
     <section className="card">
       <header className="card-head">
-        <h3 className="section-title">{title}</h3>
-        {writable && <Button onClick={() => setEditing({ row: null })}>{addLabel}</Button>}
+        <h3 className="section-title">{tr(title)}</h3>
+        {writable && <Button onClick={() => setEditing({ row: null })}>{tr(addLabel)}</Button>}
       </header>
       {list.loading && !list.data ? <Loading /> : list.error ? <ErrorState error={list.error} onRetry={list.reload} /> : (
         <DataTable columns={[...columns, ...actionCol]} rows={list.data || []} empty={emptyText} />
@@ -126,19 +127,19 @@ export function RecordManager({ endpoint, title, addLabel = "+ Agregar", fields,
       {actionError && <FormError error={actionError} />}
 
       {editing && !pending && (
-        <Modal open title={editing.row ? `Editar · ${title}` : `Agregar · ${title}`} onClose={() => setEditing(null)}>
+        <Modal open title={editing.row ? tr('Editar · {title}', { title: title }) : tr('Agregar · {title}', { title: title })} onClose={() => setEditing(null)}>
           <RecordForm fields={fields} initial={editing.row ? toForm(editing.row) : emptyValues(fields)} onSubmit={save} onCancel={() => setEditing(null)} />
         </Modal>
       )}
       <ConfirmDialog
         open={!!pending}
-        title={pending?.kind === 'delete' ? 'Eliminar registro' : 'Confirmar modificación'}
+        title={pending?.kind === 'delete' ? tr('Eliminar registro') : tr('Confirmar modificación')}
         message={pending?.kind === 'delete'
-          ? 'Esta acción elimina el registro y recalcula todos los indicadores del periodo.'
-          : 'Revisa los cambios. Al guardar se recalcularán los indicadores del periodo.'}
+          ? tr('Esta acción elimina el registro y recalcula todos los indicadores del periodo.')
+          : tr('Revisa los cambios. Al guardar se recalcularán los indicadores del periodo.')}
         details={pending?.changes}
         danger={pending?.kind === 'delete'}
-        confirmLabel={pending?.kind === 'delete' ? 'Eliminar' : 'Guardar cambios'}
+        confirmLabel={pending?.kind === 'delete' ? tr('Eliminar') : tr('Guardar cambios')}
         loading={confirming}
         onConfirm={confirm}
         onClose={() => { setPending(null); setActionError(null); }}

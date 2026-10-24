@@ -1,6 +1,8 @@
 import { useEffect, useId, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from './Button.jsx';
+import { useI18n } from '../../i18n/I18nContext.jsx';
+import { tr } from '../../i18n/tr.js';
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -40,6 +42,7 @@ function useFocusTrap(open, ref, onClose) {
 }
 
 export function Modal({ open, title, onClose, children, footer, wide, className = '' }) {
+  const { t } = useI18n();
   const ref = useRef(null);
   const titleId = useId();
   useFocusTrap(open, ref, onClose);
@@ -48,8 +51,8 @@ export function Modal({ open, title, onClose, children, footer, wide, className 
     <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose?.()}>
       <div ref={ref} className={`modal ${wide ? 'modal-wide' : ''} ${className}`} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1}>
         <header className="modal-head">
-          <h3 id={titleId}>{title}</h3>
-          <button type="button" className="icon-btn" onClick={onClose} aria-label="Cerrar">×</button>
+          <h3 id={titleId}>{tr(title)}</h3>
+          <button type="button" className="icon-btn" onClick={onClose} aria-label={t('app.close')}>×</button>
         </header>
         <div className="modal-body">{children}</div>
         {footer && <footer className="modal-foot">{footer}</footer>}
@@ -59,26 +62,27 @@ export function Modal({ open, title, onClose, children, footer, wide, className 
   );
 }
 
-export function ConfirmDialog({ open, title = 'Confirmar cambio', message, details, confirmLabel = 'Confirmar', danger, loading, onConfirm, onClose, children }) {
+export function ConfirmDialog({ open, title, message, details, confirmLabel, danger, loading, onConfirm, onClose, children }) {
+  const { t } = useI18n();
   return (
     <Modal
       open={open}
-      title={title}
+      title={title || t('app.confirm.title')}
       onClose={onClose}
       footer={
         <>
-          <Button variant="secondary" onClick={onClose}>Cancelar</Button>
-          <Button variant={danger ? 'danger' : 'primary'} loading={loading} onClick={onConfirm}>{confirmLabel}</Button>
+          <Button variant="secondary" onClick={onClose}>{t('app.confirm.cancel')}</Button>
+          <Button variant={danger ? 'danger' : 'primary'} loading={loading} onClick={onConfirm}>{tr(confirmLabel) || t('app.confirm.confirm')}</Button>
         </>
       }
     >
-      <p className="muted">{message}</p>
+      <p className="muted">{tr(message)}</p>
       {details?.length > 0 && (
         <table className="diff-table">
-          <thead><tr><th>Campo</th><th>Anterior</th><th>Nuevo</th></tr></thead>
+          <thead><tr><th>{t('app.confirm.field')}</th><th>{t('app.confirm.before')}</th><th>{t('app.confirm.after')}</th></tr></thead>
           <tbody>
             {details.map((d) => (
-              <tr key={d.field}><td>{d.field}</td><td>{d.from}</td><td><b>{d.to}</b></td></tr>
+              <tr key={d.field}><td>{tr(d.field)}</td><td>{d.from}</td><td><b>{d.to}</b></td></tr>
             ))}
           </tbody>
         </table>

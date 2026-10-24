@@ -5,6 +5,7 @@ import { Modal } from '../../components/ui/Modal.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { FormError } from '../../components/ui/Form.jsx';
 import { date, money } from '../../utils/format.js';
+import { tr } from '../../i18n/tr.js';
 
 const METHODS = [
   { value: 'CARD', label: 'Tarjeta', hint: 'Débito o crédito' },
@@ -12,28 +13,28 @@ const METHODS = [
 ];
 
 export const offerPrice = (offer) =>
-  offer?.price === null || offer?.price === undefined ? 'Precio por definir' : `${money(offer.price)} ${offer.currency}`;
+  offer?.price === null || offer?.price === undefined ? tr('Precio por definir') : `${money(offer.price)} ${offer.currency}`;
 
 function Summary({ offer, method, setMethod }) {
   return (
     <div className="checkout-summary">
       <div className="checkout-product">
-        <span className="checkout-kicker">{offer.type === 'FULL_ANNUAL' ? 'Acceso completo' : `Herramienta · Módulo ${offer.moduleNumber}`}</span>
-        <b>{offer.name}</b>
-        {offer.description && <p>{offer.description}</p>}
+        <span className="checkout-kicker">{offer.type === 'FULL_ANNUAL' ? tr('Acceso completo') : tr('Herramienta · Módulo {n}', { n: offer.moduleNumber })}</span>
+        <b>{tr(offer.name)}</b>
+        {offer.description && <p>{tr(offer.description)}</p>}
       </div>
       <div className="checkout-amount">
-        <span>Total</span>
-        <strong>{offer.price === null || offer.price === undefined ? 'Precio por definir — simulación de acceso' : offerPrice(offer)}</strong>
-        {offer.type === 'FULL_ANNUAL' && <small>Vigencia de {offer.accessDays || 365} días</small>}
-        {offer.type === 'TOOL_ONLY' && <small>Suscripción mensual · {offer.accessDays || 30} días de acceso por pago</small>}
+        <span>{tr('Total')}</span>
+        <strong>{offer.price === null || offer.price === undefined ? tr('Precio por definir — simulación de acceso') : offerPrice(offer)}</strong>
+        {offer.type === 'FULL_ANNUAL' && <small>{tr('Vigencia de')}{' '}{offer.accessDays || 365}{' '}{tr('días')}</small>}
+        {offer.type === 'TOOL_ONLY' && <small>{tr('Suscripción mensual ·')}{' '}{offer.accessDays || 30}{' '}{tr('días de acceso por pago')}</small>}
       </div>
       <fieldset className="checkout-methods">
-        <legend>Método de pago</legend>
+        <legend>{tr('Método de pago')}</legend>
         {METHODS.map((m) => (
           <label key={m.value} className={`checkout-method ${method === m.value ? 'is-selected' : ''}`}>
             <input type="radio" name="method" value={m.value} checked={method === m.value} onChange={() => setMethod(m.value)} />
-            <span><b>{m.label}</b><small>{m.hint}</small></span>
+            <span><b>{tr(m.label)}</b><small>{tr(m.hint)}</small></span>
           </label>
         ))}
       </fieldset>
@@ -46,11 +47,11 @@ function Result({ status, offer, onClose, onRetry }) {
   return (
     <div className={`checkout-result ${ok ? 'is-ok' : 'is-bad'}`} role="status">
       <span className="checkout-result-icon" aria-hidden="true">{ok ? '✓' : '!'}</span>
-      <h4>{ok ? 'Pago aprobado' : 'Pago rechazado'}</h4>
-      <p>{ok ? `Tu acceso a ${offer.name} ya está activo.` : 'No se otorgó ningún acceso. Puedes intentarlo de nuevo.'}</p>
+      <h4>{ok ? tr('Pago aprobado') : tr('Pago rechazado')}</h4>
+      <p>{ok ? tr('Tu acceso a {name} ya está activo.', { name: offer.name }) : tr('No se otorgó ningún acceso. Puedes intentarlo de nuevo.')}</p>
       <div className="form-actions">
-        {!ok && <Button variant="secondary" onClick={onRetry}>Intentar de nuevo</Button>}
-        <Button onClick={onClose}>{ok ? 'Continuar' : 'Cerrar'}</Button>
+        {!ok && <Button variant="secondary" onClick={onRetry}>{tr('Intentar de nuevo')}</Button>}
+        <Button onClick={onClose}>{ok ? tr('Continuar') : 'Cerrar'}</Button>
       </div>
     </div>
   );
@@ -91,15 +92,15 @@ export function CheckoutModal({ offer, onClose, onCompleted }) {
   });
 
   return (
-    <Modal open title="Pago seguro" onClose={onClose} className="checkout">
-      <div className="checkout-env">ENTORNO DE PRUEBA · No se realiza ningún cobro real</div>
+    <Modal open title={tr('Pago seguro')} onClose={onClose} className="checkout">
+      <div className="checkout-env">{tr('ENTORNO DE PRUEBA · No se realiza ningún cobro real')}</div>
       {step === 'summary' && (
         <>
           <Summary offer={offer} method={method} setMethod={setMethod} />
           <FormError error={state.error} />
           <div className="form-actions">
-            <Button variant="secondary" onClick={onClose}>Cancelar</Button>
-            <Button loading={state.busy} onClick={start} data-autofocus>Continuar al pago</Button>
+            <Button variant="secondary" onClick={onClose}>{tr('Cancelar')}</Button>
+            <Button loading={state.busy} onClick={start} data-autofocus>{tr('Continuar al pago')}</Button>
           </div>
         </>
       )}
@@ -108,15 +109,15 @@ export function CheckoutModal({ offer, onClose, onCompleted }) {
           <div className="checkout-processing">
             <span className="checkout-pulse" aria-hidden="true" />
             <div>
-              <b>Solicitud de pago creada</b>
+              <b>{tr('Solicitud de pago creada')}</b>
               <small>Referencia {attempt.id.slice(-8).toUpperCase()} · {date(attempt.createdAt)}</small>
             </div>
           </div>
-          <p className="muted small">Controles internos de prueba: elige el resultado que devolverá el proveedor simulado.</p>
+          <p className="muted small">{tr('Controles internos de prueba: elige el resultado que devolverá el proveedor simulado.')}</p>
           <FormError error={state.error} />
           <div className="checkout-sim">
-            <Button variant="danger" loading={state.busy} onClick={() => simulate('REJECTED')}>Simular pago rechazado</Button>
-            <Button loading={state.busy} onClick={() => simulate('APPROVED')}>Simular pago aprobado</Button>
+            <Button variant="danger" loading={state.busy} onClick={() => simulate('REJECTED')}>{tr('Simular pago rechazado')}</Button>
+            <Button loading={state.busy} onClick={() => simulate('APPROVED')}>{tr('Simular pago aprobado')}</Button>
           </div>
         </div>
       )}

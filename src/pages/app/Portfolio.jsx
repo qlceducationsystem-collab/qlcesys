@@ -11,24 +11,25 @@ import { AsyncView, Empty } from '../../components/ui/States.jsx';
 import { ClosedNotice, ReconciliationBanner, Roi } from '../../components/finance/Finance.jsx';
 import { RecordForm } from '../../features/records/RecordManager.jsx';
 import { RequirePeriod } from '../../features/periods/PeriodControls.jsx';
+import { tr } from '../../i18n/tr.js';
 
 const Totals = ({ initial, final, result, roi, labels = ['Capital inicial', 'Capital final', 'Resultado', 'ROI'] }) => (
   <div className="totals">
-    <div className="total"><span>{labels[0]}</span><strong>{money(initial)}</strong></div>
-    <div className="total"><span>{labels[1]}</span><strong>{money(final)}</strong></div>
-    <div className="total"><span>{labels[2]}</span><strong className={result > 0 ? 'up' : result < 0 ? 'down' : ''}>{signedMoney(result)}</strong></div>
-    <div className="total"><span>{labels[3]}</span><strong><Roi value={roi} /></strong></div>
+    <div className="total"><span>{tr(labels[0])}</span><strong>{money(initial)}</strong></div>
+    <div className="total"><span>{tr(labels[1])}</span><strong>{money(final)}</strong></div>
+    <div className="total"><span>{tr(labels[2])}</span><strong className={result > 0 ? 'up' : result < 0 ? 'down' : ''}>{signedMoney(result)}</strong></div>
+    <div className="total"><span>{tr(labels[3])}</span><strong><Roi value={roi} /></strong></div>
   </div>
 );
 
 function productFields(categories) {
   return [
-    { name: 'categoryCode', label: 'Categoría', type: 'select', options: categories.map((c) => ({ value: c.code, label: c.name })), display: (v) => categories.find((c) => c.code === v)?.name || v },
-    { name: 'name', label: 'Producto', maxLength: 200 },
+    { name: 'categoryCode', label: tr('Categoría'), type: 'select', options: categories.map((c) => ({ value: c.code, label: c.name })), display: (v) => categories.find((c) => c.code === v)?.name || v },
+    { name: 'name', label: tr('Producto'), maxLength: 200 },
     { name: 'institution', label: 'Institución (opcional)', required: false, maxLength: 120 },
-    { name: 'initialCapital', label: 'Capital inicial', type: 'money', display: money, hint: 'Incluye aportaciones y retiros del periodo en este producto.' },
-    { name: 'finalCapital', label: 'Capital final', type: 'money', display: money },
-    { name: 'notes', label: 'Notas', type: 'textarea', required: false },
+    { name: 'initialCapital', label: tr('Capital inicial'), type: 'money', display: money, hint: tr('Incluye aportaciones y retiros del periodo en este producto.') },
+    { name: 'finalCapital', label: tr('Capital final'), type: 'money', display: money },
+    { name: 'notes', label: tr('Notas'), type: 'textarea', required: false },
   ];
 }
 
@@ -37,21 +38,21 @@ function ProductCard({ p, writable, onEdit, onDelete, basePath }) {
     <div className="asset">
       <div className="asset-head">
         <div>
-          <Link to={`${basePath}/cartera/${p.assetId}`} className="asset-name">{p.name}</Link>
-          <div className="asset-type">{p.categoryName}{p.institution ? ` · ${p.institution}` : ''}</div>
+          <Link to={`${basePath}/cartera/${p.assetId}`} className="asset-name">{tr(p.name)}</Link>
+          <div className="asset-type">{tr(p.categoryName)}{p.institution ? ` · ${p.institution}` : ''}</div>
         </div>
         {writable && (
           <div className="row-actions">
-            <button className="btn-link" onClick={onEdit}>Editar</button>
-            <button className="btn-remove" onClick={onDelete}>Quitar</button>
+            <button className="btn-link" onClick={onEdit}>{tr('Editar')}</button>
+            <button className="btn-remove" onClick={onDelete}>{tr('Quitar')}</button>
           </div>
         )}
       </div>
       <div className="asset-grid">
-        <div className="total"><span>Capital inicial</span><strong>{money(p.initial)}</strong></div>
-        <div className="total"><span>Capital final</span><strong>{money(p.final)}</strong></div>
-        <div className="total"><span>Resultado del producto</span><strong className={p.result > 0 ? 'up' : p.result < 0 ? 'down' : ''}>{signedMoney(p.result)}</strong></div>
-        <div className="total"><span>ROI del producto</span><strong><Roi value={p.roi} /></strong></div>
+        <div className="total"><span>{tr('Capital inicial')}</span><strong>{money(p.initial)}</strong></div>
+        <div className="total"><span>{tr('Capital final')}</span><strong>{money(p.final)}</strong></div>
+        <div className="total"><span>{tr('Resultado del producto')}</span><strong className={p.result > 0 ? 'up' : p.result < 0 ? 'down' : ''}>{signedMoney(p.result)}</strong></div>
+        <div className="total"><span>{tr('ROI del producto')}</span><strong><Roi value={p.roi} /></strong></div>
       </div>
     </div>
   );
@@ -103,45 +104,43 @@ function PortfolioBody({ summary, categories, reload }) {
   return (
     <>
       <PageHeader
-        kicker="Mi cartera · detalle por producto"
-        title="Mis inversiones"
-        subtitle="Producto individual → categoría → resultado → cartera total"
-        actions={writable && <Button onClick={() => setForm({ product: null })}>+ Agregar producto</Button>}
+        kicker={tr('Mi cartera · detalle por producto')}
+        title={tr('Mis inversiones')}
+        subtitle={tr('Producto individual → categoría → resultado → cartera total')}
+        actions={writable && <Button onClick={() => setForm({ product: null })}>{tr('+ Agregar producto')}</Button>}
       />
       <ClosedNotice />
       <ReconciliationBanner reconciliation={summary.reconciliation} compact={summary.reconciliation.reconciled} />
 
       {portfolio.products.length === 0 && (
-        <Empty title="Tu cartera está vacía" text="Agrega tus productos (CETES, acciones, Casa A, Negocio A…) con su capital inicial y final del periodo."
-          action={writable && <Button onClick={() => setForm({ product: null })}>Agregar primer producto</Button>} />
+        <Empty title={tr('Tu cartera está vacía')} text={tr('Agrega tus productos (CETES, acciones, Casa A, Negocio A…) con su capital inicial y final del periodo.')}
+          action={writable && <Button onClick={() => setForm({ product: null })}>{tr('Agregar primer producto')}</Button>} />
       )}
 
       {categories.filter((c) => byCat.has(c.code)).map((c) => {
         const cat = byCat.get(c.code);
         const items = portfolio.products.filter((p) => p.categoryCode === c.code);
         return (
-          <Card key={c.code} title={c.name} actions={<span className="badge">{items.length} {items.length === 1 ? 'producto' : 'productos'} · {pct(cat.share)} de la cartera</span>}>
+          <Card key={c.code} title={c.name} actions={<span className="badge">{items.length} {items.length === 1 ? 'producto' : 'productos'} · {pct(cat.share)}{' '}{tr('de la cartera')}</span>}>
             {items.map((p) => (
               <ProductCard key={p.positionId} p={p} basePath={basePath} writable={writable}
                 onEdit={() => setForm({ product: p })} onDelete={() => setPending({ kind: 'delete', product: p })} />
             ))}
-            {writable && <Button variant="add" onClick={() => setForm({ product: null, categoryCode: c.code })}>+ Agregar producto</Button>}
+            {writable && <Button variant="add" onClick={() => setForm({ product: null, categoryCode: c.code })}>{tr('+ Agregar producto')}</Button>}
             <Totals {...cat} />
           </Card>
         );
       })}
 
-      <Card title="Resumen de la cartera" actions={<span className="badge">Actualización automática</span>}>
+      <Card title={tr('Resumen de la cartera')} actions={<span className="badge">{tr('Actualización automática')}</span>}>
         <Totals {...portfolio.global} labels={['Capital inicial', 'Capital final', 'Resultado global', 'ROI global']} />
         <Notice>
-          El sistema calcula primero cada producto, suma los capitales de cada categoría y después integra las categorías
-          para obtener el resultado global. El ROI global se calcula sobre el capital inicial global, nunca promediando ROI
-          individuales. Las aportaciones y deducciones se registran en Movimientos patrimoniales y no se cuentan como rendimiento.
+          {tr('El sistema calcula primero cada producto, suma los capitales de cada categoría y después integra las categorías para obtener el resultado global. El ROI global se calcula sobre el capital inicial global, nunca promediando ROI individuales. Las aportaciones y deducciones se registran en Movimientos patrimoniales y no se cuentan como rendimiento.')}
         </Notice>
       </Card>
 
       {form && !pending && (
-        <Modal open title={form.product ? 'Editar producto' : 'Agregar producto'} onClose={() => setForm(null)}>
+        <Modal open title={form.product ? tr('Editar producto') : tr('Agregar producto')} onClose={() => setForm(null)}>
           <RecordForm
             fields={fields}
             initial={form.product ? toForm(form.product) : { categoryCode: form.categoryCode || '', name: '', institution: '', notes: '', initialCapital: '', finalCapital: '' }}
@@ -152,8 +151,8 @@ function PortfolioBody({ summary, categories, reload }) {
       )}
       <ConfirmDialog
         open={!!pending}
-        title={pending?.kind === 'delete' ? `Quitar ${pending?.product.name}` : 'Confirmar modificación'}
-        message={pending?.kind === 'delete' ? 'Se eliminará el producto de este periodo y se recalcularán categoría, cartera, patrimonio y conciliación.' : 'Revisa los cambios antes de guardar. Todos los indicadores se recalcularán.'}
+        title={pending?.kind === 'delete' ? tr('Quitar {label}', { label: pending?.product.name }) : tr('Confirmar modificación')}
+        message={pending?.kind === 'delete' ? tr('Se eliminará el producto de este periodo y se recalcularán categoría, cartera, patrimonio y conciliación.') : tr('Revisa los cambios antes de guardar. Todos los indicadores se recalcularán.')}
         details={pending?.changes}
         danger={pending?.kind === 'delete'}
         loading={busy}

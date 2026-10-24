@@ -14,10 +14,3 @@ export function responsiveImage(url, widths = [480, 720, 1080]) {
     srcSet: widths.map((w) => `${cloudinaryUrl(url, w)} ${w}w`).join(', '),
   };
 }
-
-export function preloadImage(url, width = 720) {
-  if (!url || document.querySelector(`link[data-preload="${url}"]`)) return;
-  const link = Object.assign(document.createElement('link'), { rel: 'preload', as: 'image', href: cloudinaryUrl(url, width) });
-  link.dataset.preload = url;
-  document.head.appendChild(link);
-}

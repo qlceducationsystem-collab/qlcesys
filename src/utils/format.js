@@ -1,3 +1,9 @@
+let locale = 'es-MX';
+
+export const setFormatLocale = (lang) => {
+  locale = lang === 'en' ? 'en-US' : 'es-MX';
+};
+
 const mxn = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 export const money = (n) => (n === null || n === undefined || Number.isNaN(Number(n)) ? '—' : mxn.format(Number(n)));
@@ -16,14 +22,16 @@ export const pct = (n, { signed = false } = {}) => {
 
 export const tone = (n) => (n === null || n === undefined || Number(n) === 0 ? '' : Number(n) > 0 ? 'up' : 'down');
 
-const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-export const monthName = (m) => MONTHS[m - 1] || '';
-export const periodLabel = (p) => (p ? `${MONTHS[p.month - 1]} ${p.year}` : '');
-export const shortMonth = (m) => MONTHS[m - 1]?.slice(0, 3) || '';
+const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
+const monthOf = (m, month) => (m >= 1 && m <= 12 ? capitalize(new Date(2000, m - 1, 1).toLocaleDateString(locale, { month })) : '');
+export const monthName = (m) => monthOf(m, 'long');
+export const periodLabel = (p) => (p ? `${monthName(p.month)} ${p.year}` : '');
+export const shortMonth = (m) => monthOf(m, 'long').slice(0, 3);
+export const count = (n) => Number(n || 0).toLocaleString(locale);
 
-export const date = (d) => (d ? new Date(d).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' }) : '—');
+export const date = (d) => (d ? new Date(d).toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' }) : '—');
 export const dateTime = (d) =>
-  d ? new Date(d).toLocaleString('es-MX', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
+  d ? new Date(d).toLocaleString(locale, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
 
 export const toDateInput = (d) => {
   const x = d ? new Date(d) : new Date();

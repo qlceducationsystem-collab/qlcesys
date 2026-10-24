@@ -1,11 +1,12 @@
 import { tone } from '../../utils/format.js';
+import { tr } from '../../i18n/tr.js';
 
 export function Card({ title, actions, children, className = '', ...rest }) {
   return (
     <section className={`card ${className}`} {...rest}>
       {(title || actions) && (
         <header className="card-head">
-          {title && <h3 className="section-title">{title}</h3>}
+          {title && <h3 className="section-title">{tr(title)}</h3>}
           {actions && <div className="card-actions">{actions}</div>}
         </header>
       )}
@@ -17,9 +18,9 @@ export function Card({ title, actions, children, className = '', ...rest }) {
 export function StatCard({ label, value, delta, deltaTone, accent }) {
   return (
     <div className={`card stat ${accent ? 'stat-accent' : ''}`}>
-      <div className="label">{label}</div>
+      <div className="label">{tr(label)}</div>
       <div className="value">{value}</div>
-      {delta !== undefined && delta !== null && <div className={`delta ${deltaTone ?? ''}`}>{delta}</div>}
+      {delta !== undefined && delta !== null && <div className={`delta ${deltaTone ?? ''}`}>{tr(delta)}</div>}
     </div>
   );
 }
@@ -30,25 +31,25 @@ export function PageHeader({ title, subtitle, kicker, actions }) {
   return (
     <div className="top">
       <div>
-        {kicker && <div className="section-kicker">{kicker}</div>}
-        <h1>{title}</h1>
-        {subtitle && <div className="subtitle">{subtitle}</div>}
+        {kicker && <div className="section-kicker">{tr(kicker)}</div>}
+        <h1>{tr(title)}</h1>
+        {subtitle && <div className="subtitle">{tr(subtitle)}</div>}
       </div>
       {actions && <div className="top-actions">{actions}</div>}
     </div>
   );
 }
 
-export const Notice = ({ children, variant = '' }) => <div className={`notice ${variant}`}>{children}</div>;
+export const Notice = ({ children, variant = '' }) => <div className={`notice ${variant}`}>{tr(children)}</div>;
 
 export function Pill({ children, variant = '' }) {
-  return <span className={`pill ${variant}`}>{children}</span>;
+  return <span className={`pill ${variant}`}>{tr(children)}</span>;
 }
 
 export function ProgressBar({ value = 0, label }) {
   const v = Math.max(0, Math.min(100, Number(value) || 0));
   return (
-    <div className="progress" role="progressbar" aria-valuenow={v} aria-valuemin={0} aria-valuemax={100} aria-label={label}>
+    <div className="progress" role="progressbar" aria-valuenow={v} aria-valuemin={0} aria-valuemax={100} aria-label={tr(label)}>
       <div className="bar" style={{ width: `${v}%` }} />
     </div>
   );
@@ -58,8 +59,8 @@ export function Row({ label, value, valueTone, sub }) {
   return (
     <div className="row">
       <span>
-        {label}
-        {sub && <span className="small block">{sub}</span>}
+        {tr(label)}
+        {sub && <span className="small block">{tr(sub)}</span>}
       </span>
       <b className={valueTone === 'auto' ? tone(value) : valueTone || ''}>{value}</b>
     </div>

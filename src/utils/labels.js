@@ -96,3 +96,85 @@ options.debtTypes = toOptions(DEBT_TYPES);
 options.taxItemTypes = toOptions(TAX_ITEM_TYPES);
 options.resultPeriods = toOptions(RESULT_PERIODS);
 options.scenarioTypes = toOptions(SCENARIO_TYPES);
+
+const EN = {
+  INCOME_CATEGORIES: { SALARIO: 'Salary', NEGOCIO: 'Business', RENTAS: 'Rent', DIVIDENDOS: 'Dividends', INTERESES: 'Interest', OTROS: 'Other' },
+  EXPENSE_CATEGORIES: {
+    VIVIENDA: 'Housing', ALIMENTACION: 'Food', SERVICIOS: 'Utilities', TRANSPORTE: 'Transportation', SEGUROS: 'Insurance',
+    EDUCACION: 'Education', ENTRETENIMIENTO: 'Entertainment', VIAJES: 'Travel', DEUDAS: 'Debts', OTROS: 'Other',
+  },
+  PROTECTION_TYPES: {
+    LIQUIDEZ: 'Liquidity', FONDO_EMERGENCIA: 'Emergency fund', RESERVA: 'Reserve',
+    SEGURO_GASTOS_MEDICOS: 'Major medical insurance', SEGURO_VIDA: 'Life insurance', OTRO_SEGURO: 'Other insurance',
+  },
+  MOVEMENT_TYPES: { APORTACION: 'Contribution', DEDUCCION: 'Withdrawal' },
+  APPOINTMENT_STATUS: { PENDING: 'Pending', CONFIRMED: 'Confirmed', COMPLETED: 'Completed', CANCELLED: 'Cancelled' },
+  APPOINTMENT_CHANNELS: { VIDEOLLAMADA: 'Video call', LLAMADA: 'Phone call', WHATSAPP: 'WhatsApp', PRESENCIAL: 'In person' },
+  APPOINTMENT_REASONS: ['Financial organization', 'Goal planning', 'Budget', 'Debts', 'Wealth building', 'Diversification', 'Investment education'],
+  ACCESS_MODES: { FULL: 'Full annual access', TOOLS: 'Tools only', NONE: 'No access' },
+  PAYMENT_STATUS: { PENDING: 'Pending', APPROVED: 'Approved', REJECTED: 'Rejected' },
+  ADMIN_LEVELS: { VIEW: 'View only', EDIT: 'Edit', FULL: 'Full administration' },
+  PRODUCT_TYPES: {
+    RENTA_FIJA: 'Fixed income', RENTA_VARIABLE: 'Equities', FONDOS: 'Funds', ACCIONES: 'Stocks',
+    BIENES_RAICES: 'Real estate', NEGOCIO: 'Business', ACTIVO_DIGITAL: 'Digital asset', LIQUIDEZ: 'Liquidity',
+  },
+  HORIZONS: { CORTO: 'Short term', MEDIANO: 'Medium term', LARGO: 'Long term' },
+  LIQUIDITY_LEVELS: { ALTA: 'High', MEDIA: 'Medium', BAJA: 'Low' },
+  PERCEIVED_RISK: { BAJO: 'Low', MEDIO: 'Medium', ALTO: 'High', MUY_ALTO: 'Very high' },
+  RISK_TOLERANCE: { CONSERVADOR: 'Conservative', MODERADO: 'Moderate', ALTO: 'High' },
+  FINANCIAL_GOALS: { CONSTRUIR_PATRIMONIO: 'Build wealth', FONDO_EMERGENCIA: 'Create an emergency fund', INVERTIR_MEJOR: 'Invest better', REDUCIR_DEUDAS: 'Reduce debt' },
+  AUTOMATION_LEVELS: { MANUAL: 'Manual', SEMI: 'Semi-automated', AUTO: 'Automated' },
+  MONITORING_LEVELS: { BASIC: 'Basic', CONTINUOUS: 'Continuous', ALERTS: 'Continuous + alerts' },
+  MODULE_STATE: {
+    COMPLETED: 'Completed', AVAILABLE: 'Available', LOCKED_ORDER: 'Complete the previous module', LOCKED_ACCESS: 'Requires access',
+    LOCKED_FILTER: 'Requires the markets filter', LOCKED_ROUTE: 'Choose the Markets Path', COMING_SOON: 'Next stage',
+  },
+  BUDGET_EXTRA: { AHORRO: 'Savings', INVERSION: 'Investment' },
+  DEBT_TYPES: {
+    TARJETA_CREDITO: 'Credit card', PRESTAMO_PERSONAL: 'Personal loan', CREDITO_AUTOMOTRIZ: 'Car loan',
+    HIPOTECA: 'Mortgage', CREDITO_NOMINA: 'Payroll loan', PRESTAMO_FAMILIAR: 'Family loan', BNPL: 'Installments / BNPL',
+    DEUDA_NEGOCIO: 'Business debt', IMPUESTOS: 'Pending taxes', OTRA: 'Other obligation',
+  },
+  TAX_ITEM_TYPES: {
+    NEGOCIO: 'Business', INVERSION_FINANCIERA: 'Financial investment', BIEN_INMUEBLE: 'Real estate property', RENTA_ACTIVOS: 'Asset rental',
+    PARTICIPACION_EMPRESA: 'Company stake', CRIPTOACTIVOS: 'Crypto assets', OTRA: 'Other investment',
+  },
+  RESULT_PERIODS: { MENSUAL: 'Monthly', TRIMESTRAL: 'Quarterly', SEMESTRAL: 'Semiannual', ANUAL: 'Annual', PERSONALIZADO: 'Custom' },
+  SCENARIO_TYPES: { AHORRO: 'Savings', INVERSION: 'Investment', META: 'Financial goal', EFECTIVO: 'Cash', OTRO: 'Other' },
+  ESSENTIAL_SOURCES: { MOVEMENTS: 'Actual income and expense records', BUDGET: 'Planned budget from Module 7', DECLARED: 'Amount you declared', NONE: 'No information' },
+  BLOCK_TITLES: { 1: 'Fundamentals, investing and risk', 2: 'Wealth organization and growth' },
+};
+
+const MAPS = {
+  INCOME_CATEGORIES, EXPENSE_CATEGORIES, PROTECTION_TYPES, MOVEMENT_TYPES, APPOINTMENT_STATUS, APPOINTMENT_CHANNELS, ACCESS_MODES,
+  PAYMENT_STATUS, ADMIN_LEVELS, PRODUCT_TYPES, HORIZONS, LIQUIDITY_LEVELS, PERCEIVED_RISK, RISK_TOLERANCE, FINANCIAL_GOALS,
+  AUTOMATION_LEVELS, MONITORING_LEVELS, DEBT_TYPES, TAX_ITEM_TYPES, RESULT_PERIODS, SCENARIO_TYPES, ESSENTIAL_SOURCES, BLOCK_TITLES,
+};
+
+const ES = {
+  ...Object.fromEntries(Object.entries(MAPS).map(([name, map]) => [name, { ...map }])),
+  APPOINTMENT_REASONS: [...APPOINTMENT_REASONS],
+  MODULE_STATE: Object.fromEntries(Object.entries(MODULE_STATE).map(([key, state]) => [key, state.label])),
+  BUDGET_EXTRA: { AHORRO: BUDGET_LABELS.AHORRO, INVERSION: BUDGET_LABELS.INVERSION },
+};
+
+const OPTION_SOURCES = {
+  income: INCOME_CATEGORIES, expense: EXPENSE_CATEGORIES, protection: PROTECTION_TYPES, movement: MOVEMENT_TYPES, channel: APPOINTMENT_CHANNELS,
+  productTypes: PRODUCT_TYPES, horizons: HORIZONS, liquidity: LIQUIDITY_LEVELS, risk: PERCEIVED_RISK, tolerance: RISK_TOLERANCE,
+  goals: FINANCIAL_GOALS, automation: AUTOMATION_LEVELS, monitoring: MONITORING_LEVELS, debtTypes: DEBT_TYPES,
+  taxItemTypes: TAX_ITEM_TYPES, resultPeriods: RESULT_PERIODS, scenarioTypes: SCENARIO_TYPES,
+};
+
+let currentLang = 'es';
+
+export function applyLabels(lang) {
+  const next = lang === 'en' ? 'en' : 'es';
+  if (next === currentLang) return;
+  currentLang = next;
+  const dict = next === 'en' ? EN : ES;
+  Object.entries(MAPS).forEach(([name, map]) => Object.assign(map, dict[name]));
+  APPOINTMENT_REASONS.splice(0, APPOINTMENT_REASONS.length, ...dict.APPOINTMENT_REASONS);
+  Object.entries(dict.MODULE_STATE).forEach(([key, label]) => { MODULE_STATE[key].label = label; });
+  Object.assign(BUDGET_LABELS, EXPENSE_CATEGORIES, dict.BUDGET_EXTRA);
+  Object.entries(OPTION_SOURCES).forEach(([key, map]) => { options[key] = toOptions(map); });
+}

@@ -8,25 +8,28 @@ import { ErrorState, Loading } from '../components/ui/States.jsx';
 import { SecurityNavButton } from '../features/security/AccountSecurity.jsx';
 import { ADMIN_LEVELS } from '../utils/labels.js';
 import { AppLayout } from './AppLayout.jsx';
+import { useI18n } from '../i18n/I18nContext.jsx';
+import { LanguageSwitcher } from '../components/ui/LanguageSwitcher.jsx';
 
 const NAV = [
-  { group: 'General' },
-  { to: '/admin', icon: '◎', label: 'Dashboard', end: true },
-  { to: '/admin/clientes', icon: '◫', label: 'Clientes' },
-  { to: '/admin/solicitudes', icon: '✉', label: 'Solicitudes de información' },
-  { to: '/admin/citas', icon: '◌', label: 'Citas de asesoría' },
-  { group: 'Contenido' },
-  { to: '/admin/archivos', icon: '▤', label: 'Academia / archivos' },
-  { group: 'Comercial' },
-  { to: '/admin/precios', icon: '◇', label: 'Precios y accesos' },
-  { to: '/admin/pagos', icon: '⇄', label: 'Pagos de prueba' },
-  { group: 'Sistema' },
-  { to: '/admin/integraciones', icon: '⚙', label: 'Integraciones' },
-  { to: '/admin/equipo', icon: '◈', label: 'Administradores', full: true },
+  { group: 'general' },
+  { to: '/admin', icon: '◎', label: 'dashboard', end: true },
+  { to: '/admin/clientes', icon: '◫', label: 'clients' },
+  { to: '/admin/solicitudes', icon: '✉', label: 'leads' },
+  { to: '/admin/citas', icon: '◌', label: 'appointments' },
+  { group: 'content' },
+  { to: '/admin/archivos', icon: '▤', label: 'files' },
+  { group: 'commercial' },
+  { to: '/admin/precios', icon: '◇', label: 'pricing' },
+  { to: '/admin/pagos', icon: '⇄', label: 'payments' },
+  { group: 'system' },
+  { to: '/admin/integraciones', icon: '⚙', label: 'integrations' },
+  { to: '/admin/equipo', icon: '◈', label: 'team', full: true },
 ];
 
 export function AdminLayout() {
   const { user, logout } = useAuth();
+  const { t, lang } = useI18n();
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   useEffect(() => {
@@ -38,25 +41,26 @@ export function AdminLayout() {
       <aside className="sidebar">
         <div className="sidebar-top">
           <Brand to="/admin" />
-          <button type="button" className="icon-btn menu-toggle" onClick={() => setMenuOpen((v) => !v)} aria-label="Abrir menú" aria-expanded={menuOpen}>{menuOpen ? '×' : '☰'}</button>
+          <button type="button" className="icon-btn menu-toggle" onClick={() => setMenuOpen((v) => !v)} aria-label={t('app.openMenu')} aria-expanded={menuOpen}>{menuOpen ? '×' : '☰'}</button>
         </div>
         <nav className="nav">
           {NAV.filter((n) => !n.full || user?.adminLevel === 'FULL').map((n) =>
             n.group ? (
-              <div key={n.group} className="nav-group">{n.group}</div>
+              <div key={n.group} className="nav-group">{t(`app.adminNav.${n.group}`)}</div>
             ) : (
               <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => (isActive ? 'active' : '')}>
-                <span className="ico">{n.icon}</span>{n.label}
+                <span className="ico">{n.icon}</span>{t(`app.adminNav.${n.label}`)}
               </NavLink>
             ),
           )}
           <SecurityNavButton />
-          <button type="button" className="nav-logout" onClick={logout}><span className="ico">⎋</span>Cerrar sesión</button>
+          <button type="button" className="nav-logout" onClick={logout}><span className="ico">⎋</span>{t('app.logout')}</button>
         </nav>
-        <div className="userbox">Administrador: {user?.name}<br /><span>{ADMIN_LEVELS[user?.adminLevel] || 'Sin nivel asignado'}</span></div>
+        <div className="sidebar-lang"><LanguageSwitcher /></div>
+        <div className="userbox">{t('app.admin')}: {user?.name}<br /><span>{ADMIN_LEVELS[user?.adminLevel] || t('app.noLevel')}</span></div>
       </aside>
       <main className="main">
-        <div className="page-enter" key={location.pathname}><Outlet /></div>
+        <div className="page-enter" key={`${location.pathname}-${lang}`}><Outlet /></div>
         <Disclaimer />
       </main>
     </div>

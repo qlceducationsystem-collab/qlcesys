@@ -8,40 +8,41 @@ import { DataTable } from '../../components/ui/DataTable.jsx';
 import { RequirePeriod } from '../../features/periods/PeriodControls.jsx';
 import { AllocationBars, ReadingCard } from '../../features/academy/AllocationView.jsx';
 import { modulePath } from '../../features/academy/useAcademy.js';
+import { tr } from '../../i18n/tr.js';
 
 function Body({ s, allocation }) {
   const { basePath } = useWorkspace();
   if (!s.portfolio.products.length) {
     return (
       <Empty
-        title="Sin distribución todavía"
-        text="Registra tus productos en el Módulo 2 o en Mi cartera para ver cómo está distribuido tu patrimonio."
-        action={<Link className="btn-primary" to={modulePath(basePath, 2)}>Ir al mapa de productos</Link>}
+        title={tr('Sin distribución todavía')}
+        text={tr('Registra tus productos en el Módulo 2 o en Mi cartera para ver cómo está distribuido tu patrimonio.')}
+        action={<Link className="btn-primary" to={modulePath(basePath, 2)}>{tr('Ir al mapa de productos')}</Link>}
       />
     );
   }
   return (
     <>
       <div className="layout">
-        <Card title={`Distribución por categoría · ${money(allocation.total)}`}>
+        <Card title={tr('Distribución por categoría · {total}', { total: money(allocation.total) })}>
           <AllocationBars allocation={allocation} />
-          {allocation.pendingBreakdown > 0 && <p className="small muted">{money(allocation.pendingBreakdown)} del diagnóstico aún no están desglosados en productos.</p>}
+          {allocation.pendingBreakdown > 0 && <p className="small muted">{money(allocation.pendingBreakdown)}{' '}{tr('del diagnóstico aún no están desglosados en productos.')}</p>}
         </Card>
         <ReadingCard reading={allocation.reading} />
       </div>
-      <Card title="Detalle por producto">
+      <Card title={tr('Detalle por producto')}>
         <DataTable
           rowKey="positionId"
           rows={[...s.portfolio.products].sort((a, b) => b.final - a.final)}
           columns={[
-            { key: 'name', label: 'Producto' },
-            { key: 'categoryName', label: 'Categoría' },
-            { key: 'final', label: 'Capital', align: 'right', render: (p) => money(p.final) },
-            { key: 'share', label: '% de la cartera', align: 'right', render: (p) => pct(p.share) },
+            { key: 'name', label: tr('Producto') },
+            { key: 'categoryName', label: tr('Categoría') },
+            { key: 'final', label: tr('Capital'), align: 'right', render: (p) => money(p.final) },
+            { key: 'share', label: tr('% de la cartera'), align: 'right', render: (p) => pct(p.share) },
           ]}
         />
       </Card>
-      <p className="small muted">Una cartera no debe evaluarse únicamente por rendimiento potencial: también importan su liquidez, riesgo, horizonte y función dentro del patrimonio.</p>
+      <p className="small muted">{tr('Una cartera no debe evaluarse únicamente por rendimiento potencial: también importan su liquidez, riesgo, horizonte y función dentro del patrimonio.')}</p>
     </>
   );
 }
@@ -50,7 +51,7 @@ export default function Allocation() {
   const res = usePeriodSummary();
   return (
     <RequirePeriod>
-      <PageHeader title="Allocation / distribución patrimonial" subtitle="¿De dónde proviene tu patrimonio?" />
+      <PageHeader title={tr('Allocation / distribución patrimonial')} subtitle={tr('¿De dónde proviene tu patrimonio?')} />
       <AsyncView {...res} data={res.data} onRetry={res.reload}>{(d) => <Body s={d.summary} allocation={d.allocation} />}</AsyncView>
     </RequirePeriod>
   );

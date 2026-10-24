@@ -11,6 +11,7 @@ import { Field, FormError, Select } from '../../components/ui/Form.jsx';
 import { AsyncView } from '../../components/ui/States.jsx';
 import { DataTable } from '../../components/ui/DataTable.jsx';
 import { accessPill } from './AdminClients.jsx';
+import { tr } from '../../i18n/tr.js';
 
 function GrantManager({ client, onSaved }) {
   const offers = useAsync(() => api.get('/admin/pricing'), []);
@@ -31,25 +32,25 @@ function GrantManager({ client, onSaved }) {
   };
 
   return (
-    <Card title="Accesos del cliente">
-      <DataTable rows={client.grants} empty="Sin accesos otorgados." columns={[
-        { key: 'offer', label: 'Producto' },
-        { key: 'startsAt', label: 'Inicio', render: (g) => date(g.startsAt) },
-        { key: 'expiresAt', label: 'Vence', render: (g) => (g.expiresAt ? date(g.expiresAt) : 'Sin vencimiento') },
-        { key: 'origin', label: 'Origen', render: (g) => (g.paymentAttemptId ? 'Pago' : 'Manual') },
-        { key: 'active', label: 'Estado', render: (g) => <Pill variant={g.active ? '' : 'muted'}>{g.active ? 'Activo' : 'Revocado'}</Pill> },
-        { key: 'x', label: '', render: (g) => g.active && <button type="button" className="btn-link danger" onClick={() => setDialog({ kind: 'revoke', grant: g })}>Revocar</button> },
+    <Card title={tr('Accesos del cliente')}>
+      <DataTable rows={client.grants} empty={tr('Sin accesos otorgados.')} columns={[
+        { key: 'offer', label: tr('Producto') },
+        { key: 'startsAt', label: tr('Inicio'), render: (g) => date(g.startsAt) },
+        { key: 'expiresAt', label: tr('Vence'), render: (g) => (g.expiresAt ? date(g.expiresAt) : tr('Sin vencimiento')) },
+        { key: 'origin', label: tr('Origen'), render: (g) => (g.paymentAttemptId ? tr('Pago') : tr('Manual')) },
+        { key: 'active', label: tr('Estado'), render: (g) => <Pill variant={g.active ? '' : 'muted'}>{g.active ? tr('Activo') : tr('Revocado')}</Pill> },
+        { key: 'x', label: '', render: (g) => g.active && <button type="button" className="btn-link danger" onClick={() => setDialog({ kind: 'revoke', grant: g })}>{tr('Revocar')}</button> },
       ]} />
-      <Field label="Otorgar acceso manual (cortesía o corrección)">
+      <Field label={tr('Otorgar acceso manual (cortesía o corrección)')}>
         <Select value={offerCode} onChange={(e) => setOfferCode(e.target.value)} options={(offers.data || []).map((o) => ({ value: o.code, label: o.name }))} />
       </Field>
-      <Button onClick={() => setDialog({ kind: 'grant' })}>Otorgar acceso</Button>
+      <Button onClick={() => setDialog({ kind: 'grant' })}>{tr('Otorgar acceso')}</Button>
       <ConfirmDialog
         open={!!dialog}
-        title={dialog?.kind === 'revoke' ? 'Revocar acceso' : 'Otorgar acceso'}
+        title={dialog?.kind === 'revoke' ? tr('Revocar acceso') : tr('Otorgar acceso')}
         danger={dialog?.kind === 'revoke'}
         loading={state.busy}
-        message={dialog?.kind === 'revoke' ? `Se revocará “${dialog.grant.offer}”. Los datos del cliente se conservan.` : `Se otorgará el acceso seleccionado a ${client.name}.`}
+        message={dialog?.kind === 'revoke' ? tr('Se revocará “{offer}”. Los datos del cliente se conservan.', { offer: dialog.grant.offer }) : tr('Se otorgará el acceso seleccionado a {name}.', { name: client.name })}
         onConfirm={() => run(() => (dialog.kind === 'revoke'
           ? api.post(`/admin/clients/${client.id}/grants/${dialog.grant.id}/revoke`)
           : api.post(`/admin/clients/${client.id}/grants`, { offerCode })))}
@@ -78,13 +79,13 @@ function TwoFactorReset({ client, onSaved }) {
   if (!client.twoFactorEnabled) return null;
   return (
     <>
-      <Button variant="secondary" onClick={() => setOpen(true)}>Restablecer 2FA</Button>
+      <Button variant="secondary" onClick={() => setOpen(true)}>{tr('Restablecer 2FA')}</Button>
       <ConfirmDialog
         open={open}
-        title="Restablecer verificación en dos pasos"
+        title={tr('Restablecer verificación en dos pasos')}
         danger
         loading={state.busy}
-        message={`${client.name} deberá configurar de nuevo Google Authenticator en su próximo inicio de sesión con contraseña.`}
+        message={tr('{name} deberá configurar de nuevo Google Authenticator en su próximo inicio de sesión con contraseña.', { name: client.name })}
         onConfirm={confirm}
         onClose={() => setOpen(false)}
       >
@@ -103,19 +104,19 @@ export default function AdminClientDetail() {
     <AsyncView {...client} onRetry={client.reload}>
       {(c) => (
         <>
-          <Link className="btn-secondary back" to="/admin/clientes">← Clientes</Link>
-          <PageHeader title={c.name} subtitle={c.email} actions={<Link className="btn-primary" to={`/admin/clientes/${c.id}/app`}>Ver / gestionar como cliente</Link>} />
+          <Link className="btn-secondary back" to="/admin/clientes">{tr('← Clientes')}</Link>
+          <PageHeader title={c.name} subtitle={c.email} actions={<Link className="btn-primary" to={`/admin/clientes/${c.id}/app`}>{tr('Ver / gestionar como cliente')}</Link>} />
           <div className="layout">
-            <Card title="Información">
-              <Row label="Acceso" value={accessPill(c.access)} />
-              {c.access.full && <Row label="Acceso anual vigente hasta" value={date(c.access.full.expiresAt)} />}
-              <Row label="Módulos completados" value={`${c.completedModules} / 12`} />
-              <Row label="Verificación en dos pasos" value={<Pill variant={c.twoFactorEnabled ? '' : 'warn'}>{c.twoFactorEnabled ? 'Activa' : 'Pendiente'}</Pill>} />
+            <Card title={tr('Información')}>
+              <Row label={tr('Acceso')} value={accessPill(c.access)} />
+              {c.access.full && <Row label={tr('Acceso anual vigente hasta')} value={date(c.access.full.expiresAt)} />}
+              <Row label={tr('Módulos completados')} value={`${c.completedModules} / 12`} />
+              <Row label={tr('Verificación en dos pasos')} value={<Pill variant={c.twoFactorEnabled ? '' : 'warn'}>{c.twoFactorEnabled ? tr('Activa') : tr('Pendiente')}</Pill>} />
               {user?.adminLevel === 'FULL' && <TwoFactorReset client={c} onSaved={client.reload} />}
-              <Row label="Teléfono" value={c.phone || '—'} />
-              <Row label="Último acceso" value={dateTime(c.lastLoginAt)} />
-              <Row label="Periodos / cortes / citas" value={`${c.counts.periods} / ${c.counts.monthlyCloses} / ${c.counts.appointments}`} />
-              <Row label="Cliente desde" value={date(c.createdAt)} />
+              <Row label={tr('Teléfono')} value={c.phone || '—'} />
+              <Row label={tr('Último acceso')} value={dateTime(c.lastLoginAt)} />
+              <Row label={tr('Periodos / cortes / citas')} value={`${c.counts.periods} / ${c.counts.monthlyCloses} / ${c.counts.appointments}`} />
+              <Row label={tr('Cliente desde')} value={date(c.createdAt)} />
             </Card>
             {user?.adminLevel === 'FULL' && <GrantManager client={c} onSaved={client.reload} />}
           </div>

@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { money, pct } from '../../utils/format.js';
+import { tr } from '../../i18n/tr.js';
 
 export function BarChart({ data, height = 190, format = money, ariaLabel = 'Gráfica' }) {
   const [hover, setHover] = useState(null);
-  if (!data.length) return <div className="chart-empty">Sin datos suficientes para graficar.</div>;
+  if (!data.length) return <div className="chart-empty">{tr('Sin datos suficientes para graficar.')}</div>;
   const values = data.map((d) => Number(d.value) || 0);
   const max = Math.max(...values, 0);
   const min = Math.min(...values, 0);
@@ -35,9 +36,9 @@ export function BarChart({ data, height = 190, format = money, ariaLabel = 'Grá
               />
               {hover === i && (
                 <div className="tooltip" role="tooltip">
-                  <b>{d.label}</b>
+                  <b>{tr(d.label)}</b>
                   <span>{format(v)}</span>
-                  {d.hint && <span className="small">{d.hint}</span>}
+                  {d.hint && <span className="small">{tr(d.hint)}</span>}
                 </div>
               )}
             </div>
@@ -45,20 +46,20 @@ export function BarChart({ data, height = 190, format = money, ariaLabel = 'Grá
         })}
       </div>
       <div className="bars-axis">
-        {data.map((d, i) => <span key={d.label + i}>{d.label}</span>)}
+        {data.map((d, i) => <span key={d.label + i}>{tr(d.label)}</span>)}
       </div>
     </figure>
   );
 }
 
 export function DistributionBars({ items, emptyText = 'Sin datos para mostrar la distribución.' }) {
-  if (!items.length) return <div className="chart-empty">{emptyText}</div>;
+  if (!items.length) return <div className="chart-empty">{tr(emptyText)}</div>;
   return (
     <div className="dist">
       {items.map((it) => (
         <div className="dist-item" key={it.key} title={`${it.label}: ${money(it.value)} · ${pct(it.share)}`}>
           <div className="row">
-            <span>{it.label}</span>
+            <span>{tr(it.label)}</span>
             <span className="dist-values">
               <span className="small">{money(it.value)}</span>
               <b>{pct(it.share)}</b>
