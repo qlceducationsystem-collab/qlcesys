@@ -98,13 +98,12 @@ const SLIDE_RENDERERS = {
   modulos: ({ c, section }) => (
     <div className="ps-container ta-slide">
       <SectionHead section={section} compact />
-      <div className="ta-modules ta-fill">
-        {c.modules.map(([title, text, tags], i) => (
+      <div className="ta-modules">
+        {c.modules.map(([title, text], i) => (
           <article key={title} className="ta-module reveal-card" style={{ '--c': i }}>
             <span className="ta-module-num">{c.moduleLabel} {String(i + 1).padStart(2, '0')}</span>
             <b>{title}</b>
             <p>{text}</p>
-            <div className="ta-tags">{tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
           </article>
         ))}
       </div>

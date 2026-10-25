@@ -12,7 +12,7 @@ export const es = {
     legalFull: 'Aviso legal',
     terms: 'Términos y condiciones',
     privacy: 'Aviso de privacidad',
-    tradingInstitutional: 'Trading Institucional',
+    tradingInstitutional: 'Institutional Trading Academy',
     processing: 'Procesando…',
     passwordMismatch: 'Las contraseñas no coinciden',
     disclaimer: 'Herramienta educativa y de organización financiera. No constituye asesoría financiera personalizada ni garantiza rendimientos.',

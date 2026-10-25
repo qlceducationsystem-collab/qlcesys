@@ -78,7 +78,6 @@ export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal, extr
             {extra.label}
           </Link>
           <div className="pnav-sheet-actions">
-            {!home && <Link className="pbtn pbtn-ghost" to="/login">{t('common.login')}</Link>}
             {onLegal && <button type="button" className="pbtn pbtn-ghost" onClick={onLegal}>{t('common.legalFull')}</button>}
           </div>
         </div>

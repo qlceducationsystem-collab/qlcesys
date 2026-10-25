@@ -59,14 +59,12 @@
 .ta-structure dd { margin: 0; font-weight: 700; font-size: 16px; white-space: nowrap; }
 .ta-structure dd.is-highlight { color: var(--blue2); font-size: 18px; }
 
-.ta-modules { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr); gap: clamp(8px, 1vw, 12px); }
-.ta-module { min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 4px; padding: clamp(10px, 1.6dvh, 16px); border: 1px solid var(--line); border-radius: 16px; background: linear-gradient(155deg, var(--panel2), var(--bg2)); transition: border-color 0.2s ease; }
+.ta-modules { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 1fr; align-content: start; gap: clamp(8px, 1vw, 12px); }
+.ta-module { display: flex; flex-direction: column; gap: 4px; padding: clamp(10px, 1.6dvh, 16px); border: 1px solid var(--line); border-radius: 16px; background: linear-gradient(155deg, var(--panel2), var(--bg2)); transition: border-color 0.2s ease; }
 .ta-module:hover { border-color: rgba(0, 168, 255, 0.4); }
 .ta-module-num { color: var(--blue2); font-size: 10.5px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
 .ta-module b { font-size: clamp(13.5px, min(1.15vw, 2dvh), 16px); line-height: 1.25; }
-.ta-module p { margin: 0; color: #aebdca; font-size: clamp(11.5px, min(0.95vw, 1.65dvh), 13px); line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-.ta-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: auto; padding-top: 4px; }
-.ta-tags span { padding: 3px 8px; border: 1px solid var(--line2); border-radius: 999px; color: var(--silver); font-size: 10px; }
+.ta-module p { margin: 0; color: #aebdca; font-size: clamp(11.5px, min(0.95vw, 1.65dvh), 13px); line-height: 1.5; }
 
 .ta-faq { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-content: start; }
 .ta-faq details { padding: clamp(12px, 2dvh, 18px) 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg2); }
@@ -86,7 +84,7 @@
   .ta-split { grid-template-columns: minmax(0, 1fr); }
   .ta-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ta-modules { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .ta-module p, .ta-details section, .ta-metrics, .ta-note { display: none; }
+  .ta-details section, .ta-metrics, .ta-note { display: none; }
   .ta-visual { width: auto; aspect-ratio: 1 / 1; max-width: 100%; padding: 12px; border-radius: 22px; }
   .ta-faq { grid-template-columns: minmax(0, 1fr); }
   .ta-cta { flex-direction: column; align-items: flex-start; }
@@ -94,12 +92,13 @@
 }
 
 @media (max-width: 480px) {
-  .ta-fact small, .ta-tags, .ta-fact .ta-icon { display: none; }
+  .ta-modules { grid-template-columns: minmax(0, 1fr); grid-auto-rows: auto; }
+  .ta-fact small, .ta-fact .ta-icon { display: none; }
   .ta-panel .pbtn, .ta-cta .pbtn { align-self: stretch; }
 }
 
 @media (max-height: 760px) {
-  .ta-module p, .ta-details section, .ta-note { display: none; }
+  .ta-details section, .ta-note { display: none; }
 }
 
 @media (max-height: 620px) {

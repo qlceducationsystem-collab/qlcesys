@@ -1,7 +1,7 @@
 import { money } from '../../../utils/format.js';
 import { responsiveImage } from '../../../utils/media.js';
 import { useI18n } from '../../../i18n/I18nContext.jsx';
-import { MoreInfo, SectionCtas, SectionHead } from './SectionParts.jsx';
+import { CtaButton, MoreInfo, SectionCtas, SectionHead } from './SectionParts.jsx';
 
 const hasPrice = (offer) => offer?.price !== null && offer?.price !== undefined;
 const priceLabel = (offer, t) => (hasPrice(offer) ? `${money(offer.price)} ${offer.currency}` : t('public.priceTbd'));
@@ -111,6 +111,24 @@ export function AccessSection({ section, offers, go }) {
         </article>
       </div>
       <SectionCtas section={section} go={go} />
+    </div>
+  );
+}
+
+export function RoutesSection({ section, go }) {
+  return (
+    <div className="ps-container routes">
+      <SectionHead section={section} compact />
+      <div className="routes-grid">
+        {(section.items || []).map((r, i) => (
+          <article key={r.title} className={`access-card route-card reveal-card ${r.gold ? 'is-gold' : i === 0 ? 'is-featured' : ''}`} style={{ '--c': i }}>
+            <span className="access-tag">{r.tag}</span>
+            <h3>{r.title}</h3>
+            <p>{r.text}</p>
+            <CtaButton label={r.cta} target={r.target} go={go} variant={i === 0 ? 'primary' : 'ghost'} />
+          </article>
+        ))}
+      </div>
     </div>
   );
 }

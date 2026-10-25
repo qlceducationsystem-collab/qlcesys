@@ -19,6 +19,18 @@ const ES = [
     ],
   },
   {
+    key: 'rutas',
+    navLabel: 'Rutas',
+    eyebrow: 'Tres productos · Una visión',
+    title: 'Elige tu ruta de formación.',
+    description: 'QLC Institutional Investment Academy reúne tres soluciones complementarias: educación financiera para organizar y comprender tu patrimonio, formación especializada en trading para estudiar los mercados con un enfoque cuantitativo y copytrading institucional para quienes buscan acceder a estrategias de trading gestionadas bajo una metodología estructurada.',
+    items: [
+      { tag: 'Ruta 01 · Fundamentos', title: 'Educación financiera', text: 'Aprende a conocer tu situación financiera, organizar tus ingresos y gastos, construir una cartera y entender cómo se relacionan riesgo, rendimiento e inflación.', cta: 'Explorar educación financiera', target: 'curso' },
+      { tag: 'Ruta 02 · Formación avanzada', title: 'Curso de trading', text: 'Estudia el mercado con un proceso estructurado: hipótesis, datos, estadística, pruebas históricas, medición de escenarios y gestión de riesgo.', cta: 'Explorar curso de trading', target: '/trading-academy' },
+      { tag: 'Ruta 03 · Copytrading', title: 'Copytrading institucional', text: 'Accede a estrategias de trading gestionadas bajo una metodología estructurada, conociendo antes su funcionamiento, condiciones y riesgos.', cta: 'Conocer Copytrading', target: 'filtro-qlc', gold: true },
+    ],
+  },
+  {
     key: 'curso',
     navLabel: 'Formación Financiera',
     navHighlight: true,
@@ -117,6 +129,18 @@ const EN = [
       { title: '8 classes', text: 'Free access' },
       { title: '12 modules', text: 'Full program' },
       { title: '2 blocks', text: 'Investing and wealth' },
+    ],
+  },
+  {
+    key: 'rutas',
+    navLabel: 'Paths',
+    eyebrow: 'Three products · One vision',
+    title: 'Choose your learning path.',
+    description: 'QLC Institutional Investment Academy brings together three complementary solutions: financial education to organize and understand your wealth, specialized trading training to study the markets with a quantitative approach, and institutional copytrading for those who want to access trading strategies managed under a structured methodology.',
+    items: [
+      { tag: 'Path 01 · Fundamentals', title: 'Financial education', text: 'Learn to understand your financial situation, organize your income and expenses, build a portfolio and see how risk, return and inflation relate to each other.', cta: 'Explore financial education', target: 'curso' },
+      { tag: 'Path 02 · Advanced training', title: 'Trading course', text: 'Study the market with a structured process: hypotheses, data, statistics, historical testing, scenario measurement and risk management.', cta: 'Explore the trading course', target: '/trading-academy' },
+      { tag: 'Path 03 · Copytrading', title: 'Institutional copytrading', text: 'Access trading strategies managed under a structured methodology, knowing their operation, conditions and risks beforehand.', cta: 'Discover Copytrading', target: 'filtro-qlc', gold: true },
     ],
   },
   {
