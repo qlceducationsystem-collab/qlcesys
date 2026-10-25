@@ -7,34 +7,26 @@ import { BRAND_FULL } from '../../components/layout/Brand.jsx';
 import { CheckoutModal, offerPrice } from './CheckoutModal.jsx';
 import { tr } from '../../i18n/tr.js';
 
-const TOOL_LABELS = {
-  1: 'Diagnóstico financiero',
-  2: 'Mapa de productos',
-  3: 'Constructor de cartera',
-  4: 'Riesgo y exposición',
-  5: 'Simulador de operación',
-  6: 'Operación profesional',
-  7: 'Presupuesto y control',
-  8: 'Fondo de emergencia',
-  9: 'Panel de obligaciones',
-  10: 'Rendimiento neto',
-  11: 'Poder adquisitivo',
-  12: 'Evolución patrimonial',
-};
+const TOOL_LABELS = [
+  'Diagnóstico financiero', 'Mapa de productos', 'Constructor de cartera', 'Riesgo y exposición', 'Simulador de operación', 'Operación profesional',
+  'Presupuesto y control', 'Fondo de emergencia', 'Panel de obligaciones', 'Rendimiento neto', 'Poder adquisitivo', 'Evolución patrimonial',
+];
 
 export function AccessOffers({ title = 'Dos formas de adquirir QLC Financial Education', compact }) {
   const { accessInfo, access } = useAuth();
   const [selected, setSelected] = useState(null);
   const offers = accessInfo?.offers || [];
   const full = offers.find((o) => o.type === 'FULL_ANNUAL');
-  const tools = offers.filter((o) => o.type === 'TOOL_ONLY');
+  const tools = offers.find((o) => o.type === 'TOOL_ONLY');
+  const toolsOwned = !!access.full || access.tools.length === TOOL_LABELS.length;
+  const toolsUntil = toolsOwned && !access.full ? access.toolAccess.reduce((min, t) => (t.expiresAt && (!min || t.expiresAt < min) ? t.expiresAt : min), null) : null;
 
   return (
     <section className={`offers ${compact ? 'is-compact' : ''}`}>
       <header className="offers-head">
         <div className="section-kicker">{tr(BRAND_FULL)}</div>
         <h2>{tr(title)}</h2>
-        <p className="muted">{tr('Elige el programa completo o adquiere únicamente las herramientas que necesitas. Los datos que registres siempre se conservan.')}</p>
+        <p className="muted">{tr('Elige el programa completo o adquiere únicamente las herramientas. Los datos que registres siempre se conservan.')}</p>
       </header>
       <div className="offers-grid">
         {full && (
@@ -55,24 +47,26 @@ export function AccessOffers({ title = 'Dos formas de adquirir QLC Financial Edu
             <Button onClick={() => setSelected(full)}>{access.full ? tr('Renovar acceso anual') : tr('Adquirir acceso completo')}</Button>
           </article>
         )}
-        <article className="offer-card">
-          <div className="offer-top"><span className="offer-tag">{tr('Opción 2')}</span></div>
-          <h3>{tr('Solo herramientas')}</h3>
-          <p>{tr('Sin la academia: pagas una mensualidad por la herramienta práctica de cada módulo que necesites.')}</p>
-          <ul className="offer-tools">
-            {tools.map((t) => {
-              const owned = !!access.full || access.tools.includes(t.moduleNumber);
-              const until = access.toolAccess?.find((x) => x.moduleNumber === t.moduleNumber)?.expiresAt;
-              return (
-                <li key={t.code} className={owned ? 'is-owned' : ''}>
-                  <span className="offer-tool-n">M{t.moduleNumber}</span>
-                  <span className="offer-tool-name">{TOOL_LABELS[t.moduleNumber] || t.name}<small>{offerPrice(t)}{' '}{tr('/ mes')}{until && !access.full ? tr(' · vigente hasta {date}', { date: date(until) }) : ''}</small></span>
-                  {owned && !until ? <Pill>{tr('Activa')}</Pill> : <Button variant="secondary" onClick={() => setSelected(t)}>{owned ? 'Renovar' : 'Suscribirme'}</Button>}
+        {tools && (
+          <article className="offer-card">
+            <div className="offer-top">
+              <span className="offer-tag">{tr('Opción 2')}</span>
+              {toolsUntil && <Pill>{tr('Activo hasta {date}', { date: date(toolsUntil) })}</Pill>}
+            </div>
+            <h3>{tr('Solo herramientas')}</h3>
+            <p>{tr('Sin la academia: un solo pago mensual te da acceso a las 12 herramientas prácticas.')}</p>
+            <ul className="offer-tools">
+              {TOOL_LABELS.map((label, i) => (
+                <li key={label} className={toolsOwned ? 'is-owned' : ''}>
+                  <span className="offer-tool-n">M{i + 1}</span>
+                  <span className="offer-tool-name">{tr(label)}</span>
                 </li>
-              );
-            })}
-          </ul>
-        </article>
+              ))}
+            </ul>
+            <div className="offer-price">{offerPrice(tools)}{' '}{tr('/ mes')}</div>
+            {toolsOwned && !toolsUntil ? <Pill>{tr('Activa')}</Pill> : <Button variant="secondary" onClick={() => setSelected(tools)}>{toolsOwned ? tr('Renovar herramientas') : tr('Suscribirme a las herramientas')}</Button>}
+          </article>
+        )}
       </div>
       {selected && <CheckoutModal offer={selected} onClose={() => setSelected(null)} />}
     </section>

@@ -84,16 +84,17 @@ export function Register() {
   const { register } = useAuth();
   const { t } = useI18n();
   const nav = useNavigate();
-  const f = useForm({ name: '', email: '', phone: '', password: '', confirm: '' });
+  const f = useForm({ name: '', email: '', confirmEmail: '', password: '', confirm: '' });
   const [local, setLocal] = useState(null);
   const [accepted, setAccepted] = useState(false);
   const submit = (e) => {
     e.preventDefault();
+    if (f.values.email.trim().toLowerCase() !== f.values.confirmEmail.trim().toLowerCase()) return setLocal({ message: t('auth.register.emailMismatch') });
     if (f.values.password !== f.values.confirm) return setLocal({ message: t('common.passwordMismatch') });
     if (!accepted) return setLocal({ message: t('auth.register.acceptRequired') });
     setLocal(null);
-    f.run(async ({ confirm: _c, phone, ...v }) => {
-      await register({ ...v, ...(phone ? { phone } : {}), acceptLegal: true, legalVersion: LEGAL_VERSION });
+    f.run(async ({ confirm: _c, confirmEmail: _e, ...v }) => {
+      await register({ ...v, acceptLegal: true, legalVersion: LEGAL_VERSION });
       nav(SETUP_PATH, { replace: true, state: { from: '/app/acceso' } });
     });
   };
@@ -103,7 +104,7 @@ export function Register() {
       <form className="stack" onSubmit={submit}>
         <Field label={t('auth.register.name')}><Input required autoComplete="name" maxLength={120} {...f.bind('name')} /></Field>
         <Field label={t('auth.email')}><Input type="email" required autoComplete="email" {...f.bind('email')} /></Field>
-        <Field label={t('auth.register.phone')}><Input type="tel" autoComplete="tel" maxLength={30} {...f.bind('phone')} /></Field>
+        <Field label={t('auth.register.confirmEmail')}><Input type="email" required autoComplete="off" onPaste={(e) => e.preventDefault()} {...f.bind('confirmEmail')} /></Field>
         <Field label={t('auth.password')} hint={t('auth.minChars')}><Input type="password" required minLength={8} autoComplete="new-password" {...f.bind('password')} /></Field>
         <Field label={t('auth.confirmPassword')}><Input type="password" required minLength={8} autoComplete="new-password" {...f.bind('confirm')} /></Field>
         <label className="check legal-check">

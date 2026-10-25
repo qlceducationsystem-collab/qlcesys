@@ -28,7 +28,7 @@ function Body({ s, allocation }) {
           <AllocationBars allocation={allocation} />
           {allocation.pendingBreakdown > 0 && <p className="small muted">{money(allocation.pendingBreakdown)}{' '}{tr('del diagnóstico aún no están desglosados en productos.')}</p>}
         </Card>
-        <ReadingCard reading={allocation.reading} />
+        <ReadingCard reading={allocation.reading} shares={allocation.shares} />
       </div>
       <Card title={tr('Detalle por producto')}>
         <DataTable

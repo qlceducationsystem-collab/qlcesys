@@ -15,11 +15,11 @@ export function Card({ title, actions, children, className = '', ...rest }) {
   );
 }
 
-export function StatCard({ label, value, delta, deltaTone, accent }) {
+export function StatCard({ label, value, delta, deltaTone, accent, valueTone }) {
   return (
-    <div className={`card stat ${accent ? 'stat-accent' : ''}`}>
+    <div className={`card stat ${accent ? 'stat-accent' : ''} ${valueTone ? `stat-${valueTone}` : ''}`}>
       <div className="label">{tr(label)}</div>
-      <div className="value">{value}</div>
+      <div className="value" style={typeof value === 'string' || typeof value === 'number' ? { '--len': Math.max(String(value).length, 9) } : undefined}>{value}</div>
       {delta !== undefined && delta !== null && <div className={`delta ${deltaTone ?? ''}`}>{tr(delta)}</div>}
     </div>
   );

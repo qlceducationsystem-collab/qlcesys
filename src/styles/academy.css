@@ -151,11 +151,15 @@ a.module-tile:hover { transform: translateY(-2px); border-color: rgba(0, 168, 25
 .reading-head span { font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted2); }
 .reading-head strong { font-size: 26px; letter-spacing: -0.03em; }
 .reading-head em { font-style: normal; font-size: 12px; color: var(--muted); }
-.reading.tone-good { border-color: rgba(91, 212, 165, 0.3); }
-.reading.tone-good .reading-head strong { color: var(--green); }
-.reading.tone-info .reading-head strong { color: var(--blue2); }
-.reading.tone-warn .reading-head strong { color: var(--gold2); }
-.reading.tone-bad .reading-head strong { color: var(--red); }
+.reading.tone-good { --tone: var(--green); --tone-soft: rgba(91, 212, 165, 0.09); --tone-line: rgba(91, 212, 165, 0.38); }
+.reading.tone-warn { --tone: var(--gold2); --tone-soft: rgba(200, 155, 60, 0.09); --tone-line: rgba(200, 155, 60, 0.42); }
+.reading.tone-bad { --tone: var(--red); --tone-soft: rgba(196, 61, 75, 0.09); --tone-line: rgba(196, 61, 75, 0.42); }
+.reading[class*='tone-'] { border-color: var(--tone-line); background: linear-gradient(160deg, var(--tone-soft), rgba(8, 13, 19, 0.9) 60%); }
+.reading[class*='tone-'] .reading-head strong { color: var(--tone); }
+.reading[class*='tone-'] .reading-meter span { background: var(--tone); }
+.reading-summary { padding: 12px 14px; border-radius: 12px; border: 1px solid var(--tone-line, var(--line)); background: var(--tone-soft, transparent); }
+.reading-summary p { margin: 0 0 8px; font-size: 13px; font-weight: 650; color: var(--tone, var(--text)); line-height: 1.5; }
+.reading-summary ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 12px; color: var(--silver); line-height: 1.5; }
 .reading-parts { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .reading-parts li { display: grid; grid-template-columns: 1fr 90px 30px; gap: 10px; align-items: center; font-size: 12px; color: var(--silver); }
 .reading-parts small { color: var(--muted2); }

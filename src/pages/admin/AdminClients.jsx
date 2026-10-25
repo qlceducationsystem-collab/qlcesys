@@ -12,7 +12,7 @@ import { tr } from '../../i18n/tr.js';
 
 export const accessPill = (access) => (
   <Pill variant={access.mode === 'FULL' ? '' : access.mode === 'TOOLS' ? 'info' : 'muted'}>
-    {access.mode === 'TOOLS' ? `Herramientas ${access.tools.map((t) => `M${t}`).join(', ')}` : ACCESS_MODES[access.mode]}
+    {access.mode === 'TOOLS' ? (access.tools.length === 12 ? tr('Herramientas M1–M12') : `Herramientas ${access.tools.map((t) => `M${t}`).join(', ')}`) : ACCESS_MODES[access.mode]}
   </Pill>
 );
 

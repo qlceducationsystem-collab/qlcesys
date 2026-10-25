@@ -40,7 +40,7 @@ function CurrentPortfolio() {
               <p className="small muted">{money(allocation.pendingBreakdown)}{' '}{tr('siguen por desglosar desde tu diagnóstico y no se incluyen en la lectura.')}</p>
             )}
           </div>
-          <ReadingCard reading={allocation.reading} />
+          <ReadingCard reading={allocation.reading} shares={allocation.shares} />
         </div>
       )}
       <p className="small muted">{tr('Esta misma distribución se mantiene actualizada en')}{' '}<Link to={`${basePath}/allocation`}>{tr('Allocation')}</Link>.</p>
@@ -73,7 +73,7 @@ function EducationalSimulation() {
             <AllocationBars allocation={sim.result} />
             <MetricCard label={tr('Cartera simulada')} value={money(sim.result.total)} hint={tr('{n} / 6 categorías', { n: sim.result.categoriesUsed })} />
           </div>
-          <ReadingCard reading={sim.result.reading} />
+          <ReadingCard reading={sim.result.reading} shares={sim.result.shares} />
         </div>
       )}
     </ToolCard>

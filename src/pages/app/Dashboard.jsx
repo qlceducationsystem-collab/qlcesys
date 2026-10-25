@@ -7,7 +7,7 @@ import { Card, PageHeader, Pill, ProgressBar, Row, StatCard, StatGrid } from '..
 import { AsyncView, Loading } from '../../components/ui/States.jsx';
 import { BarChart } from '../../components/charts/Charts.jsx';
 import { ReconciliationBanner } from '../../components/finance/Finance.jsx';
-import { AllocationBars, ReadingCard } from '../../features/academy/AllocationView.jsx';
+import { AllocationBars, READING_TONE, ReadingCard } from '../../features/academy/AllocationView.jsx';
 import { modulePath } from '../../features/academy/useAcademy.js';
 import { Block2Summary, EmergencyFundCard } from '../../features/patrimonial/PatrimonialCards.jsx';
 import { tr } from '../../i18n/tr.js';
@@ -89,7 +89,7 @@ function DashboardBody({ d }) {
       <StatGrid>
         <StatCard label={tr('Liquidez')} value={money((d.allocation?.shares.find((x) => x.key === 'LIQUIDEZ')?.amount || 0) + s.protection.total)} />
         <StatCard label={tr('Deuda total')} value={money(s.debts.totalBalance)} delta={`Pagos: ${money(s.debts.totalPayment)}`} />
-        <StatCard label={tr('Lectura de cartera')} value={d.allocation?.reading?.label || tr('Sin datos')} delta={d.allocation?.reading ? `${d.allocation.reading.score} / 100 · educativa` : tr('Registra productos en M2')} />
+        <StatCard label={tr('Lectura de cartera')} value={d.allocation?.reading ? tr(d.allocation.reading.label) : tr('Sin datos')} valueTone={READING_TONE[d.allocation?.reading?.key]} delta={d.allocation?.reading ? `${d.allocation.reading.score} / 100 · educativa` : tr('Registra productos en M2')} />
         <StatCard label={tr('Estado del periodo')} value={period?.status === 'CLOSED' ? tr('Cerrado') : tr('Abierto')} delta={s.reconciliation.reconciled ? tr('Patrimonio conciliado') : tr('Información no conciliada')} deltaTone={s.reconciliation.reconciled ? 'up' : 'down'} />
       </StatGrid>
       <div className="layout">
@@ -104,7 +104,7 @@ function DashboardBody({ d }) {
         <Card title={tr('Allocation actual')}>
           {d.allocation?.total ? <AllocationBars allocation={d.allocation} /> : <p className="muted">{tr('Registra tus productos en el Módulo 2 para ver tu distribución.')}</p>}
         </Card>
-        <ReadingCard reading={d.allocation?.reading} />
+        <ReadingCard reading={d.allocation?.reading} shares={d.allocation?.shares} />
       </div>
       <div className="layout">
         <Card title="Evolución patrimonial (patrimonio neto)"><BarChart data={evolution} ariaLabel={tr('Evolución del patrimonio neto')} /></Card>

@@ -79,12 +79,12 @@ const ES = [
     navLabel: 'Acceso',
     eyebrow: 'Dos formas de adquirir',
     title: 'Elige cómo quieres usar QLC Financial Education',
-    description: 'Puedes tomar el programa completo o adquirir únicamente las herramientas que necesitas.',
+    description: 'Puedes tomar el programa completo o adquirir únicamente las herramientas.',
     primaryCtaLabel: 'Crear mi cuenta',
     primaryCtaTarget: '/registro',
     items: [
       { title: 'Acceso completo anual', text: 'Academia + explicaciones + herramientas durante el periodo anual.', tag: 'Opción 1' },
-      { title: 'Solo herramientas', text: 'Suscripción mensual por la herramienta de cada módulo, sin la academia.', tag: 'Opción 2' },
+      { title: 'Solo herramientas', text: 'Un solo pago mensual por las 12 herramientas, sin la academia.', tag: 'Opción 2' },
     ],
   },
   {
@@ -180,12 +180,12 @@ const EN = [
     navLabel: 'Access',
     eyebrow: 'Two ways to get it',
     title: 'Choose how you want to use QLC Financial Education',
-    description: 'You can take the full program or get only the tools you need.',
+    description: 'You can take the full program or get only the tools.',
     primaryCtaLabel: 'Create my account',
     primaryCtaTarget: '/registro',
     items: [
       { title: 'Full annual access', text: 'Academy + explanations + tools for the annual period.', tag: 'Option 1' },
-      { title: 'Tools only', text: 'Monthly subscription to each module’s tool, without the academy.', tag: 'Option 2' },
+      { title: 'Tools only', text: 'A single monthly payment for all 12 tools, without the academy.', tag: 'Option 2' },
     ],
   },
   {

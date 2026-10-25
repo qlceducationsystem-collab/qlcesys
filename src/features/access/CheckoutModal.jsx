@@ -19,7 +19,7 @@ function Summary({ offer, method, setMethod }) {
   return (
     <div className="checkout-summary">
       <div className="checkout-product">
-        <span className="checkout-kicker">{offer.type === 'FULL_ANNUAL' ? tr('Acceso completo') : tr('Herramienta · Módulo {n}', { n: offer.moduleNumber })}</span>
+        <span className="checkout-kicker">{offer.type === 'FULL_ANNUAL' ? tr('Acceso completo') : (offer.moduleNumber ? tr('Herramienta · Módulo {n}', { n: offer.moduleNumber }) : tr('Herramientas M1–M12'))}</span>
         <b>{tr(offer.name)}</b>
         {offer.description && <p>{tr(offer.description)}</p>}
       </div>

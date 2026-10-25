@@ -7,14 +7,6 @@ import { CtaButton, MoreInfo, SectionCtas, SectionHead } from './SectionParts.js
 const hasPrice = (offer) => offer?.price !== null && offer?.price !== undefined;
 const priceLabel = (offer, t) => (hasPrice(offer) ? `${money(offer.price)} ${offer.currency}` : t('public.priceTbd'));
 
-function toolsPrice(tools, t) {
-  const priced = tools.filter(hasPrice);
-  if (!priced.length) return t('public.priceTbd');
-  const min = priced.reduce((a, x) => (Number(x.price) < Number(a.price) ? x : a));
-  const same = priced.length === tools.length && priced.every((x) => Number(x.price) === Number(min.price));
-  return `${same ? '' : t('public.from')}${priceLabel(min, t)}`;
-}
-
 function SectionImage({ section }) {
   if (!section.image) return null;
   const img = responsiveImage(section.image.url, [360, 560, 840]);
@@ -84,7 +76,7 @@ export function FeatureSection({ section, go }) {
 export function AccessSection({ section, offers, go }) {
   const { t, lang } = useI18n();
   const full = offers.find((o) => o.type === 'FULL_ANNUAL');
-  const tools = offers.filter((o) => o.type === 'TOOL_ONLY');
+  const tools = offers.find((o) => o.type === 'TOOL_ONLY');
   const [optionFull, optionTools] = section.items || [];
   return (
     <div className="ps-container access">
@@ -103,11 +95,9 @@ export function AccessSection({ section, offers, go }) {
           <span className="access-tag">{optionTools?.tag || t('public.option2')}</span>
           <h3>{optionTools?.title || t('public.toolsOnly')}</h3>
           <p>{optionTools?.text}</p>
-          <div className="access-price">{toolsPrice(tools, t)}<small>{t('public.perTool')}</small></div>
+          <div className="access-price">{priceLabel(tools, t)}<small>{t('public.perTool')}</small></div>
           <ul className="access-tools">
-            {tools.map((t) => (
-              <li key={t.code} title={t.name}><span>M{t.moduleNumber}</span></li>
-            ))}
+            {Array.from({ length: 12 }, (_, i) => <li key={i}><span>M{i + 1}</span></li>)}
           </ul>
         </article>
       </div>

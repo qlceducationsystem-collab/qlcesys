@@ -42,7 +42,7 @@ function GrantManager({ client, onSaved }) {
         { key: 'x', label: '', render: (g) => g.active && <button type="button" className="btn-link danger" onClick={() => setDialog({ kind: 'revoke', grant: g })}>{tr('Revocar')}</button> },
       ]} />
       <Field label={tr('Otorgar acceso manual (cortesía o corrección)')}>
-        <Select value={offerCode} onChange={(e) => setOfferCode(e.target.value)} options={(offers.data || []).map((o) => ({ value: o.code, label: o.name }))} />
+        <Select value={offerCode} onChange={(e) => setOfferCode(e.target.value)} options={(offers.data || []).filter((o) => o.active).map((o) => ({ value: o.code, label: o.name }))} />
       </Field>
       <Button onClick={() => setDialog({ kind: 'grant' })}>{tr('Otorgar acceso')}</Button>
       <ConfirmDialog

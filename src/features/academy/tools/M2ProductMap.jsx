@@ -50,7 +50,7 @@ export function M2ProductMap({ onSaved }) {
   if (res.error) return <ErrorState error={res.error} onRetry={res.reload} />;
   const { products, pending } = res.data;
   const total = products.reduce((a, p) => a + p.capital, 0);
-  const pendingInvestments = pending?.M1_INVESTMENTS || 0;
+  const pendingInvestments = (pending?.M1_INVESTMENTS || 0) + (pending?.M1_OTHER_ASSETS || 0);
 
   const run = async (fn) => {
     setState({ busy: true, error: null });
@@ -90,8 +90,8 @@ export function M2ProductMap({ onSaved }) {
           label={tr('Inversiones por desglosar')}
           value={money(pendingInvestments)}
           tone={pendingInvestments > 0 ? 'warn' : 'good'}
-          hint={pending ? tr('Del diagnóstico del Módulo 1') : tr('Completa el Módulo 1 para comparar')}
-          explanation="El Módulo 1 registró tus inversiones como cifra global. Aquí la descompones en productos sin duplicarla."
+          hint={pending ? tr('Inversiones {a} · Bienes y otros activos {b}', { a: money(pending.M1_INVESTMENTS || 0), b: money(pending.M1_OTHER_ASSETS || 0) }) : tr('Completa el Módulo 1 para comparar')}
+          explanation="El Módulo 1 registró tus inversiones, bienes raíces y otros activos como cifras globales. Aquí las descompones en productos sin duplicarlas."
         />
       </MetricGrid>
       <ToolCard step="2" title={tr('Mapa de productos registrados')} description={tr('Producto individual → categoría → Mi cartera → Allocation → Patrimonio.')}>

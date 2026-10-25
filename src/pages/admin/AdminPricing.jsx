@@ -37,7 +37,7 @@ function OfferEditor({ offer, onSaved, canEdit }) {
   return (
     <article className={`price-card ${offer.type === 'FULL_ANNUAL' ? 'is-featured' : ''}`}>
       <header>
-        <span className="price-code">{offer.type === 'FULL_ANNUAL' ? tr('Acceso completo anual') : `Herramienta M${offer.moduleNumber}`}</span>
+        <span className="price-code">{offer.type === 'FULL_ANNUAL' ? tr('Acceso completo anual') : (offer.moduleNumber ? `Herramienta M${offer.moduleNumber}` : tr('Herramientas M1–M12'))}</span>
         <Pill variant={offer.active ? '' : 'muted'}>{offer.active ? tr('Activo') : tr('Inactivo')}</Pill>
       </header>
       <strong className="price-current">{priceText(offer)}</strong>
@@ -80,8 +80,8 @@ export default function AdminPricing() {
             <Card title={tr('Acceso completo anual')}>
               <div className="price-grid single">{offers.filter((o) => o.type === 'FULL_ANNUAL').map((o) => <OfferEditor key={`${o.code}-${o.price}-${o.active}`} offer={o} onSaved={res.reload} canEdit={canEdit} />)}</div>
             </Card>
-            <Card title={tr('Solo herramientas · suscripción mensual por módulo')}>
-              <div className="price-grid">{offers.filter((o) => o.type === 'TOOL_ONLY').map((o) => <OfferEditor key={`${o.code}-${o.price}-${o.active}`} offer={o} onSaved={res.reload} canEdit={canEdit} />)}</div>
+            <Card title={tr('Solo herramientas · un solo pago mensual por las 12 herramientas')}>
+              <div className="price-grid single">{offers.filter((o) => o.type === 'TOOL_ONLY' && !o.moduleNumber).map((o) => <OfferEditor key={`${o.code}-${o.price}-${o.active}`} offer={o} onSaved={res.reload} canEdit={canEdit} />)}</div>
             </Card>
           </>
         )}

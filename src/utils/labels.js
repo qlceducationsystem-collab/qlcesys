@@ -31,7 +31,7 @@ export const ADMIN_LEVELS = { VIEW: 'Visualización', EDIT: 'Edición', FULL: 'A
 
 export const PRODUCT_TYPES = {
   RENTA_FIJA: 'Renta fija', RENTA_VARIABLE: 'Renta variable', FONDOS: 'Fondos', ACCIONES: 'Acciones',
-  BIENES_RAICES: 'Bienes raíces', NEGOCIO: 'Negocio', ACTIVO_DIGITAL: 'Activo digital', LIQUIDEZ: 'Liquidez',
+  BIENES_RAICES: 'Bienes raíces', NEGOCIO: 'Negocio', ACTIVO_DIGITAL: 'Activo digital', ALTO_RIESGO: 'Alto riesgo', LIQUIDEZ: 'Liquidez',
 };
 export const HORIZONS = { CORTO: 'Corto plazo', MEDIANO: 'Mediano plazo', LARGO: 'Largo plazo' };
 export const LIQUIDITY_LEVELS = { ALTA: 'Alta', MEDIA: 'Media', BAJA: 'Baja' };
@@ -116,7 +116,7 @@ const EN = {
   ADMIN_LEVELS: { VIEW: 'View only', EDIT: 'Edit', FULL: 'Full administration' },
   PRODUCT_TYPES: {
     RENTA_FIJA: 'Fixed income', RENTA_VARIABLE: 'Equities', FONDOS: 'Funds', ACCIONES: 'Stocks',
-    BIENES_RAICES: 'Real estate', NEGOCIO: 'Business', ACTIVO_DIGITAL: 'Digital asset', LIQUIDEZ: 'Liquidity',
+    BIENES_RAICES: 'Real estate', NEGOCIO: 'Business', ACTIVO_DIGITAL: 'Digital asset', ALTO_RIESGO: 'High risk', LIQUIDEZ: 'Liquidity',
   },
   HORIZONS: { CORTO: 'Short term', MEDIANO: 'Medium term', LARGO: 'Long term' },
   LIQUIDITY_LEVELS: { ALTA: 'High', MEDIA: 'Medium', BAJA: 'Low' },

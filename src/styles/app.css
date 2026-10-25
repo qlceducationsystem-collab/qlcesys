@@ -48,7 +48,14 @@ h1 { font-size: clamp(28px, 4vw, 44px); line-height: 1.12; letter-spacing: -.04e
 .card-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .section-title { font-size: 13px; font-weight: 750; }
 .stat .label, .label { font-size: 9px; color: var(--muted2); margin-bottom: 9px; text-transform: uppercase; letter-spacing: .12em; }
-.stat .value { font-size: 24px; font-weight: 750; letter-spacing: -.03em; overflow-wrap: anywhere; }
+.stat { container-type: inline-size; }
+.stat .value { --max: 24px; font-size: min(var(--max), calc(100cqi / (var(--len, 9) * 0.6))); font-weight: 750; letter-spacing: -.03em; white-space: nowrap; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.stat-good .value { color: var(--green); }
+.stat-warn .value { color: var(--gold2); }
+.stat-bad .value { color: var(--red); }
+.stat-good { border-color: rgba(91, 212, 165, 0.32); background: linear-gradient(145deg, rgba(91, 212, 165, 0.08), rgba(13, 19, 26, 0.85)); }
+.stat-warn { border-color: rgba(200, 155, 60, 0.36); background: linear-gradient(145deg, rgba(200, 155, 60, 0.08), rgba(13, 19, 26, 0.85)); }
+.stat-bad { border-color: rgba(196, 61, 75, 0.36); background: linear-gradient(145deg, rgba(196, 61, 75, 0.08), rgba(13, 19, 26, 0.85)); }
 .stat-accent { border-color: rgba(0, 168, 255, 0.28); background: linear-gradient(145deg, rgba(0, 168, 255, 0.08), rgba(13, 19, 26, 0.85)); }
 .delta { font-size: 10px; margin-top: 7px; color: var(--muted); }
 .layout { display: grid; grid-template-columns: 1.45fr .8fr; gap: 16px; margin-bottom: 16px; align-items: start; }
@@ -170,7 +177,7 @@ h1 { font-size: clamp(28px, 4vw, 44px); line-height: 1.12; letter-spacing: -.04e
 }
 @media (max-width: 560px) {
   .grid-4, .grid-3, .grid-2, .cards3, .asset-grid, .totals { grid-template-columns: 1fr; }
-  .stat .value { font-size: 21px; }
+  .stat .value { --max: 21px; }
   .card { padding: 15px; }
   .asset-head { flex-direction: column; align-items: flex-start; }
   .form-actions > * { flex: 1; }
