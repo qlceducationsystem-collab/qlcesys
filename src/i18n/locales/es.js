@@ -6,6 +6,7 @@ export const es = {
     myPlatform: 'Mi plataforma',
     openMenu: 'Abrir menú',
     goHome: 'Ir al inicio',
+    back: 'Volver',
     sections: 'Secciones',
     mainNav: 'Navegación principal',
     legalShort: 'Aviso',

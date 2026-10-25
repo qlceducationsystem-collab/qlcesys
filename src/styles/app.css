@@ -133,7 +133,10 @@ h1 { font-size: clamp(28px, 4vw, 44px); line-height: 1.12; letter-spacing: -.04e
 .pager { display: flex; gap: 12px; align-items: center; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap; }
 .search { min-width: min(320px, 100%); }
 
-.auth-main { padding: 50px 16px 70px; display: flex; justify-content: center; }
+.auth-main { padding: 28px 16px 70px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.auth-back { align-self: center; width: min(460px, 100%); display: inline-flex; align-items: center; gap: 8px; padding: 6px 0; border: 0; background: none; color: var(--silver); font: 600 13px/1 var(--font); cursor: pointer; transition: color 0.2s ease; }
+.auth-back:hover { color: var(--blue2); }
+.auth-back:focus-visible { outline: 2px solid var(--blue2); outline-offset: 4px; border-radius: 6px; }
 .auth-card { width: min(460px, 100%); background: rgba(13, 19, 26, 0.85); border: 1px solid var(--line); border-radius: 22px; padding: 28px; box-shadow: 0 30px 100px rgba(0, 0, 0, .35); }
 .auth-card.wide { width: min(620px, 100%); }
 .auth-card h1 { font-size: 30px; }

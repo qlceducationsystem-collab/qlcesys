@@ -53,8 +53,7 @@ body.public-locked {
 }
 .pnav-brand .brand-logo { width: 40px; height: 40px; object-fit: cover; border-radius: 9px; }
 .pnav-brand-text { display: flex; flex-direction: column; line-height: 1.1; text-align: left; }
-.pnav-brand-text b { font-size: 14px; letter-spacing: 0.24em; }
-.pnav-brand-text small { font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted2); margin-top: 3px; }
+.pnav-brand-text small { max-width: 170px; font-size: 9.5px; line-height: 1.35; letter-spacing: 0.16em; text-transform: uppercase; color: var(--silver); }
 .pnav-links { display: flex; gap: 2px; flex: 1; min-width: 0; justify-content: center; }
 .pnav-links button, .pnav-links .pnav-extra {
   position: relative;

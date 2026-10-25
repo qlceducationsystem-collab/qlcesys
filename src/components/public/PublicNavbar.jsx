@@ -3,19 +3,18 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useI18n } from '../../i18n/I18nContext.jsx';
 import { BrandLogo } from '../layout/BrandLogo.jsx';
-import { BRAND_NAME, BRAND_TAGLINE } from '../layout/Brand.jsx';
+import { BRAND_TAGLINE } from '../layout/Brand.jsx';
 import { LanguageSwitcher } from '../ui/LanguageSwitcher.jsx';
 
 export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal, extraLink, homeTo }) {
   const { user } = useAuth();
   const { t } = useI18n();
-  const extra = extraLink || { to: '/trading-academy', label: t('common.tradingInstitutional') };
+  const extra = extraLink === false ? null : extraLink || { to: '/trading-academy', label: t('common.tradingInstitutional') };
   const [open, setOpen] = useState(false);
   const brand = (
     <>
       <BrandLogo width="40" height="34" />
       <span className="pnav-brand-text">
-        <b>{BRAND_NAME}</b>
         <small>{BRAND_TAGLINE}</small>
       </span>
     </>
@@ -51,7 +50,7 @@ export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal, extr
               {s.navLabel}
             </button>
           ))}
-          <Link className="pnav-extra" to={extra.to}>{extra.label}</Link>
+          {extra && <Link className="pnav-extra" to={extra.to}>{extra.label}</Link>}
         </nav>
         <div className="pnav-actions">
           <LanguageSwitcher />
@@ -80,10 +79,12 @@ export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal, extr
               {s.navLabel}
             </button>
           ))}
-          <Link className="pnav-sheet-link" to={extra.to} style={{ '--i': sections.length }}>
-            <span>★</span>
-            {extra.label}
-          </Link>
+          {extra && (
+            <Link className="pnav-sheet-link" to={extra.to} style={{ '--i': sections.length }}>
+              <span>★</span>
+              {extra.label}
+            </Link>
+          )}
           <div className="pnav-sheet-actions">
             {onLegal && <button type="button" className="pbtn pbtn-ghost" onClick={onLegal}>{t('common.legalFull')}</button>}
           </div>

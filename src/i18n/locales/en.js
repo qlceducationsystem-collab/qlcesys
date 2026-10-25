@@ -6,6 +6,7 @@ export const en = {
     myPlatform: 'My platform',
     openMenu: 'Open menu',
     goHome: 'Go to home',
+    back: 'Back',
     sections: 'Sections',
     mainNav: 'Main navigation',
     legalShort: 'Notice',
