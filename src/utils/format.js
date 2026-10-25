@@ -38,7 +38,8 @@ export const toDateInput = (d) => {
   return new Date(x.getTime() - x.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 };
 
-const usdFmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const usdNum = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const usdFmt = { format: (n) => `${usdNum.format(n)} USD` };
 export const usd = (n) => (n === null || n === undefined ? '—' : usdFmt.format(Number(n)));
 export const signedUsd = (n) => {
   if (n === null || n === undefined) return '—';
