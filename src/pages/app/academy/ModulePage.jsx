@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useWorkspace } from '../../../context/WorkspaceContext.jsx';
 import { Button } from '../../../components/ui/Button.jsx';
 import { Field, FormError, Textarea } from '../../../components/ui/Form.jsx';
+import { dateTime } from '../../../utils/format.js';
 import { ErrorState, Loading } from '../../../components/ui/States.jsx';
 import { Pill } from '../../../components/ui/Card.jsx';
 import { ModuleLayout } from '../../../features/academy/ModuleLayout.jsx';
@@ -26,6 +27,7 @@ const TOOLS = {
   7: M7Budget, 8: M8EmergencyFund, 9: M9Obligations, 10: M10NetReturn, 11: M11Inflation, 12: M12AnnualReview,
 };
 const NEXT_STEP = { 3: 'ruta', 6: 'm/7', 12: null };
+const QUESTIONS_NOTE = 'También puedes escribir aquí tus dudas o preguntas; el equipo de QLC las leerá y te responderá por este mismo medio.';
 
 function Lesson({ module }) {
   return (
@@ -69,12 +71,24 @@ function Progress({ module, onDone }) {
 
   return (
     <ToolCard title={tr('Ejercicio y registro')} description={module.exerciseGuide?.prompt || tr('Registra tus conclusiones y marca el módulo como completado cuando termines.')}>
-      {module.exerciseGuide?.steps && <ol className="exercise-steps">{module.exerciseGuide.steps.map((s) => <li key={s}>{tr(s)}</li>)}</ol>}
+      {module.exerciseGuide?.steps ? (
+        <ol className="exercise-steps">
+          {module.exerciseGuide.steps.map((s) => <li key={s}>{tr(s)}</li>)}
+          <li className="is-note">{tr(QUESTIONS_NOTE)}</li>
+        </ol>
+      ) : <p className="small muted">{tr(QUESTIONS_NOTE)}</p>}
       <Field label={tr('Tu registro')}>
         <Textarea value={exercise} onChange={(e) => setExercise(e.target.value)} maxLength={5000} disabled={!canEdit} placeholder={tr('Escribe tus respuestas y conclusiones')} />
       </Field>
+      {module.adminReply && (
+        <div className="exercise-reply">
+          <b>{tr('Respuesta del equipo QLC')}</b>
+          <small>{dateTime(module.adminReplyAt)}</small>
+          <p>{module.adminReply}</p>
+        </div>
+      )}
       <FormError error={state.error} />
-      {state.saved && <p className="small up">{tr('Avance guardado.')}</p>}
+      {state.saved && <p className="small up">{tr('Avance guardado. El equipo de QLC recibirá tu registro.')}</p>}
       {canEdit && (
         <div className="form-actions">
           <Button variant="secondary" loading={state.busy} onClick={() => save('IN_PROGRESS')}>{tr('Guardar avance')}</Button>

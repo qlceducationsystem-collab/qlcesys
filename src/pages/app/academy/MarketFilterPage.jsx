@@ -9,6 +9,31 @@ import { ModuleLayout } from '../../../features/academy/ModuleLayout.jsx';
 import { modulePath, useAcademy } from '../../../features/academy/useAcademy.js';
 import { tr } from '../../../i18n/tr.js';
 
+const M4_INTRO = [
+  'En este módulo comprenderás por qué el trading puede generar rendimientos significativos y cómo el apalancamiento amplifica los resultados de una operación, tanto positivos como negativos. Aprenderás a distinguir entre el capital que aportas, la exposición que asumes y el riesgo al que realmente estás sometido.',
+  'La gestión del riesgo y del capital es uno de los pilares de QLC y una de nuestras principales especialidades. Nuestro enfoque se centra en comprender, medir y administrar la exposición financiera para tomar decisiones con mayor control y disciplina.',
+  'A través de nuestro simulador, podrás observar cómo un mismo movimiento del mercado produce resultados diferentes según el nivel de apalancamiento y la exposición utilizada.',
+];
+const M4_WARNING = 'Sin embargo, un mayor potencial de rentabilidad también implica un mayor riesgo de pérdida.';
+const M4_OUTRO = [
+  'Los beneficios nunca están garantizados y una operación apalancada puede ocasionar pérdidas importantes, incluso superiores al margen aportado, dependiendo del instrumento y de sus condiciones.',
+  'Por ello, es fundamental mantener una exposición prudente en relación con el patrimonio total, evitar concentrar demasiado capital en una sola operación y priorizar la preservación del capital sobre la búsqueda de rendimientos elevados.',
+  'Nuestro objetivo no es asumir el máximo riesgo posible, sino gestionar el capital de manera estratégica, consciente y sostenible.',
+];
+
+function Module4Intro({ to, label }) {
+  return (
+    <article className="m4-intro" aria-labelledby="m4-intro-title">
+      <span className="section-kicker">{tr('Antes de comenzar el Módulo 4')}</span>
+      <h3 id="m4-intro-title">{tr('Riesgo, exposición y gestión profesional del capital')}</h3>
+      {M4_INTRO.map((p) => <p key={p}>{tr(p)}</p>)}
+      <p className="m4-intro-warning"><b>{tr(M4_WARNING)}</b>{' '}{tr(M4_OUTRO[0])}</p>
+      {M4_OUTRO.slice(1).map((p) => <p key={p}>{tr(p)}</p>)}
+      <Link className="btn-primary" to={to}>{tr(label)}</Link>
+    </article>
+  );
+}
+
 const QUESTIONS = [
   { id: 'q1', group: 'A · Conceptos básicos de trading', text: '¿Qué significa abrir una posición LONG?', options: [['1', 'Buscar beneficiarse de una subida del precio.'], ['0a', 'Buscar beneficiarse únicamente de una caída del precio.'], ['0b', 'Mantener el dinero fuera del mercado.']] },
   { id: 'q2', text: '¿Qué es el apalancamiento?', options: [['1', 'Permite controlar una exposición mayor utilizando una cantidad menor de margen.'], ['0a', 'Garantiza una mayor rentabilidad.'], ['0b', 'Elimina el riesgo de una operación.']] },
@@ -49,9 +74,9 @@ export default function MarketFilterPage() {
         <div className="filter-result is-pass">
           <b>✓ Filtro aprobado{a.filter.last ? ` el ${date(a.filter.last.createdAt)}` : ''}.</b>
           <span>{tr('Tienes la base necesaria para continuar con la Ruta de Mercados.')}</span>
-          <Link className="btn-primary" to={modulePath(basePath, 4)}>{tr('Ir al Módulo 4 →')}</Link>
         </div>
       )}
+      {a.filter.passed && !result && <Module4Intro to={modulePath(basePath, 4)} label="Ir al Módulo 4 →" />}
       <form className="filter-form" onSubmit={submit}>
         {QUESTIONS.map((q, i) => (
           <fieldset key={q.id} className="filter-q">
@@ -76,7 +101,6 @@ export default function MarketFilterPage() {
             <>
               <b>{tr('✓ Filtro aprobado.')}</b>
               <span>{tr('Tienes la base necesaria para continuar con la Ruta de Mercados. Trading')}{' '}{result.tradingScore}/3 · Exchange {result.exchangeScore}/3.</span>
-              <Link className="btn-primary" to={modulePath(basePath, 4)}>{tr('Comenzar Módulo 4 →')}</Link>
             </>
           ) : (
             <>
@@ -90,6 +114,7 @@ export default function MarketFilterPage() {
           )}
         </div>
       )}
+      {result?.passed && <Module4Intro to={modulePath(basePath, 4)} label="Comenzar Módulo 4 →" />}
     </ModuleLayout>
   );
 }

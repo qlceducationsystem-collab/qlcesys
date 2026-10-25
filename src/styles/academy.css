@@ -108,6 +108,18 @@ a.module-tile:hover { transform: translateY(-2px); border-color: rgba(0, 168, 25
 .empty-inline { padding: 18px; border: 1px dashed var(--line2); border-radius: 12px; color: var(--muted); font-size: 13px; }
 .split-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
 .exercise-steps { margin: 0; padding-left: 20px; color: var(--muted); font-size: 13px; display: grid; gap: 4px; }
+.exercise-steps .is-note { color: var(--blue2); font-weight: 600; }
+.exercise-reply { display: grid; gap: 4px; padding: 14px 16px; border-radius: 12px; border: 1px solid rgba(91, 212, 165, 0.32); background: rgba(91, 212, 165, 0.07); }
+.exercise-reply b { color: var(--green); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
+.exercise-reply small { color: var(--muted2); font-size: 11px; }
+.exercise-reply p { margin: 4px 0 0; white-space: pre-wrap; font-size: 13px; line-height: 1.6; color: var(--silver); }
+.exercise-message { white-space: pre-wrap; padding: 13px 15px; border-radius: 12px; border: 1px solid var(--line); background: rgba(8, 13, 19, 0.6); font-size: 13px; line-height: 1.6; max-height: 260px; overflow: auto; }
+.m4-intro { margin-top: 18px; padding: 22px; border-radius: 16px; border: 1px solid rgba(0, 168, 255, 0.24); background: linear-gradient(160deg, rgba(0, 168, 255, 0.07), rgba(8, 13, 19, 0.9) 60%); display: grid; gap: 10px; justify-items: start; }
+.m4-intro h3 { margin: 0; font-size: 20px; letter-spacing: -0.02em; }
+.m4-intro p { margin: 0; font-size: 13.5px; line-height: 1.7; color: var(--silver); }
+.m4-intro-warning { padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(200, 155, 60, 0.35); background: rgba(200, 155, 60, 0.07); }
+.m4-intro-warning b { color: var(--gold2); }
+.m4-intro .btn-primary { margin-top: 6px; }
 .pro-flow { display: flex; flex-wrap: wrap; gap: 8px; }
 .pro-flow span { display: inline-flex; gap: 8px; align-items: center; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; font-size: 12.5px; }
 .pro-flow b { color: var(--blue2); font-size: 11px; }

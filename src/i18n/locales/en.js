@@ -100,7 +100,7 @@ export const en = {
       movements: 'Wealth movements', closes: 'Monthly closings', annual: 'Annual report', advisory: 'Personal advisory',
     },
     adminNav: {
-      general: 'General', dashboard: 'Dashboard', clients: 'Clients', leads: 'Information requests', appointments: 'Advisory appointments',
+      general: 'General', dashboard: 'Dashboard', clients: 'Clients', leads: 'Information requests', exercises: 'Exercises and questions', appointments: 'Advisory appointments',
       content: 'Content', files: 'Academy / files', commercial: 'Commercial', pricing: 'Prices and access', payments: 'Test payments',
       system: 'System', integrations: 'Integrations', team: 'Administrators',
     },

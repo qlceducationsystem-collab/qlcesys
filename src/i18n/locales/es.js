@@ -100,7 +100,7 @@ export const es = {
       movements: 'Movimientos patrimoniales', closes: 'Cortes mensuales', annual: 'Informe anual', advisory: 'Asesoría personalizada',
     },
     adminNav: {
-      general: 'General', dashboard: 'Dashboard', clients: 'Clientes', leads: 'Solicitudes de información', appointments: 'Citas de asesoría',
+      general: 'General', dashboard: 'Dashboard', clients: 'Clientes', leads: 'Solicitudes de información', exercises: 'Ejercicios y dudas', appointments: 'Citas de asesoría',
       content: 'Contenido', files: 'Academia / archivos', commercial: 'Comercial', pricing: 'Precios y accesos', payments: 'Pagos de prueba',
       system: 'Sistema', integrations: 'Integraciones', team: 'Administradores',
     },

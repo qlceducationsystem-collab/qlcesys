@@ -16,6 +16,7 @@ const NAV = [
   { to: '/admin', icon: '◎', label: 'dashboard', end: true },
   { to: '/admin/clientes', icon: '◫', label: 'clients' },
   { to: '/admin/solicitudes', icon: '✉', label: 'leads' },
+  { to: '/admin/ejercicios', icon: '✎', label: 'exercises' },
   { to: '/admin/citas', icon: '◌', label: 'appointments' },
   { group: 'content' },
   { to: '/admin/archivos', icon: '▤', label: 'files' },
