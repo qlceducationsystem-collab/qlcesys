@@ -39,7 +39,7 @@ const ES = [
     subtitle: 'Elige una clase y avanza a tu ritmo.',
     stages: [
       { icon: 'learn', title: 'Etapa 1. Aprende', text: '8 clases gratuitas para comprender los fundamentos financieros, la inversión, la diversificación y el riesgo.' },
-      { icon: 'apply', title: 'Etapa 2. Aplica', text: 'Suscripción a QLC Financial Education para registrar inversiones, estructurar la cartera, analizar resultados y dar seguimiento al patrimonio.' },
+      { icon: 'apply', title: 'Etapa 2. Aplica', text: 'Suscripción al Software Educativo de QLC Financial Education para registrar inversiones, estructurar la cartera, analizar resultados y dar seguimiento al patrimonio.' },
       { icon: 'track', title: 'Etapa 3. Da seguimiento', text: 'Utiliza los registros e informes para comprender cómo evoluciona tu situación financiera y tomar decisiones más informadas.' },
     ],
     items: [
@@ -152,7 +152,7 @@ const EN = [
     subtitle: 'Choose a class and move at your own pace.',
     stages: [
       { icon: 'learn', title: 'Stage 1. Learn', text: '8 free classes to understand the fundamentals of finance, investing, diversification and risk.' },
-      { icon: 'apply', title: 'Stage 2. Apply', text: 'Subscribe to QLC Financial Education to record investments, structure your portfolio, analyze results and track your wealth.' },
+      { icon: 'apply', title: 'Stage 2. Apply', text: 'Subscribe to the QLC Financial Education Educational Software to record investments, structure your portfolio, analyze results and track your wealth.' },
       { icon: 'track', title: 'Stage 3. Follow up', text: 'Use the records and reports to understand how your financial situation evolves and make better-informed decisions.' },
     ],
     items: [

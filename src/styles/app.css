@@ -8,8 +8,7 @@
 .menu-toggle { display: none; }
 .brand { display: flex; align-items: center; gap: 12px; padding: 6px 12px 22px; color: var(--text); }
 .brand-mark { width: 43px; height: 43px; object-fit: cover; border-radius: 10px; }
-.brand-name { font-size: 15px; letter-spacing: .25em; font-weight: 800; color: var(--text); }
-.brand span { display: block; font-size: 9px; color: var(--muted2); letter-spacing: .16em; margin-top: 4px; }
+.brand span { display: block; font-size: 10.5px; line-height: 1.4; color: var(--silver); letter-spacing: .14em; text-transform: uppercase; }
 .nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
 .nav a, .nav .nav-logout {
   display: flex; align-items: center; background: transparent; border: 1px solid transparent; color: #aeb9c5;

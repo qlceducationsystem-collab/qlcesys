@@ -10,10 +10,7 @@ export function Brand({ to = '/' }) {
   return (
     <Link to={to} className="brand">
       <BrandLogo className="brand-mark" alt={BRAND_NAME} width="43" height="43" />
-      <div>
-        <div className="brand-name">{BRAND_NAME}</div>
-        <span>{BRAND_TAGLINE}</span>
-      </div>
+      <span>{BRAND_TAGLINE}</span>
     </Link>
   );
 }

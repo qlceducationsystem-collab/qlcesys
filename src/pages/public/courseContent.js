@@ -201,9 +201,9 @@ const ES = [
       },
       {
         type: 'lesson',
-        title: '¿Por qué un límite inicial de 400 USDT?',
+        title: '¿Por qué un límite inicial de 2,000 USDT?',
         paragraphs: [
-          'De acuerdo con el documento conceptual de QLC, la asignación inicial contempla un mínimo de **20 USDT** y un máximo de **400 USDT** por cuenta principal. La finalidad indicada es mantener el capital administrado dentro de parámetros operativos definidos y evitar una concentración excesiva de capital en una sola cuenta operativa.',
+          'De acuerdo con el documento conceptual de QLC, la asignación inicial contempla un mínimo de **100 USDT** y un máximo de **2,000 USDT** por cuenta principal. La finalidad indicada es mantener el capital administrado dentro de parámetros operativos definidos y evitar una concentración excesiva de capital en una sola cuenta operativa.',
           'La lógica educativa detrás del límite es importante: cuando una inversión es de alto riesgo, aumentar el capital no necesariamente mejora la estructura de una cartera. Primero debe existir una razón para aumentar la exposición.',
         ],
         example: ['Idea clave:', 'si una persona tiene un patrimonio diversificado, una asignación limitada a una estrategia especializada puede permitir participar en ella sin convertirla automáticamente en el centro de todo su patrimonio.'],
@@ -257,8 +257,8 @@ const ES = [
       {
         type: 'cards', cols: 2,
         items: [
-          ['20 USDT · mínimo inicial', 'El documento conceptual establece esta cantidad como mínimo inicial dentro de la estructura planteada.'],
-          ['400 USDT · máximo inicial', 'QLC establece este límite para nuevos participantes como parte de su metodología de control y distribución de exposición.'],
+          ['100 USDT · mínimo inicial', 'El documento conceptual establece esta cantidad como mínimo inicial dentro de la estructura planteada.'],
+          ['2,000 USDT · máximo inicial', 'QLC establece este límite para nuevos participantes como parte de su metodología de control y distribución de exposición.'],
         ],
       },
       {
@@ -486,9 +486,9 @@ const EN = [
       },
       {
         type: 'lesson',
-        title: 'Why an initial limit of 400 USDT?',
+        title: 'Why an initial limit of 2,000 USDT?',
         paragraphs: [
-          'According to the QLC concept document, the initial allocation has a minimum of **20 USDT** and a maximum of **400 USDT** per main account. The stated purpose is to keep managed capital within defined operating parameters and avoid excessive concentration of capital in a single operating account.',
+          'According to the QLC concept document, the initial allocation has a minimum of **100 USDT** and a maximum of **2,000 USDT** per main account. The stated purpose is to keep managed capital within defined operating parameters and avoid excessive concentration of capital in a single operating account.',
           'The educational logic behind the limit is important: when an investment is high risk, increasing capital does not necessarily improve a portfolio’s structure. There must first be a reason to increase exposure.',
         ],
         example: ['Key idea:', 'if a person has diversified wealth, a limited allocation to a specialized strategy can let them participate without automatically making it the center of all their wealth.'],
@@ -542,8 +542,8 @@ const EN = [
       {
         type: 'cards', cols: 2,
         items: [
-          ['20 USDT · initial minimum', 'The concept document sets this amount as the initial minimum within the proposed structure.'],
-          ['400 USDT · initial maximum', 'QLC sets this limit for new participants as part of its methodology for controlling and distributing exposure.'],
+          ['100 USDT · initial minimum', 'The concept document sets this amount as the initial minimum within the proposed structure.'],
+          ['2,000 USDT · initial maximum', 'QLC sets this limit for new participants as part of its methodology for controlling and distributing exposure.'],
         ],
       },
       {
