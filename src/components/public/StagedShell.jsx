@@ -27,12 +27,12 @@ export function useStagedSections(sections, titleSuffix) {
   return { activeKey, select };
 }
 
-export function StagedShell({ sections, activeKey, onSelect, render, onLegal, extraLink, children }) {
+export function StagedShell({ sections, activeKey, onSelect, render, onLegal, extraLink, homeTo, children }) {
   const { t } = useI18n();
   return (
     <div className="public-shell">
       <IntroReveal />
-      <PublicNavbar sections={sections} activeKey={activeKey} onSelect={onSelect} onLegal={onLegal} extraLink={extraLink} />
+      <PublicNavbar sections={sections} activeKey={activeKey} onSelect={onSelect} onLegal={onLegal} extraLink={extraLink} homeTo={homeTo} />
       <main className="public-stage" id="contenido">
         {activeKey && <SectionStage activeKey={activeKey} render={render} />}
         <nav className="stage-dots" aria-label={t('common.sections')}>

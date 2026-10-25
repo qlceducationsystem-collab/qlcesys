@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { WorkspaceProvider } from '../context/WorkspaceContext.jsx';
 import { AppLayout } from '../layouts/AppLayout.jsx';
 import { AdminClientWorkspace, AdminLayout } from '../layouts/AdminLayout.jsx';
@@ -51,23 +51,19 @@ const routesFor = (pages) =>
 
 const LegalPage = page(() => import('../pages/public/legal/LegalPage.jsx'));
 const TradingAcademy = page(() => import('../pages/public/marketing/TradingAcademy.jsx'));
+const QlcHome = page(() => import('../pages/public/marketing/QlcHome.jsx'));
 
 function NotFound() {
   const { t } = useI18n();
   return <Empty title={t('app.notFoundTitle')} text={t('app.notFoundText')} />;
 }
 
-function LegacyEducationRedirect() {
-  const { search } = useLocation();
-  return <Navigate to={`/${search}`} replace />;
-}
-
 export default function AppRoutes() {
   return (
     <Suspense fallback={<Loading />}>
       <Routes>
-        <Route path="/" element={<PublicExperience />} />
-        <Route path="/educacion-financiera" element={<LegacyEducationRedirect />} />
+        <Route path="/" element={<QlcHome />} />
+        <Route path="/educacion-financiera" element={<PublicExperience />} />
         <Route path="/trading-academy" element={<TradingAcademy />} />
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />

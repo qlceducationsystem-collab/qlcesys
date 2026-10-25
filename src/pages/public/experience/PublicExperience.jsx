@@ -4,14 +4,13 @@ import { BRAND_FULL } from '../../../components/layout/Brand.jsx';
 import { StagedShell, useStagedSections } from '../../../components/public/StagedShell.jsx';
 import { HeroSection } from '../sections/HeroSection.jsx';
 import { CourseSection } from '../sections/CourseSection.jsx';
-import { AccessSection, FeatureSection, GenericSection, LayersSection, QlcSection, RoutesSection } from '../sections/InfoSections.jsx';
+import { AccessSection, FeatureSection, GenericSection, LayersSection, QlcSection } from '../sections/InfoSections.jsx';
 import { CopytradingFilter } from './CopytradingFilter.jsx';
 import { LegalNotice } from './LegalNotice.jsx';
 import { usePublicContent } from './usePublicContent.js';
 
 const RENDERERS = {
   inicio: HeroSection,
-  rutas: RoutesSection,
   curso: CourseSection,
   patrimonio: LayersSection,
   plataforma: FeatureSection,
@@ -44,7 +43,7 @@ export default function PublicExperience() {
   };
 
   return (
-    <StagedShell sections={sections} activeKey={activeKey} onSelect={select} render={render} onLegal={() => setLegalOpen(true)}>
+    <StagedShell sections={sections} activeKey={activeKey} onSelect={select} render={render} onLegal={() => setLegalOpen(true)} homeTo="/">
       <CopytradingFilter open={filterOpen} onClose={() => setFilterOpen(false)} />
       <LegalNotice open={legalOpen} onClose={() => setLegalOpen(false)} />
     </StagedShell>

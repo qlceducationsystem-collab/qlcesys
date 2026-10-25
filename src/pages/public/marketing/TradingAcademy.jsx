@@ -183,7 +183,7 @@ function TradingStage() {
   const render = (key) => SLIDE_RENDERERS[key]?.({ c, section: c.sections[key], go: select }) || null;
 
   return (
-    <StagedShell sections={sections} activeKey={activeKey} onSelect={select} render={render} onLegal={() => setLegalOpen(true)} extraLink={{ to: '/', label: c.extraLink }}>
+    <StagedShell sections={sections} activeKey={activeKey} onSelect={select} render={render} onLegal={() => setLegalOpen(true)} extraLink={{ to: '/educacion-financiera', label: c.extraLink }} homeTo="/">
       <LegalNotice open={legalOpen} onClose={() => setLegalOpen(false)} />
     </StagedShell>
   );

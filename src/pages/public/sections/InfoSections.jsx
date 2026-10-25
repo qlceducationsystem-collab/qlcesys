@@ -1,6 +1,7 @@
 import { money } from '../../../utils/format.js';
 import { responsiveImage } from '../../../utils/media.js';
 import { useI18n } from '../../../i18n/I18nContext.jsx';
+import { LegalLinks } from '../legal/LegalPage.jsx';
 import { CtaButton, MoreInfo, SectionCtas, SectionHead } from './SectionParts.jsx';
 
 const hasPrice = (offer) => offer?.price !== null && offer?.price !== undefined;
@@ -123,12 +124,31 @@ export function RoutesSection({ section, go }) {
         {(section.items || []).map((r, i) => (
           <article key={r.title} className={`access-card route-card reveal-card ${r.gold ? 'is-gold' : i === 0 ? 'is-featured' : ''}`} style={{ '--c': i }}>
             <span className="access-tag">{r.tag}</span>
+            {r.label && <span className="route-label">{r.label}</span>}
             <h3>{r.title}</h3>
             <p>{r.text}</p>
+            {r.list?.length > 0 && <ul className="access-list route-list">{r.list.map((item) => <li key={item}>{item}</li>)}</ul>}
             <CtaButton label={r.cta} target={r.target} go={go} variant={i === 0 ? 'primary' : 'ghost'} />
           </article>
         ))}
       </div>
+    </div>
+  );
+}
+
+export function ClosingSection({ section, go }) {
+  return (
+    <div className="ps-container closing">
+      <div className="closing-panel">
+        <SectionHead section={section} />
+        <SectionCtas section={section} go={go} />
+        {section.secondaryText && <p className="closing-note reveal" style={{ '--r': 5 }}>{section.secondaryText}</p>}
+      </div>
+      <footer className="closing-foot reveal" style={{ '--r': 6 }}>
+        <span>© QLC · Quantum Liquidity Capital</span>
+        {section.footer && <span>{section.footer}</span>}
+        <LegalLinks />
+      </footer>
     </div>
   );
 }

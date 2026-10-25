@@ -6,12 +6,20 @@ import { BrandLogo } from '../layout/BrandLogo.jsx';
 import { BRAND_NAME, BRAND_TAGLINE } from '../layout/Brand.jsx';
 import { LanguageSwitcher } from '../ui/LanguageSwitcher.jsx';
 
-export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal, extraLink }) {
+export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal, extraLink, homeTo }) {
   const { user } = useAuth();
   const { t } = useI18n();
   const extra = extraLink || { to: '/trading-academy', label: t('common.tradingInstitutional') };
   const [open, setOpen] = useState(false);
-  const navSections = sections.filter((s) => !s.hideInNav);
+  const brand = (
+    <>
+      <BrandLogo width="40" height="34" />
+      <span className="pnav-brand-text">
+        <b>{BRAND_NAME}</b>
+        <small>{BRAND_TAGLINE}</small>
+      </span>
+    </>
+  );
   const home = user ? (user.role === 'ADMIN' ? '/admin' : '/app') : null;
 
   useEffect(() => {
@@ -26,15 +34,13 @@ export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal, extr
   return (
     <header className={`pnav ${sections.length ? 'has-sections' : ''} ${open ? 'is-open' : ''}`}>
       <div className="pnav-inner">
-        <button type="button" className="pnav-brand" onClick={() => select(sections[0]?.key)} aria-label={t('common.goHome')}>
-          <BrandLogo width="40" height="34" />
-          <span className="pnav-brand-text">
-            <b>{BRAND_NAME}</b>
-            <small>{BRAND_TAGLINE}</small>
-          </span>
-        </button>
+        {homeTo ? (
+          <Link className="pnav-brand" to={homeTo} aria-label={t('common.goHome')}>{brand}</Link>
+        ) : (
+          <button type="button" className="pnav-brand" onClick={() => select(sections[0]?.key)} aria-label={t('common.goHome')}>{brand}</button>
+        )}
         <nav className="pnav-links" aria-label={t('common.sections')}>
-          {navSections.map((s) => (
+          {sections.map((s) => (
             <button
               key={s.key}
               type="button"
@@ -68,13 +74,13 @@ export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal, extr
       </div>
       {open && (
         <div className="pnav-sheet">
-          {navSections.map((s, i) => (
+          {sections.map((s, i) => (
             <button key={s.key} type="button" className={`${s.key === activeKey ? 'is-active' : ''} ${s.navHighlight ? 'is-highlight' : ''}`} style={{ '--i': i }} onClick={() => select(s.key)}>
               <span>{String(i + 1).padStart(2, '0')}</span>
               {s.navLabel}
             </button>
           ))}
-          <Link className="pnav-sheet-link" to={extra.to} style={{ '--i': navSections.length }}>
+          <Link className="pnav-sheet-link" to={extra.to} style={{ '--i': sections.length }}>
             <span>★</span>
             {extra.label}
           </Link>
