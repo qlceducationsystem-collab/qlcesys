@@ -31,13 +31,14 @@ export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal, extr
   };
 
   return (
-    <header className={`pnav ${sections.length ? 'has-sections' : ''} ${open ? 'is-open' : ''}`}>
+    <header className={`pnav ${sections.length ? 'has-sections' : ''} ${homeTo ? 'has-home' : ''} ${open ? 'is-open' : ''}`}>
       <div className="pnav-inner">
         {homeTo ? (
           <Link className="pnav-brand" to={homeTo} aria-label={t('common.goHome')}>{brand}</Link>
         ) : (
           <button type="button" className="pnav-brand" onClick={() => select(sections[0]?.key)} aria-label={t('common.goHome')}>{brand}</button>
         )}
+        {homeTo && <Link className="pnav-home" to={homeTo} aria-label={t('common.mainPage')}><span aria-hidden="true">←</span><b>{t('common.mainPage')}</b></Link>}
         <nav className="pnav-links" aria-label={t('common.sections')}>
           {sections.map((s) => (
             <button
@@ -73,6 +74,12 @@ export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal, extr
       </div>
       {open && (
         <div className="pnav-sheet">
+          {homeTo && (
+            <Link className="pnav-sheet-link pnav-sheet-home" to={homeTo} style={{ '--i': 0 }}>
+              <span>←</span>
+              {t('common.mainPage')}
+            </Link>
+          )}
           {sections.map((s, i) => (
             <button key={s.key} type="button" className={`${s.key === activeKey ? 'is-active' : ''} ${s.navHighlight ? 'is-highlight' : ''}`} style={{ '--i': i }} onClick={() => select(s.key)}>
               <span>{String(i + 1).padStart(2, '0')}</span>

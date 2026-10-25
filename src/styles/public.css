@@ -122,6 +122,12 @@ body.public-locked {
   animation-delay: calc(var(--i) * 40ms + 60ms);
 }
 .pnav-sheet > .pnav-sheet-link { color: var(--gold2); text-decoration: none; }
+.pnav-sheet > .pnav-sheet-home { color: #fff; font-weight: 700; }
+.pnav-home { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid var(--line2); border-radius: 999px; color: #fff; font-size: 12.5px; text-decoration: none; white-space: nowrap; transition: border-color 0.2s, background 0.2s; }
+.pnav-home:hover { border-color: rgba(0, 168, 255, 0.5); background: rgba(0, 168, 255, 0.08); }
+.pnav-home span { color: var(--blue2); }
+.pnav-home b { font-weight: 600; }
+.pnav.has-home .pnav-inner { width: min(1620px, calc(100% - 32px)); }
 .pnav-sheet > button span, .pnav-sheet > .pnav-sheet-link span { font-size: 11px; color: var(--blue2); letter-spacing: 0.12em; }
 .pnav-sheet > button.is-active { color: var(--blue2); }
 .pnav-sheet-actions { display: flex; gap: 10px; margin-top: auto; flex-wrap: wrap; }
@@ -438,6 +444,11 @@ h1.ps-title { font-size: clamp(32px, min(5.4vw, 8.4dvh), 78px); }
 @keyframes sweep { to { transform: translateX(120%); } }
 @keyframes lineGrow { to { transform: scaleX(1); } }
 
+@media (max-width: 1680px) {
+  .pnav.has-home .pnav-links { display: none; }
+  .pnav.has-home .pnav-burger { display: inline-flex; }
+}
+
 @media (max-width: 1500px) {
   .pnav.has-sections .pnav-links { display: none; }
   .pnav.has-sections .pnav-burger { display: inline-flex; }
@@ -525,6 +536,11 @@ h1.ps-title { font-size: clamp(32px, min(5.4vw, 8.4dvh), 78px); }
 }
 
 @media (max-width: 420px) {
+  .pnav-home { padding: 6px 8px; }
+  .pnav-home b { display: none; }
+  .pnav.has-home .pnav-inner { gap: 5px; }
+  .pnav.has-home .pnav-actions { gap: 4px; }
+  .pnav.has-home .pnav-login { font-size: 11px; }
   .pnav-inner { width: calc(100% - 24px); gap: 8px; }
   .pnav-brand-text { display: none; }
   .pnav-actions { gap: 5px; }
@@ -539,6 +555,7 @@ h1.ps-title { font-size: clamp(32px, min(5.4vw, 8.4dvh), 78px); }
 }
 
 @media (max-width: 360px) {
+  .pnav.has-home .pnav-brand { display: none; }
   .pnav-inner { width: calc(100% - 16px); gap: 6px; }
   .pnav-brand .brand-logo { width: 32px; height: 32px; }
   .pnav-actions { gap: 4px; }
