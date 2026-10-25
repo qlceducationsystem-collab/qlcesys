@@ -11,6 +11,7 @@ export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal, extr
   const { t } = useI18n();
   const extra = extraLink || { to: '/trading-academy', label: t('common.tradingInstitutional') };
   const [open, setOpen] = useState(false);
+  const navSections = sections.filter((s) => !s.hideInNav);
   const home = user ? (user.role === 'ADMIN' ? '/admin' : '/app') : null;
 
   useEffect(() => {
@@ -33,7 +34,7 @@ export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal, extr
           </span>
         </button>
         <nav className="pnav-links" aria-label={t('common.sections')}>
-          {sections.map((s) => (
+          {navSections.map((s) => (
             <button
               key={s.key}
               type="button"
@@ -67,13 +68,13 @@ export function PublicNavbar({ sections = [], activeKey, onSelect, onLegal, extr
       </div>
       {open && (
         <div className="pnav-sheet">
-          {sections.map((s, i) => (
+          {navSections.map((s, i) => (
             <button key={s.key} type="button" className={`${s.key === activeKey ? 'is-active' : ''} ${s.navHighlight ? 'is-highlight' : ''}`} style={{ '--i': i }} onClick={() => select(s.key)}>
               <span>{String(i + 1).padStart(2, '0')}</span>
               {s.navLabel}
             </button>
           ))}
-          <Link className="pnav-sheet-link" to={extra.to} style={{ '--i': sections.length }}>
+          <Link className="pnav-sheet-link" to={extra.to} style={{ '--i': navSections.length }}>
             <span>★</span>
             {extra.label}
           </Link>

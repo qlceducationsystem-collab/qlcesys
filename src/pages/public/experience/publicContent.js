@@ -20,7 +20,8 @@ const ES = [
   },
   {
     key: 'rutas',
-    navLabel: 'Rutas',
+    navLabel: 'Soluciones QLC',
+    navHighlight: true,
     eyebrow: 'Tres productos · Una visión',
     title: 'Elige tu ruta de formación.',
     description: 'QLC Institutional Investment Academy reúne tres soluciones complementarias: educación financiera para organizar y comprender tu patrimonio, formación especializada en trading para estudiar los mercados con un enfoque cuantitativo y copytrading institucional para quienes buscan acceder a estrategias de trading gestionadas bajo una metodología estructurada.',
@@ -33,7 +34,7 @@ const ES = [
   {
     key: 'curso',
     navLabel: 'Formación Financiera',
-    navHighlight: true,
+    hideInNav: true,
     eyebrow: 'Acceso gratuito',
     title: 'Ocho clases para construir criterio financiero',
     subtitle: 'Elige una clase y avanza a tu ritmo.',
@@ -133,7 +134,8 @@ const EN = [
   },
   {
     key: 'rutas',
-    navLabel: 'Paths',
+    navLabel: 'QLC Solutions',
+    navHighlight: true,
     eyebrow: 'Three products · One vision',
     title: 'Choose your learning path.',
     description: 'QLC Institutional Investment Academy brings together three complementary solutions: financial education to organize and understand your wealth, specialized trading training to study the markets with a quantitative approach, and institutional copytrading for those who want to access trading strategies managed under a structured methodology.',
@@ -146,7 +148,7 @@ const EN = [
   {
     key: 'curso',
     navLabel: 'Financial Training',
-    navHighlight: true,
+    hideInNav: true,
     eyebrow: 'Free access',
     title: 'Eight classes to build financial judgment',
     subtitle: 'Choose a class and move at your own pace.',
