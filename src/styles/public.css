@@ -475,9 +475,13 @@ h1.ps-title { font-size: clamp(32px, min(5.4vw, 8.4dvh), 78px); }
   .feature.is-secondary { display: none; }
   .features-more { display: block; }
   .access-grid { grid-template-columns: 1fr; max-height: none; gap: 10px; }
-  .routes-grid { grid-template-columns: 1fr; gap: 10px; }
+  .routes { align-content: start; gap: 12px; }
+  .routes .ps-lead { font-size: 13px; line-height: 1.45; }
+  .routes-grid { grid-template-columns: 1fr; gap: 8px; }
+  .route-card { padding: 12px 14px; gap: 6px; }
+  .route-card h3 { font-size: 17px; }
   .route-card p { display: none; }
-  .route-card .pbtn { height: 40px; }
+  .route-card .pbtn { height: 38px; font-size: 13px; }
   .access-card { padding: 16px; gap: 6px; }
   .access-card p, .access-list { display: none; }
   .access .ps-lead { display: none; }
