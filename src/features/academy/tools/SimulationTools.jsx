@@ -6,6 +6,7 @@ import { Field, FormError, Input, MoneyInput, Select } from '../../../components
 import { DataTable } from '../../../components/ui/DataTable.jsx';
 import { ExplainRows, MetricCard, MetricGrid, RiskNote, SimBadge, ToolCard } from '../ResultParts.jsx';
 import { useSimulation } from '../useSimulation.js';
+import { MultiPositionLab } from './MultiPositionLab.jsx';
 import { tr } from '../../../i18n/tr.js';
 
 const toneOf = (v) => (v === null || v === undefined || v === 0 ? '' : v > 0 ? 'up' : 'down');
@@ -193,6 +194,7 @@ export function M6ProfessionalSimulator() {
         { key: 'risk', label: tr('Riesgo acumulado'), align: 'right', render: (s) => pct(s.result.accumulatedRiskPct) },
         { key: 'lvl', label: tr('Nivel'), render: (s) => s.result.level.label },
       ]} />
+      <MultiPositionLab />
     </div>
   );
 }

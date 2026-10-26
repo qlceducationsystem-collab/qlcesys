@@ -31,7 +31,7 @@ export function BudgetComparison({ budget }) {
     <Card title={tr('Presupuesto planeado vs. real')} actions={<ModuleLink n={7}>{tr('Editar en M7')}</ModuleLink>}>
       <div className="grid grid-3">
         <Row label={tr('Gasto planeado')} value={money(v.expensesPlanned)} />
-        <Row label={tr('Gasto real')} value={money(v.expensesActual)} />
+        <Row label={tr('Gasto real')} value={money(v.expensesActualTotal ?? v.expensesActual)} />
         <Row label={tr('Desviación')} value={signedMoney(v.expenseDifference)} valueTone={v.expenseDifference < 0 ? 'down' : 'up'} />
         <Row label={tr('Ahorro planeado / real')} value={`${money(v.savingsPlanned)} / ${money(v.savingsActual)}`} />
         <Row label={tr('Inversión planeada / real')} value={`${money(v.investmentPlanned)} / ${money(v.investmentActual)}`} />
