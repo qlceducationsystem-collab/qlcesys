@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useAsync } from '../../hooks/useAsync.js';
-import { money } from '../../utils/format.js';
+import { priceMoney } from '../../utils/format.js';
 import { Card, Notice, PageHeader, Pill } from '../../components/ui/Card.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { ConfirmDialog } from '../../components/ui/Modal.jsx';
@@ -10,7 +10,7 @@ import { Field, FormError, Input, MoneyInput } from '../../components/ui/Form.js
 import { AsyncView } from '../../components/ui/States.jsx';
 import { tr } from '../../i18n/tr.js';
 
-const priceText = (o) => (o.price === null ? tr('Precio por definir') : `${money(o.price)} ${o.currency}`);
+const priceText = (o) => (o.price === null ? tr('Precio por definir') : `${priceMoney(o.price)} ${o.currency}`);
 
 function OfferEditor({ offer, onSaved, canEdit }) {
   const [f, setF] = useState({ name: offer.name, description: offer.description || '', price: offer.price ?? '', currency: offer.currency, accessDays: offer.accessDays ?? '', active: offer.active });
@@ -55,7 +55,7 @@ function OfferEditor({ offer, onSaved, canEdit }) {
         title={tr('Confirmar cambio de precio')}
         message={tr('El cambio se aplica a nuevas compras.')}
         details={[
-          { field: tr('Precio'), from: priceText(offer), to: f.price === '' ? tr('Precio por definir') : `${money(f.price)} ${f.currency}` },
+          { field: tr('Precio'), from: priceText(offer), to: f.price === '' ? tr('Precio por definir') : `${priceMoney(f.price)} ${f.currency}` },
           { field: tr('Estado'), from: offer.active ? tr('Activo') : tr('Inactivo'), to: f.active ? tr('Activo') : tr('Inactivo') },
         ]}
         loading={state.busy}

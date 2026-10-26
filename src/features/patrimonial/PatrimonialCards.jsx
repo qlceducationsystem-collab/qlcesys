@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { customName, isCustomCategory } from '@shared/patrimonial.js';
 import { useWorkspace } from '../../context/WorkspaceContext.jsx';
 import { useAsync } from '../../hooks/useAsync.js';
 import { dateTime, money, pct, signedMoney } from '../../utils/format.js';
@@ -41,7 +42,7 @@ export function BudgetComparison({ budget }) {
         rowKey="category"
         rows={v.rows}
         columns={[
-          { key: 'category', label: tr('Categoría'), render: (r) => BUDGET_LABELS[r.category] },
+          { key: 'category', label: tr('Categoría'), render: (r) => (isCustomCategory(r.category) ? customName(r.category) : BUDGET_LABELS[r.category]) },
           { key: 'planned', label: tr('Planeado'), align: 'right', render: (r) => money(r.planned) },
           { key: 'actual', label: tr('Real'), align: 'right', render: (r) => money(r.actual) },
           {

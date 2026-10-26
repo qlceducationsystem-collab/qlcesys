@@ -84,27 +84,60 @@ export function Register() {
   const { register } = useAuth();
   const { t } = useI18n();
   const nav = useNavigate();
-  const f = useForm({ name: '', email: '', confirmEmail: '', password: '', confirm: '' });
+  const f = useForm({ name: '', email: '', password: '', confirm: '', code: '' });
   const [local, setLocal] = useState(null);
   const [accepted, setAccepted] = useState(false);
+  const [verify, setVerify] = useState(null);
+  const [resent, setResent] = useState(false);
+
+  const create = async ({ confirm: _c, code, ...v }, emailToken) => {
+    await register({ ...v, acceptLegal: true, legalVersion: LEGAL_VERSION, ...(emailToken ? { emailToken, emailCode: code } : {}) });
+    nav(SETUP_PATH, { replace: true, state: { from: '/app/acceso' } });
+  };
+
+  const requestCode = (values) => api.post('/auth/register/email-code', { email: values.email });
+
   const submit = (e) => {
     e.preventDefault();
-    if (f.values.email.trim().toLowerCase() !== f.values.confirmEmail.trim().toLowerCase()) return setLocal({ message: t('auth.register.emailMismatch') });
+    if (verify) return f.run((values) => create(values, verify.emailToken));
     if (f.values.password !== f.values.confirm) return setLocal({ message: t('common.passwordMismatch') });
     if (!accepted) return setLocal({ message: t('auth.register.acceptRequired') });
     setLocal(null);
-    f.run(async ({ confirm: _c, confirmEmail: _e, ...v }) => {
-      await register({ ...v, acceptLegal: true, legalVersion: LEGAL_VERSION });
-      nav(SETUP_PATH, { replace: true, state: { from: '/app/acceso' } });
+    f.run(async (values) => {
+      const sent = await requestCode(values);
+      if (!sent.required) return create(values);
+      setResent(false);
+      setVerify({ emailToken: sent.emailToken, email: values.email, minutes: sent.minutes });
     });
   };
+
+  const resend = () => f.run(async (values) => {
+    const sent = await requestCode(values);
+    setVerify({ ...verify, emailToken: sent.emailToken });
+    setResent(true);
+  });
+
+  if (verify) {
+    return (
+      <AuthCard title={t('auth.register.verifyTitle')} subtitle={t('auth.register.verifySubtitle', { email: verify.email, minutes: verify.minutes })}
+        footer={<button type="button" className="btn-link" onClick={() => { setVerify(null); f.setValues({ ...f.values, code: '' }); }}>{t('auth.register.changeEmail')}</button>}>
+        <form className="stack" onSubmit={submit}>
+          <Field label={t('auth.register.codeLabel')}><CodeInput autoFocus {...f.bind('code')} /></Field>
+          <FormError error={f.state.error} />
+          {resent && !f.state.error && <p className="small up">{t('auth.register.codeResent')}</p>}
+          <Button type="submit" loading={f.state.busy}>{t('auth.register.verifySubmit')}</Button>
+          <button type="button" className="btn-link" onClick={resend} disabled={f.state.busy}>{t('auth.register.resend')}</button>
+        </form>
+      </AuthCard>
+    );
+  }
+
   return (
     <AuthCard title={t('auth.register.title')} subtitle={t('auth.register.subtitle')}
       footer={<>{t('auth.register.hasAccount')} <Link to="/login">{t('common.login')}</Link></>}>
       <form className="stack" onSubmit={submit}>
         <Field label={t('auth.register.name')}><Input required autoComplete="name" maxLength={120} {...f.bind('name')} /></Field>
         <Field label={t('auth.email')}><Input type="email" required autoComplete="email" {...f.bind('email')} /></Field>
-        <Field label={t('auth.register.confirmEmail')}><Input type="email" required autoComplete="off" onPaste={(e) => e.preventDefault()} {...f.bind('confirmEmail')} /></Field>
         <Field label={t('auth.password')} hint={t('auth.minChars')}><Input type="password" required minLength={8} autoComplete="new-password" {...f.bind('password')} /></Field>
         <Field label={t('auth.confirmPassword')}><Input type="password" required minLength={8} autoComplete="new-password" {...f.bind('confirm')} /></Field>
         <label className="check legal-check">

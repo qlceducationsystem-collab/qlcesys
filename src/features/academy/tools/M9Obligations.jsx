@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { debtPayment } from '@shared/patrimonial.js';
 import { useWorkspace } from '../../../context/WorkspaceContext.jsx';
 import { useAsync } from '../../../hooks/useAsync.js';
 import { money, pct } from '../../../utils/format.js';
@@ -8,7 +9,7 @@ import { Button } from '../../../components/ui/Button.jsx';
 import { DataTable } from '../../../components/ui/DataTable.jsx';
 import { Field, FormError, Input, MoneyInput, Select } from '../../../components/ui/Form.jsx';
 import { ConfirmDialog, Modal } from '../../../components/ui/Modal.jsx';
-import { Pill, ProgressBar } from '../../../components/ui/Card.jsx';
+import { Notice, Pill, ProgressBar } from '../../../components/ui/Card.jsx';
 import { ErrorState } from '../../../components/ui/States.jsx';
 import { ExplainRows, KindBadge, MetricCard, MetricGrid, RiskNote, SaveStatus, ToolCard, ToolSkeleton } from '../ResultParts.jsx';
 import { useAction } from '../useAction.js';
@@ -17,6 +18,10 @@ import { tr } from '../../../i18n/tr.js';
 const EMPTY = { name: '', type: 'TARJETA_CREDITO', balance: '', annualRate: '', payment: '', fees: '' };
 const toForm = (d) => ({ name: d.name, type: d.type, balance: d.balance, annualRate: d.annualRate ?? '', payment: d.payment, fees: d.fees });
 const toBody = (f) => ({ ...f, balance: Number(f.balance || 0), payment: Number(f.payment || 0), fees: Number(f.fees || 0), annualRate: f.annualRate === '' ? null : Number(f.annualRate) });
+const DIAGNOSIS_DEBTS = ['Deudas por desglosar (diagnóstico)', 'Deudas totales (diagnóstico)'];
+export const isDiagnosisDebt = (d) => DIAGNOSIS_DEBTS.includes(d.name);
+export const FEES_LABEL = 'Comisiones y seguros incluidos en el pago';
+export const FEES_HINT = 'Solo la parte del pago mensual que no es interés ni capital. No repitas aquí el pago.';
 
 function ratioText(ratio) {
   if (ratio === null) return tr('Registra ingresos del periodo en Ingresos y gastos para calcular la proporción.');
@@ -38,7 +43,7 @@ function DebtForm({ initial, onSubmit, onCancel, busy, error, disabled }) {
           <input className="input" type="number" inputMode="decimal" min="0" max="1000" step="0.01" value={f.annualRate} onChange={set('annualRate')} placeholder={tr('Si se conoce')} disabled={disabled} />
         </Field>
         <Field label={tr('Pago mensual planeado')}><MoneyInput required value={f.payment} onChange={set('payment')} placeholder="0" disabled={disabled} /></Field>
-        <Field label={tr('Cargos mensuales')}><MoneyInput value={f.fees} onChange={set('fees')} placeholder="0" disabled={disabled} /></Field>
+        <Field label={tr(FEES_LABEL)} hint={tr(FEES_HINT)}><MoneyInput value={f.fees} onChange={set('fees')} placeholder="0" disabled={disabled} /></Field>
       </div>
       <FormError error={error} />
       <div className="form-actions">
@@ -49,13 +54,14 @@ function DebtForm({ initial, onSubmit, onCancel, busy, error, disabled }) {
   );
 }
 
-function PaymentModal({ debt, onClose, onDone }) {
+export function PaymentModal({ debt, endpoint = '/academy/obligations', onClose, onDone }) {
   const { api } = useWorkspace();
   const action = useAction();
   const [f, setF] = useState({ amount: String(debt.payment || ''), newBalance: '' });
+  const preview = debtPayment({ balance: debt.balance, annualRate: debt.annualRate, fees: debt.fees, amount: f.amount });
   const submit = async () => {
     const body = { amount: Number(f.amount), newBalance: f.newBalance === '' ? null : Number(f.newBalance) };
-    if (await action.run(() => api.post(`/academy/obligations/${debt.balanceId}/payments`, body))) onDone();
+    if (await action.run(() => api.post(`${endpoint}/${debt.balanceId}/payments`, body))) onDone();
   };
   return (
     <Modal
@@ -65,10 +71,20 @@ function PaymentModal({ debt, onClose, onDone }) {
       footer={<><Button variant="secondary" onClick={onClose}>{tr('Cancelar')}</Button><Button loading={action.busy} onClick={submit} disabled={!Number(f.amount)}>{tr('Confirmar pago real')}</Button></>}
     >
       <div className="stack">
-        <p className="muted small">{tr('Se registrará un gasto real de la categoría Deudas en Ingresos y gastos. El saldo solo cambia si capturas el saldo de tu estado de cuenta.')}</p>
+        <p className="muted small">{tr('Se registrará un gasto real de la categoría Deudas en Ingresos y gastos. Del pago se descuentan primero los intereses y cargos estimados; el resto se abona a capital y reduce el saldo.')}</p>
         <Field label={tr('Importe pagado')}><MoneyInput required min="0.01" value={f.amount} onChange={(e) => setF({ ...f, amount: e.target.value })} /></Field>
-        <Field label="Nuevo saldo según tu estado de cuenta (opcional)" hint={`Saldo actual: ${money(debt.balance)}`}>
-          <MoneyInput value={f.newBalance} onChange={(e) => setF({ ...f, newBalance: e.target.value })} placeholder={tr('Sin cambio')} />
+        <ExplainRows
+          title={tr('Cómo se aplica este pago')}
+          rows={[
+            ['Saldo actual', money(preview.previousBalance)],
+            [preview.rateKnown ? 'Interés estimado del mes' : 'Interés (tasa pendiente: no se descuenta)', money(preview.interest)],
+            ['Comisiones y seguros', money(preview.fees)],
+            ['Abono a capital', money(preview.principal)],
+          ]}
+          final={{ label: tr('Nuevo saldo estimado'), value: money(preview.newBalance), tone: 'up' }}
+        />
+        <Field label="Saldo según tu estado de cuenta (opcional)" hint={tr('Si tu banco indica otro saldo, escríbelo y se usará en lugar del estimado.')}>
+          <MoneyInput value={f.newBalance} onChange={(e) => setF({ ...f, newBalance: e.target.value })} placeholder={money(preview.newBalance)} />
         </Field>
         <FormError error={action.error} />
       </div>
@@ -119,10 +135,14 @@ export function M9Obligations({ onSaved }) {
       {totals && (
         <MetricGrid>
           <MetricCard label={tr('Saldo total de obligaciones')} value={money(totals.balance)} hint={tr('{n} obligaciones · pasivo en Patrimonio', { n: totals.count })} />
-          <MetricCard label={tr('Pagos mensuales planeados')} value={money(totals.payments)} hint={tr('Plan: no reduce el saldo')} />
+          <MetricCard label={tr('Pagos mensuales planeados')} value={money(totals.payments)} hint={tr('Al confirmar un pago, su abono a capital reduce el saldo')} />
           <MetricCard label={tr('Intereses mensuales estimados')} value={money(totals.interest)} tone={totals.incomplete ? 'warn' : ''} hint={totals.incomplete ? tr('Incompleto: hay tasas pendientes') : tr('Saldo × tasa anual / 12')} />
           <MetricCard label={tr('Pagos / ingreso mensual')} value={pct(totals.paymentToIncome)} hint={totals.paymentToIncome === null ? tr('N/D · sin ingreso registrado') : tr('Indicador descriptivo')} />
         </MetricGrid>
+      )}
+
+      {items.some(isDiagnosisDebt) && (
+        <Notice>{tr('La deuda total que declaraste en el diagnóstico aparece como «Deudas por desglosar». Cada obligación que registras se descuenta de ese renglón, así el saldo total no se duplica.')}</Notice>
       )}
 
       {editable && (
@@ -140,7 +160,7 @@ export function M9Obligations({ onSaved }) {
             { key: 'name', label: 'Obligación', render: (d) => <><b>{tr(d.name)}</b><span className="small block">{tr(DEBT_TYPES[d.type])}</span></> },
             { key: 'balance', label: tr('Saldo'), align: 'right', render: (d) => money(d.balance) },
             { key: 'annualRate', label: tr('Tasa anual'), align: 'right', render: (d) => (d.rateKnown ? pct(d.annualRate) : <Pill variant="warn">{tr('Tasa pendiente')}</Pill>) },
-            { key: 'payment', label: tr('Pago planeado'), align: 'right', render: (d) => money(d.payment) },
+            { key: 'payment', label: tr('Pago planeado'), align: 'right', render: (d) => <>{money(d.payment)}{d.payment > 0 && <span className="small block muted">{tr('Interés {interest} · capital {capital}', { interest: money(d.monthlyInterest ?? 0), capital: money(Math.max(0, d.principalContribution)) })}</span>}</> },
             { key: 'monthlyInterest', label: tr('Interés est.'), align: 'right', render: (d) => (d.monthlyInterest === null ? 'Incompleto' : money(d.monthlyInterest)) },
             { key: 'monthlyCost', label: tr('Interés + cargos'), align: 'right', render: (d) => money(d.monthlyCost) },
             { key: 'principalContribution', label: tr('Aporte est. a capital'), align: 'right', render: (d) => <span className={d.paymentBelowCost ? 'down' : ''}>{money(d.principalContribution)}</span> },
@@ -182,7 +202,7 @@ export function M9Obligations({ onSaved }) {
               ]}
               final={{ label: tr('Aportación estimada a capital'), value: money(totals.principalContribution), tone: totals.principalContribution < 0 ? 'down' : 'up' }}
             />
-            <p className="small muted">{tr('Es una aproximación: no actualiza el saldo real sin un desglose confirmado del acreedor.')}</p>
+            <p className="small muted">{tr('Es una aproximación. Cada pago confirmado reduce el saldo por su abono estimado a capital; puedes corregirlo con el saldo de tu estado de cuenta.')}</p>
           </ToolCard>
           <ToolCard title={tr('Comparación con tus ingresos')}>
             <div className="source-line"><span>{tr('Ingreso mensual neto · Ingresos y gastos')}</span><b>{money(totals.income)}</b></div>
@@ -193,7 +213,7 @@ export function M9Obligations({ onSaved }) {
         </div>
       )}
 
-      <RiskNote>{tr('La fórmula de interés es simplificada y no necesariamente coincide con tu estado de cuenta. Registrar una deuda no es registrar un gasto y planear un pago no reduce el saldo: solo los pagos confirmados se registran como movimientos reales.')}</RiskNote>
+      <RiskNote>{tr('La fórmula de interés es simplificada y no necesariamente coincide con tu estado de cuenta. Registrar una deuda no es registrar un gasto y planear un pago no reduce el saldo: solo los pagos confirmados se registran como gasto real y reducen el saldo por su abono a capital.')}</RiskNote>
       <SaveStatus action={action} />
 
       {paying && <PaymentModal debt={paying} onClose={() => setPaying(null)} onDone={async () => { setPaying(null); await refresh(); }} />}

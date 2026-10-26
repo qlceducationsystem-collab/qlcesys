@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { api, setUnauthorizedHandler, tokenStore } from '../api/client.js';
+import { flagNotice } from '../features/notice/noticeContent.js';
 
 const AuthContext = createContext(null);
 const NO_ACCESS = { access: { full: null, tools: [], hasAny: false, mode: 'NONE' }, offers: [], provider: 'MOCK' };
@@ -71,6 +72,7 @@ export function AuthProvider({ children }) {
       return { setupRequired: true, user: res.user };
     }
     challengeStore.set(null);
+    if (res.user?.role === 'CLIENT') flagNotice();
     return { user: await startSession(res) };
   }, [startSession]);
 

@@ -20,6 +20,7 @@ const NAV = [
   { to: '/admin/citas', icon: '◌', label: 'appointments' },
   { group: 'content' },
   { to: '/admin/archivos', icon: '▤', label: 'files' },
+  { to: '/admin/aviso-copytrading', icon: '◬', label: 'loginNotice' },
   { group: 'commercial' },
   { to: '/admin/precios', icon: '◇', label: 'pricing' },
   { to: '/admin/pagos', icon: '⇄', label: 'payments' },

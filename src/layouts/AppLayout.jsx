@@ -9,6 +9,8 @@ import { SecurityNavButton } from '../features/security/AccountSecurity.jsx';
 import { ACCESS_MODES, ADMIN_LEVELS } from '../utils/labels.js';
 import { useI18n } from '../i18n/I18nContext.jsx';
 import { LanguageSwitcher } from '../components/ui/LanguageSwitcher.jsx';
+import { useCurrency } from '../context/CurrencyContext.jsx';
+import { LoginNotice } from '../features/notice/LoginNotice.jsx';
 
 export const NAV = [
   { to: '', icon: '⌂', label: 'home', end: true },
@@ -40,6 +42,7 @@ export function AppLayout() {
   const { user, logout, hasAccess, access } = useAuth();
   const { basePath, isAdminView, client, canEdit } = useWorkspace();
   const { t, lang } = useI18n();
+  const { currency } = useCurrency();
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const relative = location.pathname.slice(basePath.length);
@@ -96,7 +99,8 @@ export function AppLayout() {
         {(hasAccess || isAdminView) && !relative.startsWith('/academia') && !relative.startsWith('/acceso') && (
           <div className="topbar"><PeriodSelector /></div>
         )}
-        <div className="page-enter" key={`${location.pathname}-${lang}`}>{gated ? <AccessGate /> : <Outlet />}</div>
+        <div className="page-enter" key={`${location.pathname}-${lang}-${currency}`}>{gated ? <AccessGate /> : <Outlet />}</div>
+        {!isAdminView && <LoginNotice />}
         <Disclaimer />
       </main>
     </div>

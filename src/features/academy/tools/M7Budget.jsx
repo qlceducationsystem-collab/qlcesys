@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BUDGET_CATEGORIES, BUDGET_EXPENSE_CATEGORIES, budgetView } from '@shared/patrimonial.js';
+import { BUDGET_CATEGORIES, BUDGET_EXPENSE_CATEGORIES, budgetView, CUSTOM_NAME_MAX, customCategory, customName, isCustomCategory } from '@shared/patrimonial.js';
 import { useWorkspace } from '../../../context/WorkspaceContext.jsx';
 import { useAsync } from '../../../hooks/useAsync.js';
-import { money, pct, periodLabel, signedMoney } from '../../../utils/format.js';
+import { dateTime, money, pct, periodLabel } from '../../../utils/format.js';
 import { BUDGET_LABELS } from '../../../utils/labels.js';
 import { Button } from '../../../components/ui/Button.jsx';
 import { DataTable } from '../../../components/ui/DataTable.jsx';
@@ -34,7 +34,14 @@ const fromInput = (v) => {
 };
 const today = () => ({ year: new Date().getFullYear(), month: new Date().getMonth() + 1 });
 const round = (n, d) => Math.round(n * 10 ** d) / 10 ** d;
-const ACTUAL_OPTIONS = [...BUDGET_EXPENSE_CATEGORIES, 'AHORRO'].map((c) => ({ value: c, label: BUDGET_LABELS[c] }));
+const CUSTOM_OPTION = '__custom';
+const categoryLabel = (c) => (isCustomCategory(c) ? customName(c) : tr(BUDGET_LABELS[c]));
+const actualOptions = (lines) => [
+  ...BUDGET_EXPENSE_CATEGORIES.map((c) => ({ value: c, label: BUDGET_LABELS[c] })),
+  ...lines.filter((l) => isCustomCategory(l.category)).map((l) => ({ value: l.category, label: customName(l.category) })),
+  { value: 'AHORRO', label: BUDGET_LABELS.AHORRO },
+];
+const sameLines = (a, b) => a.length === b.length && a.every((l) => Number(l.percent || 0) === b.find((x) => x.category === l.category)?.percent);
 
 function differenceText(row) {
   if (row.kind === 'TARGET') return row.difference > 0 ? tr('Faltan {amount} para la meta', { amount: money(row.difference) }) : tr('Meta cumplida (+{amount})', { amount: money(Math.abs(row.difference)) });
@@ -50,12 +57,12 @@ function RealCell({ row, month, editable, action, onSaved }) {
     if (ok) onSaved();
     else setValue(String(row.actual || ''));
   };
-  if (!editable || row.category === 'INVERSION') return money(row.actual);
+  if (!editable) return money(row.actual);
   return (
     <div className="real-cell">
       <MoneyInput
         className="input amount-input"
-        aria-label={tr('Importe real de {category}', { category: tr(BUDGET_LABELS[row.category]) })}
+        aria-label={tr('Importe real de {category}', { category: categoryLabel(row.category) })}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={(e) => { if (e.key === 'Enter' && changed) { e.preventDefault(); save(); } }}
@@ -66,7 +73,7 @@ function RealCell({ row, month, editable, action, onSaved }) {
   );
 }
 
-function RealMovementForm({ month, onRecorded, disabled }) {
+function RealMovementForm({ month, lines, onRecorded, disabled }) {
   const { api } = useWorkspace();
   const action = useAction();
   const [f, setF] = useState({ category: 'VIVIENDA', amount: '', description: '' });
@@ -81,7 +88,7 @@ function RealMovementForm({ month, onRecorded, disabled }) {
   return (
     <form className="stack" onSubmit={submit}>
       <div className="inline-form">
-        <Field label={tr('Categoría')}><Select value={f.category} onChange={(e) => setF({ ...f, category: e.target.value })} options={ACTUAL_OPTIONS} disabled={disabled} /></Field>
+        <Field label={tr('Categoría')}><Select value={f.category} onChange={(e) => setF({ ...f, category: e.target.value })} options={actualOptions(lines)} disabled={disabled} /></Field>
         <Field label={tr('Importe real')}><MoneyInput required min="0.01" value={f.amount} onChange={(e) => setF({ ...f, amount: e.target.value })} disabled={disabled} /></Field>
         <Field label={tr('Concepto')}><Input required maxLength={200} value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} placeholder={tr('Ej. Renta de octubre')} disabled={disabled} /></Field>
         <Button type="submit" variant="secondary" loading={action.busy} disabled={disabled}>{tr('Agregar movimiento')}</Button>
@@ -92,14 +99,48 @@ function RealMovementForm({ month, onRecorded, disabled }) {
   );
 }
 
-function BudgetEditor({ data, reload, onSaved, monthField }) {
+function AddCategory({ available, lines, onAdd }) {
+  const [choice, setChoice] = useState('');
+  const [name, setName] = useState('');
+  const custom = choice === CUSTOM_OPTION;
+  const category = custom ? customCategory(name) : choice;
+  const duplicate = custom && lines.some((l) => l.category.toLowerCase() === category.toLowerCase());
+  const valid = custom ? name.trim().length > 0 && !duplicate : !!choice;
+  const add = () => {
+    onAdd(category);
+    setChoice('');
+    setName('');
+  };
+  return (
+    <div className="stack">
+      <div className="inline-form">
+        <Field label={tr('Agregar categoría')} hint={tr('Elige una sugerencia o escribe la tuya.')}>
+          <Select
+            value={choice}
+            onChange={(e) => setChoice(e.target.value)}
+            options={[...available.map((c) => ({ value: c, label: BUDGET_LABELS[c] })), { value: CUSTOM_OPTION, label: 'Otra: escribir mi categoría…' }]}
+            placeholder={tr('Selecciona')}
+          />
+        </Field>
+        {custom && (
+          <Field label={tr('Nombre de tu categoría')} error={duplicate ? tr('Esa categoría ya está en tu presupuesto.') : null}>
+            <Input autoFocus maxLength={CUSTOM_NAME_MAX} value={name} onChange={(e) => setName(e.target.value)} placeholder={tr('Ej. Mascotas, gimnasio, regalos')} onKeyDown={(e) => { if (e.key === 'Enter' && valid) { e.preventDefault(); add(); } }} />
+          </Field>
+        )}
+        <Button type="button" variant="secondary" disabled={!valid} onClick={add}>{tr('Agregar')}</Button>
+      </div>
+    </div>
+  );
+}
+
+function BudgetEditor({ data, history, reload, onSaved, monthField }) {
   const { api, canEdit, basePath } = useWorkspace();
   const action = useAction();
   const realAction = useAction();
   const [netIncome, setNetIncome] = useState(String(data.netIncome || ''));
   const [lines, setLines] = useState(data.lines.map((l) => ({ ...l, percent: String(l.percent) })));
-  const [extra, setExtra] = useState('');
   const [drafts, setDrafts] = useState({});
+  const [template, setTemplate] = useState('');
   const view = useMemo(() => budgetView({ netIncome, lines, actuals: data.actuals }), [netIncome, lines, data.actuals]);
   const month = { year: data.year, month: data.month };
   const closed = data.period?.status === 'CLOSED';
@@ -112,9 +153,15 @@ function BudgetEditor({ data, reload, onSaved, monthField }) {
     setPercent(category, amount === '' ? '' : String(round((Number(amount) / income) * 100, 4)));
   };
   const addLine = (category, percent = '0') => setLines([...lines, { category, percent }]);
-  const dirty = data.saved
-    ? income !== data.netIncome || lines.length !== data.lines.length || lines.some((l) => Number(l.percent || 0) !== data.lines.find((d) => d.category === l.category)?.percent)
-    : true;
+  const dirty = data.saved ? income !== data.netIncome || !sameLines(lines, data.lines) : true;
+  const templates = history.filter((h) => h.year !== data.year || h.month !== data.month);
+  const applyTemplate = () => {
+    const chosen = templates.find((h) => `${h.year}-${h.month}` === template);
+    if (!chosen) return;
+    setLines(chosen.lines.map((l) => ({ ...l, percent: String(l.percent) })));
+    setDrafts({});
+    setTemplate('');
+  };
   const over = view.rows.filter((r) => r.status === 'OVER');
   const pending = view.rows.filter((r) => r.status === 'PENDING' && r.planned > 0);
 
@@ -145,7 +192,7 @@ function BudgetEditor({ data, reload, onSaved, monthField }) {
           rowKey="category"
           rows={view.rows}
           columns={[
-            { key: 'category', label: tr('Categoría'), render: (r) => <b>{tr(BUDGET_LABELS[r.category])}</b> },
+            { key: 'category', label: tr('Categoría'), render: (r) => <b>{categoryLabel(r.category)}</b> },
             {
               key: 'percent', label: tr('% del ingreso'), align: 'right', render: (r) => (
                 <input
@@ -155,7 +202,7 @@ function BudgetEditor({ data, reload, onSaved, monthField }) {
                   min="0"
                   max="100"
                   step="0.01"
-                  aria-label={tr('Porcentaje de {category}', { category: tr(BUDGET_LABELS[r.category]) })}
+                  aria-label={tr('Porcentaje de {category}', { category: categoryLabel(r.category) })}
                   value={lines.find((l) => l.category === r.category).percent}
                   onChange={(e) => { setDrafts({ ...drafts, [r.category]: undefined }); setPercent(r.category, e.target.value); }}
                   disabled={!editable}
@@ -166,14 +213,14 @@ function BudgetEditor({ data, reload, onSaved, monthField }) {
               key: 'planned', label: tr('Importe planeado'), align: 'right', render: (r) => (editable && income > 0 ? (
                 <MoneyInput
                   className="input amount-input"
-                  aria-label={tr('Importe planeado de {category}', { category: tr(BUDGET_LABELS[r.category]) })}
+                  aria-label={tr('Importe planeado de {category}', { category: categoryLabel(r.category) })}
                   value={drafts[r.category] ?? String(round(r.planned, 2))}
                   onChange={(e) => setPlanned(r.category, e.target.value)}
                   onBlur={() => setDrafts({ ...drafts, [r.category]: undefined })}
                 />
               ) : money(r.planned)),
             },
-            ...(editable ? [{ key: 'x', label: '', align: 'right', render: (r) => <button type="button" className="btn-link danger" onClick={() => setLines(lines.filter((l) => l.category !== r.category))} aria-label={tr('Quitar {label}', { label: tr(BUDGET_LABELS[r.category]) })}>{tr('Quitar')}</button> }] : []),
+            ...(editable ? [{ key: 'x', label: '', align: 'right', render: (r) => <button type="button" className="btn-link danger" onClick={() => setLines(lines.filter((l) => l.category !== r.category))} aria-label={tr('Quitar {label}', { label: categoryLabel(r.category) })}>{tr('Quitar')}</button> }] : []),
           ]}
         />
         <div className="budget-total">
@@ -181,14 +228,22 @@ function BudgetEditor({ data, reload, onSaved, monthField }) {
           <b className={view.complete ? '' : 'is-off'}>{pct(view.percentTotal)} · {money(view.totalPlanned)}</b>
           {!view.complete && <span className="warn-text small">{view.percentGap > 0 ? tr('Faltan {pct} por asignar', { pct: pct(view.percentGap) }) : tr('Te pasaste por {pct}', { pct: pct(Math.abs(view.percentGap)) })}</span>}
         </div>
-        {editable && available.length > 0 && (
+        {editable && <AddCategory available={available} lines={lines} onAdd={(c) => addLine(c)} />}
+        {editable && templates.length > 0 && (
           <div className="inline-form">
-            <Field label={tr('Agregar categoría')}><Select value={extra} onChange={(e) => setExtra(e.target.value)} options={available.map((c) => ({ value: c, label: BUDGET_LABELS[c] }))} placeholder={tr('Selecciona')} /></Field>
-            <Button type="button" variant="secondary" disabled={!extra} onClick={() => { addLine(extra); setExtra(''); }}>{tr('Agregar')}</Button>
+            <Field label={tr('Copiar la distribución de otro mes')}>
+              <Select value={template} onChange={(e) => setTemplate(e.target.value)} options={templates.map((h) => ({ value: `${h.year}-${h.month}`, label: periodLabel(h) }))} placeholder={tr('Selecciona un mes guardado')} />
+            </Field>
+            <Button type="button" variant="secondary" disabled={!template} onClick={applyTemplate}>{tr('Copiar distribución')}</Button>
           </div>
         )}
         <RiskNote>{tr('Los porcentajes iniciales son un ejemplo educativo editable, no una regla universal. El ahorro y la inversión planeados son metas: no crean ahorro acumulado ni activos.')}</RiskNote>
         <FormError error={action.error} />
+        {data.saved && (
+          <p className="budget-saved small">
+            {tr('Presupuesto de {period} guardado en tu cuenta ({date}). Puedes cambiar el ingreso o los porcentajes y pulsar «Actualizar presupuesto» cuantas veces lo necesites mientras el mes no tenga un corte cerrado. Tus presupuestos guardados aparecen al final de esta página.', { period: periodLabel(month), date: dateTime(data.updatedAt) })}
+          </p>
+        )}
         {editable && (
           <div className="form-actions">
             <SaveStatus action={action} savedText={tr('Presupuesto guardado para este mes.')} />
@@ -208,7 +263,7 @@ function BudgetEditor({ data, reload, onSaved, monthField }) {
               rowKey="category"
               rows={view.rows}
               columns={[
-                { key: 'category', label: tr('Categoría'), render: (r) => <b>{tr(BUDGET_LABELS[r.category])}</b> },
+                { key: 'category', label: tr('Categoría'), render: (r) => <b>{categoryLabel(r.category)}</b> },
                 { key: 'planned', label: tr('Planeado'), align: 'right', render: (r) => money(r.planned) },
                 { key: 'actual', label: tr('Real'), align: 'right', render: (r) => <RealCell key={`${r.category}-${r.actual}`} row={r} month={month} editable={editable} action={realAction} onSaved={reload} /> },
                 { key: 'difference', label: tr('Diferencia'), align: 'right', render: (r) => <span className={r.status === 'OVER' ? 'down' : r.status === 'PENDING' ? 'warn-text' : 'up'}>{differenceText(r)}</span> },
@@ -217,15 +272,21 @@ function BudgetEditor({ data, reload, onSaved, monthField }) {
             />
             <FormError error={realAction.error} />
             <SaveStatus action={realAction} savedText={tr('Importe real actualizado.')} />
-            <p className="small muted">{tr('Diferencia = planeado − real. En gastos, un número positivo es margen y uno negativo es exceso. En ahorro e inversión indica cuánto falta para la meta. Las aportaciones a inversiones se registran en')}{' '}<Link to={`${basePath}/movimientos`}>{tr('Movimientos')}</Link>{' '}{tr('para mantener conciliada Mi cartera.')}</p>
+            <p className="small muted">{tr('Diferencia = planeado − real. En gastos, un número positivo es margen y uno negativo es exceso. En ahorro e inversión indica cuánto falta para la meta. La inversión real que escribas aquí se registra como aportación en')}{' '}<Link to={`${basePath}/movimientos`}>{tr('Movimientos')}</Link>{tr('; agrega o actualiza el producto en')}{' '}<Link to={`${basePath}/cartera`}>{tr('Mi cartera')}</Link>{' '}{tr('para mantenerla conciliada.')}</p>
+            {view.diagnosisPending > 0 && (
+              <div className="pending-diagnosis">
+                <b>{tr('Gasto del diagnóstico por desglosar: {amount}', { amount: money(view.diagnosisPending) })}</b>
+                <p className="small">{tr('Es el gasto mensual global y el pago de deudas que declaraste en el Módulo 1. No es una categoría: se reduce automáticamente cada vez que registras un gasto real por categoría, para que nada se cuente dos veces. Mientras exista, se incluye en el saldo estimado.')}</p>
+              </div>
+            )}
             {view.unbudgeted.length > 0 && (
               <div className="unbudgeted">
                 <b>{tr('Gastos reales fuera de tu presupuesto: {amount}', { amount: money(view.unbudgetedExpenses) })}</b>
-                <p className="small">{tr('Estos gastos ya están registrados en Ingresos y gastos (por ejemplo, el gasto mensual global de tu diagnóstico del Módulo 1 se guarda en «Otros»), pero su categoría no está en tu distribución. Sí se descuentan del saldo estimado. Agrégalas al presupuesto para controlarlas.')}</p>
+                <p className="small">{tr('Estos gastos ya están registrados en Ingresos y gastos, pero su categoría no está en tu distribución. Sí se descuentan del saldo estimado. Agrégalas al presupuesto para controlarlas.')}</p>
                 <ul>
                   {view.unbudgeted.map((u) => (
                     <li key={u.category}>
-                      <span>{tr(BUDGET_LABELS[u.category])}</span>
+                      <span>{categoryLabel(u.category)}</span>
                       <b>{money(u.actual)}</b>
                       {editable && <button type="button" className="btn-link" onClick={() => addLine(u.category, income > 0 ? String(round((u.actual / income) * 100, 4)) : '0')}>{tr('Agregar al presupuesto')}</button>}
                     </li>
@@ -235,7 +296,7 @@ function BudgetEditor({ data, reload, onSaved, monthField }) {
             )}
             <details className="more-actions">
               <summary>{tr('Agregar un movimiento con concepto')}</summary>
-              <RealMovementForm month={month} onRecorded={reload} disabled={!editable} />
+              <RealMovementForm month={month} lines={lines} onRecorded={reload} disabled={!editable} />
             </details>
           </>
         )}
@@ -245,7 +306,7 @@ function BudgetEditor({ data, reload, onSaved, monthField }) {
         <MetricGrid>
           <MetricCard label={tr('Ingreso mensual neto')} value={money(view.netIncome)} />
           <MetricCard label={tr('Gastos planeados')} value={money(view.expensesPlanned)} hint={tr('Vivienda, alimentación, deudas y demás gastos')} />
-          <MetricCard label={tr('Gastos reales')} value={money(view.expensesActualTotal)} tone={view.expensesActualTotal > view.expensesPlanned ? 'bad' : 'good'} hint={view.unbudgetedExpenses > 0 ? tr('Incluye {amount} fuera del presupuesto', { amount: money(view.unbudgetedExpenses) }) : tr('Todos dentro de categorías presupuestadas')} />
+          <MetricCard label={tr('Gastos reales')} value={money(view.expensesActualTotal)} tone={view.expensesActualTotal > view.expensesPlanned ? 'bad' : 'good'} hint={view.unbudgetedExpenses + view.diagnosisPending > 0 ? tr('Incluye {amount} fuera de tus categorías o por desglosar', { amount: money(view.unbudgetedExpenses + view.diagnosisPending) }) : tr('Todos dentro de categorías presupuestadas')} />
           <MetricCard label={tr('Ahorro real')} value={money(view.savingsActual)} hint={tr('Meta: {amount}', { amount: money(view.savingsPlanned) })} tone={view.savingsPlanned > 0 && view.savingsActual >= view.savingsPlanned ? 'good' : 'warn'} />
           <MetricCard label={tr('Inversión real')} value={money(view.investmentActual)} hint={tr('Meta: {amount}', { amount: money(view.investmentPlanned) })} tone={view.investmentPlanned > 0 && view.investmentActual >= view.investmentPlanned ? 'good' : 'warn'} />
           <MetricCard
@@ -261,8 +322,8 @@ function BudgetEditor({ data, reload, onSaved, monthField }) {
             <p className="up">{tr('Cumpliste tu presupuesto: ningún gasto superó el plan y tus metas están cubiertas.')}</p>
           ) : (
             <ul>
-              {over.map((r) => <li key={r.category} className="down">{tr('{category}: gastaste {amount} más de lo planeado.', { category: tr(BUDGET_LABELS[r.category]), amount: money(Math.abs(r.difference)) })}</li>)}
-              {pending.map((r) => <li key={r.category} className="warn-text">{tr('{category}: faltan {amount} para tu meta.', { category: tr(BUDGET_LABELS[r.category]), amount: money(r.difference) })}</li>)}
+              {over.map((r) => <li key={r.category} className="down">{tr('{category}: gastaste {amount} más de lo planeado.', { category: categoryLabel(r.category), amount: money(Math.abs(r.difference)) })}</li>)}
+              {pending.map((r) => <li key={r.category} className="warn-text">{tr('{category}: faltan {amount} para tu meta.', { category: categoryLabel(r.category), amount: money(r.difference) })}</li>)}
               {view.unbudgeted.length > 0 && <li className="warn-text">{tr('Tienes {amount} en gastos sin presupuesto.', { amount: money(view.unbudgetedExpenses) })}</li>}
             </ul>
           )}
@@ -273,10 +334,33 @@ function BudgetEditor({ data, reload, onSaved, monthField }) {
   );
 }
 
+function BudgetHistory({ history, current, onSelect }) {
+  if (!history.length) return null;
+  return (
+    <ToolCard title={tr('Presupuestos guardados')} description={tr('Cada presupuesto se guarda por mes en tu cuenta. Abre uno para revisarlo, corregirlo o copiar su distribución a otro mes.')}>
+      <DataTable
+        rowKey="key"
+        rows={history.map((h) => ({ ...h, key: `${h.year}-${h.month}` }))}
+        columns={[
+          { key: 'month', label: tr('Mes'), render: (h) => <b>{periodLabel(h)}</b> },
+          { key: 'netIncome', label: tr('Ingreso neto'), align: 'right', render: (h) => money(h.netIncome) },
+          { key: 'lines', label: tr('Distribución'), render: (h) => <span className="small">{h.lines.map((l) => `${categoryLabel(l.category)} ${pct(l.percent)}`).join(' · ')}</span> },
+          { key: 'updatedAt', label: tr('Guardado'), render: (h) => <span className="small">{dateTime(h.updatedAt)}</span> },
+          { key: 'x', label: '', align: 'right', render: (h) => (h.year === current.year && h.month === current.month ? <span className="small muted">{tr('Abierto')}</span> : <button type="button" className="btn-link" onClick={() => onSelect({ year: h.year, month: h.month })}>{tr('Abrir')}</button>) },
+        ]}
+      />
+    </ToolCard>
+  );
+}
+
 export function M7Budget({ onSaved }) {
   const { api, period } = useWorkspace();
   const [month, setMonth] = useState(() => (period ? { year: period.year, month: period.month } : today()));
   const res = useAsync(() => api.get(`/academy/budget?year=${month.year}&month=${month.month}`), [api, month.year, month.month]);
+  const history = useAsync(() => api.get('/academy/budget/history'), [api]);
+  const reloadAll = async () => {
+    await Promise.all([res.reload(), history.reload()]);
+  };
   const monthField = (
     <Field label={tr('Mes del presupuesto')} hint={res.data ? (res.data.saved ? tr('Presupuesto guardado') : tr('Sin presupuesto guardado: distribución inicial de ejemplo')) : null}>
       <Input type="month" required value={toInput(month)} onChange={(e) => e.target.value && setMonth(fromInput(e.target.value))} />
@@ -297,8 +381,9 @@ export function M7Budget({ onSaved }) {
       )}
       {res.error && <ErrorState error={res.error} onRetry={res.reload} />}
       {res.data && !res.error && (
-        <BudgetEditor key={`${toInput(month)}-${res.data.updatedAt || 'new'}`} data={res.data} reload={res.reload} onSaved={onSaved} monthField={monthField} />
+        <BudgetEditor key={`${toInput(month)}-${res.data.updatedAt || 'new'}`} data={res.data} history={history.data || []} reload={reloadAll} onSaved={onSaved} monthField={monthField} />
       )}
+      <BudgetHistory history={history.data || []} current={month} onSelect={(m) => { setMonth(m); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
     </div>
   );
 }

@@ -1,0 +1,46 @@
+const fmt = (n) => Number(n).toLocaleString('es-MX', { maximumFractionDigits: 2 });
+
+export const NOTICE_FLAG = 'qlc_login_notice';
+
+export const flagNotice = () => {
+  try {
+    sessionStorage.setItem(NOTICE_FLAG, '1');
+  } catch {
+    return;
+  }
+};
+
+export const NOTICE_TEXT = {
+  es: {
+    title: 'QLC Copytrading | Una oportunidad para diversificar su cartera',
+    intro: (m) => `Estimado inversor: nuestro producto principal, QLC Copytrading, registra actualmente un retorno acumulado del ${fmt(m.returnPct)}% en ${fmt(m.days)} días, con ${fmt(m.wins)} operaciones ganadas, ${fmt(m.losses)} perdidas y una tasa de aciertos del ${fmt(m.hitRate)}%. El drawdown máximo registrado es del ${fmt(m.drawdown)}%.`,
+    evaluate: 'Evalúe nuestras métricas, analice el riesgo frente al resultado y descubra si QLC Copytrading es una opción para complementar su cartera de inversión.',
+    live: 'Consulte nuestras operaciones en vivo en nuestro perfil Trader Elite de Bitget o solicite información para acceder a nuestro producto.',
+    disclaimer: 'Los resultados pasados no garantizan resultados futuros. Invertir implica riesgos, incluida la pérdida de capital.',
+    metrics: (m) => [
+      ['Retorno acumulado', `${fmt(m.returnPct)}%`, `${fmt(m.days)} días`],
+      ['Operaciones ganadas', fmt(m.wins), `${fmt(m.losses)} perdidas`],
+      ['Tasa de aciertos', `${fmt(m.hitRate)}%`, 'Operaciones cerradas'],
+      ['Drawdown máximo', `${fmt(m.drawdown)}%`, 'Registrado'],
+    ],
+    bitget: 'Ver perfil en Bitget ↗',
+    info: 'Solicitar información ↗',
+    close: 'Cerrar',
+  },
+  en: {
+    title: 'QLC Copytrading | An opportunity to diversify your portfolio',
+    intro: (m) => `Dear investor: our main product, QLC Copytrading, currently records a cumulative return of ${fmt(m.returnPct)}% over ${fmt(m.days)} days, with ${fmt(m.wins)} winning trades, ${fmt(m.losses)} losing trades and a ${fmt(m.hitRate)}% hit rate. The maximum recorded drawdown is ${fmt(m.drawdown)}%.`,
+    evaluate: 'Review our metrics, weigh the risk against the result and find out whether QLC Copytrading is an option to complement your investment portfolio.',
+    live: 'See our live trades on our Bitget Elite Trader profile or request information to access our product.',
+    disclaimer: 'Past results do not guarantee future results. Investing involves risk, including the loss of capital.',
+    metrics: (m) => [
+      ['Cumulative return', `${fmt(m.returnPct)}%`, `${fmt(m.days)} days`],
+      ['Winning trades', fmt(m.wins), `${fmt(m.losses)} losing`],
+      ['Hit rate', `${fmt(m.hitRate)}%`, 'Closed trades'],
+      ['Maximum drawdown', `${fmt(m.drawdown)}%`, 'Recorded'],
+    ],
+    bitget: 'View Bitget profile ↗',
+    info: 'Request information ↗',
+    close: 'Close',
+  },
+};

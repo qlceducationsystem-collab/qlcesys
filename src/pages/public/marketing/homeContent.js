@@ -22,7 +22,7 @@ const ES = {
     },
     {
       key: 'productos',
-      navLabel: 'Programas',
+      navLabel: 'Soluciones QLC',
       navHighlight: true,
       eyebrow: 'Tres productos · Una visión',
       title: 'Elige tu ruta de formación.',
@@ -108,7 +108,7 @@ const EN = {
     },
     {
       key: 'productos',
-      navLabel: 'Programs',
+      navLabel: 'QLC Solutions',
       navHighlight: true,
       eyebrow: 'Three products · One vision',
       title: 'Choose your learning path.',

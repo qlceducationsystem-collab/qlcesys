@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import { Modal } from '../../components/ui/Modal.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { FormError } from '../../components/ui/Form.jsx';
-import { date, money } from '../../utils/format.js';
+import { date, priceMoney } from '../../utils/format.js';
 import { tr } from '../../i18n/tr.js';
 
 const METHODS = [
@@ -13,7 +13,7 @@ const METHODS = [
 ];
 
 export const offerPrice = (offer) =>
-  offer?.price === null || offer?.price === undefined ? tr('Precio por definir') : `${money(offer.price)} ${offer.currency}`;
+  offer?.price === null || offer?.price === undefined ? tr('Precio por definir') : `${priceMoney(offer.price)} ${offer.currency}`;
 
 function Summary({ offer, method, setMethod }) {
   return (

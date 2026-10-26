@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useWorkspace } from '../../context/WorkspaceContext.jsx';
 import { useAsync } from '../../hooks/useAsync.js';
@@ -9,6 +10,7 @@ import { ClosedNotice } from '../../components/finance/Finance.jsx';
 import { RecordManager } from '../../features/records/RecordManager.jsx';
 import { RequirePeriod } from '../../features/periods/PeriodControls.jsx';
 import { modulePath } from '../../features/academy/useAcademy.js';
+import { FEES_HINT, FEES_LABEL, isDiagnosisDebt, PaymentModal } from '../../features/academy/tools/M9Obligations.jsx';
 import { DEBT_TYPES, options } from '../../utils/labels.js';
 import { tr } from '../../i18n/tr.js';
 
@@ -20,7 +22,7 @@ const fields = [
   { name: 'lender', label: 'Acreedor (opcional)', required: false },
   { name: 'balance', label: 'Saldo al cierre del periodo', type: 'money', display: money },
   { name: 'payment', label: 'Pago mensual planeado', type: 'money', display: money },
-  { name: 'fees', label: 'Cargos mensuales', type: 'money', display: money, required: false },
+  { name: 'fees', label: FEES_LABEL, type: 'money', display: money, required: false, hint: tr(FEES_HINT) },
   { name: 'annualRate', label: 'Tasa anual (%)', type: 'money', display: (v) => (v === null || v === '' ? tr('Pendiente') : `${v}%`), required: false, hint: tr('Déjala vacía si no la conoces: se mostrará como pendiente, no como 0%.') },
   { name: 'status', label: 'Estado', type: 'select', options: Object.entries(STATUS).map(([value, label]) => ({ value, label })), display: (v) => STATUS[v], default: 'ACTIVE' },
 ];
@@ -31,6 +33,7 @@ const columns = [
   { key: 'payment', label: 'Pago', align: 'right', render: (d) => money(d.payment) },
   { key: 'annualRate', label: 'Tasa anual', align: 'right', render: (d) => (d.rateKnown ? pct(d.annualRate) : <Pill variant="warn">{tr('Pendiente')}</Pill>) },
   { key: 'monthlyCost', label: 'Interés + cargos est.', align: 'right', render: (d) => money(d.monthlyCost) },
+  { key: 'principalContribution', label: 'Abono est. a capital', align: 'right', render: (d) => <span className={d.paymentBelowCost ? 'down' : ''}>{money(d.principalContribution)}</span> },
   { key: 'status', label: 'Estado', render: (d) => <Pill variant={d.status === 'PAID' ? '' : 'warn'}>{tr(STATUS[d.status])}</Pill> },
 ];
 
@@ -38,10 +41,18 @@ function Body() {
   const { api, basePath } = useWorkspace();
   const { summary: s, reload, period } = usePeriodSummary();
   const hist = useAsync(() => api.get('/periods/history'), [api, period?.id]);
+  const [paying, setPaying] = useState(null);
+  const changed = () => {
+    reload();
+    hist.reload();
+  };
   return (
     <>
       <PageHeader title={tr('Deudas')} subtitle={tr('Registro de obligaciones y costo del dinero')} />
       <ClosedNotice />
+      {s?.debts.items?.some(isDiagnosisDebt) && (
+        <Notice>{tr('La deuda total que declaraste en el diagnóstico aparece como «Deudas por desglosar». Cada deuda que registras se descuenta de ese renglón, así el saldo total no se duplica.')}</Notice>
+      )}
       {s && (
         <StatGrid>
           <StatCard label={tr('Deuda total')} value={money(s.debts.totalBalance)} accent />
@@ -51,9 +62,22 @@ function Body() {
         </StatGrid>
       )}
       <RecordManager endpoint="/debts" title={tr('Obligaciones')} addLabel={tr('+ Registrar deuda')} fields={fields} columns={columns}
-        select={(d) => d.items} rowId={(r) => r.balanceId} onChanged={() => { reload(); hist.reload(); }}
+        select={(d) => d.items} rowId={(r) => r.balanceId} onChanged={changed}
+        rowActions={(d, refresh) => (d.status === 'ACTIVE' ? <button className="btn-link" onClick={() => setPaying({ debt: d, refresh })}>{tr('Registrar pago')}</button> : null)}
         toForm={(d) => ({ name: d.name, type: d.type, lender: d.lender || '', balance: d.balance, payment: d.payment, fees: d.fees, annualRate: d.annualRate ?? '', status: d.status })}
         emptyText={tr('Sin deudas registradas en este periodo.')} />
+      {paying && (
+        <PaymentModal
+          debt={paying.debt}
+          endpoint="/debts"
+          onClose={() => setPaying(null)}
+          onDone={async () => {
+            const { refresh } = paying;
+            setPaying(null);
+            await refresh();
+          }}
+        />
+      )}
       <Card title={tr('Evolución de la deuda total')}>
         <BarChart data={(hist.data || []).map((h) => ({ label: `${shortMonth(h.month)} ${String(h.year).slice(2)}`, value: h.debt }))} />
       </Card>

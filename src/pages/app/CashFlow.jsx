@@ -34,7 +34,7 @@ function Body() {
         <>
           <StatGrid>
             <StatCard label={tr('Ingresos')} value={money(c.income)} />
-            <StatCard label={tr('Gastos')} value={money(c.expenses)} />
+            <StatCard label={tr('Gastos')} value={money(c.expenses)} delta={tr('Suma de todos los gastos registrados en este periodo')} />
             <StatCard label={tr('Capacidad de ahorro')} value={<span className={c.savings < 0 ? 'down' : ''}>{money(c.savings)}</span>} delta={tr('Ingresos − gastos')} accent />
             <StatCard label={tr('% ahorro')} value={pct(c.savingsRate)} />
           </StatGrid>

@@ -4,14 +4,62 @@ export const setFormatLocale = (lang) => {
   locale = lang === 'en' ? 'en-US' : 'es-MX';
 };
 
-const mxn = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+export const CURRENCIES = [
+  ['MXN', 'Peso mexicano'],
+  ['USD', 'Dólar estadounidense'],
+  ['EUR', 'Euro'],
+  ['GBP', 'Libra esterlina'],
+  ['CAD', 'Dólar canadiense'],
+  ['CHF', 'Franco suizo'],
+  ['JPY', 'Yen japonés'],
+  ['COP', 'Peso colombiano'],
+  ['CLP', 'Peso chileno'],
+  ['ARS', 'Peso argentino'],
+  ['PEN', 'Sol peruano'],
+  ['BRL', 'Real brasileño'],
+];
+const CURRENCY_KEY = 'qlc_currency';
+const SHARED_SYMBOL = ['USD', 'CAD', 'COP', 'CLP', 'ARS'];
+const isCurrency = (code) => CURRENCIES.some(([c]) => c === code);
 
-export const money = (n) => (n === null || n === undefined || Number.isNaN(Number(n)) ? '—' : mxn.format(Number(n)));
+function storedCurrency() {
+  try {
+    const code = typeof window === 'undefined' ? null : window.localStorage.getItem(CURRENCY_KEY);
+    return isCurrency(code) ? code : 'MXN';
+  } catch {
+    return 'MXN';
+  }
+}
+
+let currency = storedCurrency();
+const formatters = new Map();
+const formatterFor = (code) => {
+  const key = `${locale}|${code}`;
+  if (!formatters.has(key)) formatters.set(key, new Intl.NumberFormat(locale, { style: 'currency', currency: code, currencyDisplay: SHARED_SYMBOL.includes(code) ? 'code' : 'narrowSymbol' }));
+  return formatters.get(key);
+};
+
+export const getCurrency = () => currency;
+export const setCurrency = (code) => {
+  if (!isCurrency(code)) return;
+  currency = code;
+  try {
+    window.localStorage.setItem(CURRENCY_KEY, code);
+  } catch {
+    return;
+  }
+};
+
+const mxn = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const invalid = (n) => n === null || n === undefined || Number.isNaN(Number(n));
+
+export const money = (n) => (invalid(n) ? '—' : formatterFor(currency).format(Number(n)));
+export const priceMoney = (n) => (invalid(n) ? '—' : mxn.format(Number(n)));
 
 export const signedMoney = (n) => {
   if (n === null || n === undefined) return '—';
   const v = Number(n);
-  return `${v > 0 ? '+' : v < 0 ? '−' : ''}${mxn.format(Math.abs(v))}`;
+  return `${v > 0 ? '+' : v < 0 ? '−' : ''}${formatterFor(currency).format(Math.abs(v))}`;
 };
 
 export const pct = (n, { signed = false } = {}) => {

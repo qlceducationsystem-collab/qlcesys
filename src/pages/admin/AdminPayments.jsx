@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../../api/client.js';
 import { useAsync } from '../../hooks/useAsync.js';
-import { dateTime, money } from '../../utils/format.js';
+import { dateTime, priceMoney } from '../../utils/format.js';
 import { PAYMENT_STATUS } from '../../utils/labels.js';
 import { Card, PageHeader, Pill, StatCard, StatGrid } from '../../components/ui/Card.jsx';
 import { Select } from '../../components/ui/Form.jsx';
@@ -37,7 +37,7 @@ export default function AdminPayments() {
               { key: 'createdAt', label: tr('Fecha'), render: (a) => dateTime(a.createdAt) },
               { key: 'user', label: tr('Cliente'), render: (a) => <Link to={`/admin/clientes/${a.user.id}`}>{tr(a.user.name)}<span className="small block">{a.user.email}</span></Link> },
               { key: 'offer', label: tr('Producto'), render: (a) => a.offer?.name },
-              { key: 'amount', label: tr('Monto'), align: 'right', render: (a) => (a.amount === null ? tr('Por definir') : `${money(a.amount)} ${a.currency}`) },
+              { key: 'amount', label: tr('Monto'), align: 'right', render: (a) => (a.amount === null ? tr('Por definir') : `${priceMoney(a.amount)} ${a.currency}`) },
               { key: 'provider', label: tr('Proveedor'), render: (a) => (a.provider === 'MOCK' ? 'Simulado' : a.provider) },
               { key: 'status', label: tr('Estado'), render: (a) => <Pill variant={a.status === 'APPROVED' ? '' : a.status === 'REJECTED' ? 'bad' : 'warn'}>{tr(PAYMENT_STATUS[a.status])}</Pill> },
             ]} />

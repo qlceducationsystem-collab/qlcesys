@@ -36,6 +36,7 @@ const PRIVATE_PAGES = [
 const ADMIN_PAGES = [
   ['', page(() => import('../pages/admin/AdminDashboard.jsx'))],
   ['solicitudes', page(() => import('../pages/admin/AdminLeads.jsx'))],
+  ['aviso-copytrading', page(() => import('../pages/admin/AdminLoginNotice.jsx'))],
   ['ejercicios', page(() => import('../pages/admin/AdminExercises.jsx'))],
   ['clientes', page(() => import('../pages/admin/AdminClients.jsx'))],
   ['clientes/:clientId', page(() => import('../pages/admin/AdminClientDetail.jsx'))],

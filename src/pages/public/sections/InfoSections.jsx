@@ -1,11 +1,11 @@
-import { money } from '../../../utils/format.js';
+import { priceMoney } from '../../../utils/format.js';
 import { responsiveImage } from '../../../utils/media.js';
 import { useI18n } from '../../../i18n/I18nContext.jsx';
 import { LegalLinks } from '../legal/LegalPage.jsx';
 import { CtaButton, MoreInfo, SectionCtas, SectionHead } from './SectionParts.jsx';
 
 const hasPrice = (offer) => offer?.price !== null && offer?.price !== undefined;
-const priceLabel = (offer, t) => (hasPrice(offer) ? `${money(offer.price)} ${offer.currency}` : t('public.priceTbd'));
+const priceLabel = (offer, t) => (hasPrice(offer) ? `${priceMoney(offer.price)} ${offer.currency}` : t('public.priceTbd'));
 
 function SectionImage({ section }) {
   if (!section.image) return null;

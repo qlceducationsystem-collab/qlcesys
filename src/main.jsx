@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.jsx';
+import { CurrencyProvider } from './context/CurrencyContext.jsx';
 import { I18nProvider } from './i18n/I18nContext.jsx';
 import AppRoutes from './routes/AppRoutes.jsx';
 import { UpdatePrompt } from './features/updates/UpdatePrompt.jsx';
@@ -18,10 +19,12 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <I18nProvider>
-        <AuthProvider>
-          <AppRoutes />
-          <UpdatePrompt />
-        </AuthProvider>
+        <CurrencyProvider>
+          <AuthProvider>
+            <AppRoutes />
+            <UpdatePrompt />
+          </AuthProvider>
+        </CurrencyProvider>
       </I18nProvider>
     </BrowserRouter>
   </React.StrictMode>,

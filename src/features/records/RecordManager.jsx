@@ -57,7 +57,7 @@ export function RecordForm({ fields, initial, onSubmit, onCancel, submitLabel = 
   );
 }
 
-export function RecordManager({ endpoint, title, addLabel = "+ Agregar", fields, columns, toForm = (r) => r, onChanged, emptyText, select = (d) => d, rowId = (r) => r.id }) {
+export function RecordManager({ endpoint, title, addLabel = "+ Agregar", fields, columns, toForm = (r) => r, onChanged, emptyText, select = (d) => d, rowId = (r) => r.id, rowActions }) {
   const { api, period, canEdit } = useWorkspace();
   const list = useAsync(async () => select(await api.get(`${endpoint}?periodId=${period.id}`)), [api, endpoint, period?.id]);
   const [editing, setEditing] = useState(null);
@@ -108,6 +108,7 @@ export function RecordManager({ endpoint, title, addLabel = "+ Agregar", fields,
         align: 'right',
         render: (r) => (
           <div className="row-actions">
+            {rowActions?.(r, refresh)}
             <button className="btn-link" onClick={() => setEditing({ row: r })}>{tr('Editar')}</button>
             <button className="btn-link danger" onClick={() => setPending({ kind: 'delete', row: r })}>{tr('Eliminar')}</button>
           </div>

@@ -10,6 +10,7 @@ import { ReconciliationBanner } from '../../components/finance/Finance.jsx';
 import { AllocationBars, READING_TONE, ReadingCard } from '../../features/academy/AllocationView.jsx';
 import { modulePath } from '../../features/academy/useAcademy.js';
 import { Block2Summary, EmergencyFundCard } from '../../features/patrimonial/PatrimonialCards.jsx';
+import { CurrencySelect } from '../../context/CurrencyContext.jsx';
 import { tr } from '../../i18n/tr.js';
 
 function Onboarding({ academy }) {
@@ -62,7 +63,7 @@ function DiagnosisCard({ diagnosis }) {
   return (
     <Card title="Diagnóstico financiero (línea base)" actions={<span className="small muted">{dateTime(diagnosis.savedAt)}</span>}>
       <Row label={tr('Tasa de ahorro')} value={pct(r.savingRate)} sub={r.savingLevel?.label} />
-      <Row label={tr('Meses de liquidez')} value={r.liquidityMonths === null ? 'N/D' : tr('{n} meses', { n: r.liquidityMonths.toFixed(1) })} />
+      <Row label={tr('Meses de liquidez')} value={r.liquidityMonths === null ? 'N/D' : tr('{n} meses', { n: r.liquidityMonths.toFixed(1) })} sub={tr('Fondo de emergencia ÷ gastos mensuales declarados en el Módulo 1')} />
       <Row label={tr('Inversión / patrimonio')} value={pct(r.investmentToNetWorth)} />
       <Row label={tr('Deuda / patrimonio')} value={pct(r.debtToNetWorth)} />
       <Row label={tr('Flujo disponible')} value={money(r.freeCashFlow)} valueTone="auto" />
@@ -78,7 +79,7 @@ function DashboardBody({ d }) {
 
   return (
     <>
-      <PageHeader title={tr('Mi situación financiera')} subtitle={tr('Resumen de tu estructura financiera · {period}', { period: periodLabel(d.period) })} />
+      <PageHeader title={tr('Mi situación financiera')} subtitle={tr('Resumen de tu estructura financiera · {period}', { period: periodLabel(d.period) })} actions={<CurrencySelect />} />
       {!s.reconciliation.reconciled && <ReconciliationBanner reconciliation={s.reconciliation} />}
       <StatGrid>
         <StatCard label={tr('Ingresos mensuales')} value={money(s.cashflow.income)} delta={prev ? tr('{amount} vs. mes anterior', { amount: signedMoney(s.cashflow.income - prev.income) }) : null} deltaTone={prev ? tone(s.cashflow.income - prev.income) : ''} />
