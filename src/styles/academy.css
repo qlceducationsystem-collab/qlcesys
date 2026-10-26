@@ -128,6 +128,8 @@ a.module-tile:hover { transform: translateY(-2px); border-color: rgba(0, 168, 25
 .metric-grid { display: grid; gap: 12px; }
 .metric-grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .metric-grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.metric-grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 1100px) { .metric-grid.cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .metric-card { padding: 16px; border-radius: 14px; border: 1px solid var(--line); background: rgba(8, 13, 19, 0.85); display: flex; flex-direction: column; gap: 4px; min-width: 0; animation: pageIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .metric-label { font-size: 10.5px; color: var(--muted2); text-transform: uppercase; letter-spacing: 0.1em; }
 .metric-value { font-size: clamp(19px, 1.7vw, 25px); letter-spacing: -0.03em; overflow-wrap: anywhere; line-height: 1.15; }
@@ -422,4 +424,47 @@ a.module-tile:hover { transform: translateY(-2px); border-color: rgba(0, 168, 25
   .lab-block { padding: 12px; }
   .lab-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .lab-actions > * { flex: 1 1 100%; }
+}
+.mpl { display: grid; gap: 16px; margin-top: 8px; padding-top: 22px; border-top: 1px solid var(--line); }
+.mpl-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+.mpl-head h2 { margin: 4px 0 0; font-size: 22px; letter-spacing: -0.02em; }
+.mpl-class { border: 1px solid rgba(0, 168, 255, 0.22); border-radius: 14px; padding: 14px 16px; background: rgba(0, 168, 255, 0.04); }
+.mpl-class summary { cursor: pointer; font-weight: 700; color: var(--blue2); }
+.mpl-class p, .mpl-class li { font-size: 13px; line-height: 1.65; color: var(--silver); }
+.mpl-class h4 { margin: 16px 0 6px; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted2); }
+.mpl-class ol, .mpl-class ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.mpl-concepts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 10px; margin: 0; }
+.mpl-concepts div { padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); }
+.mpl-concepts dt { font-weight: 700; font-size: 13px; }
+.mpl-concepts dd { margin: 4px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+.mpl-capital { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(91, 212, 165, 0.3); font-size: 13px; }
+.mpl-capital b { color: var(--green); }
+.mpl-capital.is-over { border-color: rgba(255, 123, 134, 0.4); }
+.mpl-capital.is-over b { color: var(--red); }
+.mpl-market { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.mpl-price { display: grid; gap: 2px; }
+.mpl-price span { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted2); }
+.mpl-price strong { font-size: 30px; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.mpl-price small { font-size: 12px; }
+.mpl-controls { display: flex; gap: 8px; flex-wrap: wrap; }
+.mpl-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.mpl-table { min-width: 1040px; }
+.mpl-table td { vertical-align: middle; white-space: nowrap; }
+.mpl-table .input { width: 76px; padding: 7px 8px; }
+.mpl-table .input.mpl-wide { width: 110px; }
+.mpl-table select.input { width: 92px; }
+.mpl-table tr.is-closed td { opacity: 0.75; }
+.mpl-notes { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 13px; line-height: 1.6; color: var(--silver); }
+.mpl-dist { display: grid; gap: 6px; margin-top: 14px; }
+.mpl-dist-row { display: grid; grid-template-columns: 34px 1fr 110px; gap: 10px; align-items: center; font-size: 12px; }
+.mpl-dist-row b { text-align: right; font-variant-numeric: tabular-nums; }
+.mpl-dist-track { position: relative; height: 8px; border-radius: 9px; background: #172437; }
+.mpl-dist-track::after { content: ''; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--muted2); }
+.mpl-dist-track span { position: absolute; top: 0; bottom: 0; border-radius: 9px; }
+.mpl-dist-track span.is-up { left: 50%; background: var(--green); }
+.mpl-dist-track span.is-down { right: 50%; background: var(--red); }
+.mpl-log { max-height: 320px; overflow-y: auto; }
+@media (max-width: 560px) {
+  .mpl-price strong { font-size: 24px; }
+  .mpl-controls > * { flex: 1 1 100%; }
 }
