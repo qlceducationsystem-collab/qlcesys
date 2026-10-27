@@ -49,7 +49,7 @@ function AcademyCard({ academy }) {
   );
 }
 
-function DiagnosisCard({ diagnosis }) {
+function DiagnosisCard({ diagnosis, liquidity, expenses }) {
   const { basePath } = useWorkspace();
   if (!diagnosis) {
     return (
@@ -60,10 +60,11 @@ function DiagnosisCard({ diagnosis }) {
     );
   }
   const r = diagnosis.result;
+  const months = expenses > 0 ? liquidity / expenses : null;
   return (
     <Card title="Diagnóstico financiero (línea base)" actions={<span className="small muted">{dateTime(diagnosis.savedAt)}</span>}>
       <Row label={tr('Tasa de ahorro')} value={pct(r.savingRate)} sub={r.savingLevel?.label} />
-      <Row label={tr('Meses de liquidez')} value={r.liquidityMonths === null ? 'N/D' : tr('{n} meses', { n: r.liquidityMonths.toFixed(1) })} sub={r.liquidityCash === undefined ? tr('Efectivo y liquidez ÷ gastos mensuales del Módulo 1') : tr('{cash} de efectivo y liquidez ÷ {expenses} de gastos mensuales (Módulo 1)', { cash: money(r.liquidityCash), expenses: money(r.liquidityExpenses) })} />
+      <Row label={tr('Meses de liquidez')} value={months === null ? 'N/D' : tr('{n} meses', { n: months.toFixed(1) })} sub={tr('{liquidity} de liquidez ÷ {expenses} de gastos mensuales del periodo', { liquidity: money(liquidity), expenses: money(expenses) })} />
       <Row label={tr('Inversión / patrimonio')} value={pct(r.investmentToNetWorth)} />
       <Row label={tr('Deuda / patrimonio')} value={pct(r.debtToNetWorth)} />
       <Row label={tr('Flujo disponible')} value={money(r.freeCashFlow)} valueTone="auto" />
@@ -75,6 +76,7 @@ function DashboardBody({ d }) {
   const { period } = useWorkspace();
   const s = d.summary;
   const prev = d.history.length > 1 ? d.history[d.history.length - 2] : null;
+  const liquidity = (d.allocation?.shares.find((x) => x.key === 'LIQUIDEZ')?.amount || 0) + s.protection.total;
   const evolution = d.history.map((h) => ({ label: `${shortMonth(h.month)} ${String(h.year).slice(2)}`, value: h.netWorth }));
 
   return (
@@ -88,14 +90,14 @@ function DashboardBody({ d }) {
         <StatCard label={tr('Patrimonio neto')} value={money(s.balanceSheet.netWorth)} accent delta={prev ? tr('{amount} este mes', { amount: signedMoney(s.balanceSheet.netWorth - prev.netWorth) }) : tr('Activos − pasivos')} deltaTone={prev ? tone(s.balanceSheet.netWorth - prev.netWorth) : ''} />
       </StatGrid>
       <StatGrid>
-        <StatCard label={tr('Liquidez')} value={money((d.allocation?.shares.find((x) => x.key === 'LIQUIDEZ')?.amount || 0) + s.protection.total)} />
+        <StatCard label={tr('Liquidez')} value={money(liquidity)} />
         <StatCard label={tr('Deuda total')} value={money(s.debts.totalBalance)} delta={`Pagos: ${money(s.debts.totalPayment)}`} />
         <StatCard label={tr('Lectura de cartera')} value={d.allocation?.reading ? tr(d.allocation.reading.label) : tr('Sin datos')} valueTone={READING_TONE[d.allocation?.reading?.key]} delta={d.allocation?.reading ? `${d.allocation.reading.score} / 100 · educativa` : tr('Registra productos en M2')} />
         <StatCard label={tr('Estado del periodo')} value={period?.status === 'CLOSED' ? tr('Cerrado') : tr('Abierto')} delta={s.reconciliation.reconciled ? tr('Patrimonio conciliado') : tr('Información no conciliada')} deltaTone={s.reconciliation.reconciled ? 'up' : 'down'} />
       </StatGrid>
       <div className="layout">
         <AcademyCard academy={d.academy} />
-        <DiagnosisCard diagnosis={d.diagnosis} />
+        <DiagnosisCard diagnosis={d.diagnosis} liquidity={liquidity} expenses={s.cashflow.expenses} />
       </div>
       <div className="layout">
         <Block2Summary patrimonial={d.patrimonial} academy={d.academy} />
