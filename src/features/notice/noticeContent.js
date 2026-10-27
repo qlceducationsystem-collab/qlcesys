@@ -18,7 +18,7 @@ export const NOTICE_TEXT = {
     live: 'Consulte nuestras operaciones en vivo en nuestro perfil Trader Elite de Bitget o solicite información para acceder a nuestro producto.',
     disclaimer: 'Los resultados pasados no garantizan resultados futuros. Invertir implica riesgos, incluida la pérdida de capital.',
     metrics: (m) => [
-      ['Retorno acumulado', `${fmt(m.returnPct)}%`, `${fmt(m.days)} días`],
+      ['Retorno sobre inversión', `${fmt(m.returnPct)}%`, `${fmt(m.days)} días`],
       ['Operaciones ganadas', fmt(m.wins), `${fmt(m.losses)} perdidas`],
       ['Tasa de aciertos', `${fmt(m.hitRate)}%`, 'Operaciones cerradas'],
       ['Drawdown máximo', `${fmt(m.drawdown)}%`, 'Registrado'],
@@ -34,7 +34,7 @@ export const NOTICE_TEXT = {
     live: 'See our live trades on our Bitget Elite Trader profile or request information to access our product.',
     disclaimer: 'Past results do not guarantee future results. Investing involves risk, including the loss of capital.',
     metrics: (m) => [
-      ['Cumulative return', `${fmt(m.returnPct)}%`, `${fmt(m.days)} days`],
+      ['Return on investment', `${fmt(m.returnPct)}%`, `${fmt(m.days)} days`],
       ['Winning trades', fmt(m.wins), `${fmt(m.losses)} losing`],
       ['Hit rate', `${fmt(m.hitRate)}%`, 'Closed trades'],
       ['Maximum drawdown', `${fmt(m.drawdown)}%`, 'Recorded'],

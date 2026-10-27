@@ -7,6 +7,7 @@ export const es = {
     openMenu: 'Abrir menú',
     goHome: 'Ir al inicio',
     back: 'Volver',
+    backHome: 'Regresar al inicio',
     mainPage: 'Página principal',
     sections: 'Secciones',
     mainNav: 'Navegación principal',

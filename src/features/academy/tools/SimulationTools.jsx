@@ -1,6 +1,6 @@
 import { useWorkspace } from '../../../context/WorkspaceContext.jsx';
 import { dateTime, pct, signedUsd, usd } from '../../../utils/format.js';
-import { AUTOMATION_LEVELS, MONITORING_LEVELS, options } from '../../../utils/labels.js';
+import { options } from '../../../utils/labels.js';
 import { Button } from '../../../components/ui/Button.jsx';
 import { Field, FormError, Input, MoneyInput, Select } from '../../../components/ui/Form.jsx';
 import { DataTable } from '../../../components/ui/DataTable.jsx';
@@ -139,61 +139,9 @@ export function M5TradeSimulator() {
   );
 }
 
-const M6_DEFAULT = { capital: 10000, riskPct: 1, positions: 5, leverage: 5, automation: 'SEMI', monitoring: 'CONTINUOUS' };
-const LEVEL_TONE = { ESTRUCTURADO: 'good', MODERADO: 'good', BASICO: 'warn', EXPOSICION_ELEVADA: 'bad' };
-const COMPONENTS = ['Datos', 'Riesgo', 'Ejecución', 'Automatización', 'Monitoreo', 'Registro'];
-
 export function M6ProfessionalSimulator() {
-  const sim = useSimulation(6, M6_DEFAULT);
-  const r = sim.result;
   return (
     <div className="tool">
-      <div className="tool-grid">
-        <ToolCard step="1" title={tr('Configura un escenario')} description={tr('Capital, riesgo por operación, operaciones simultáneas, apalancamiento, automatización y monitoreo.')} aside={<SimBadge />}>
-          <SimForm sim={sim}>
-            <div className="form-grid cols-2">
-              <Field label="Capital operativo simulado (USD)"><MoneyInput value={sim.input.capital} onChange={sim.set('capital')} /></Field>
-              <Field label="Riesgo simulado por operación (%)"><Input type="number" step="0.1" min="0" max="100" value={sim.input.riskPct} onChange={sim.set('riskPct')} /></Field>
-              <Field label={tr('Operaciones simultáneas')}><Input type="number" min="1" max="100" step="1" value={sim.input.positions} onChange={sim.set('positions')} /></Field>
-              <Field label={tr('Apalancamiento máximo simulado')}><Select value={sim.input.leverage} onChange={sim.set('leverage', Number)} options={options.leverage} /></Field>
-              <Field label={tr('Nivel de automatización')}><Select value={sim.input.automation} onChange={sim.set('automation')} options={options.automation} /></Field>
-              <Field label={tr('Monitoreo')}><Select value={sim.input.monitoring} onChange={sim.set('monitoring')} options={options.monitoring} /></Field>
-            </div>
-          </SimForm>
-        </ToolCard>
-        {r && (
-          <ToolCard step="2" title={tr('Lectura educativa')} description={tr('Una operación profesional requiere estructura para controlar riesgo, exposición, ejecución y seguimiento.')}>
-            <MetricGrid cols={2}>
-              <MetricCard label={tr('Riesgo monetario por operación')} value={usd(r.riskMoneyPerTrade)} hint={`${pct(r.riskPct)} de ${usd(r.capital)}`} />
-              <MetricCard label={tr('Nivel operativo educativo')} value={r.level.label} tone={LEVEL_TONE[r.level.key]} hint={tr('No es una recomendación financiera')} />
-              <MetricCard label={tr('Riesgo acumulado teórico')} value={pct(r.accumulatedRiskPct)} tone={r.accumulatedRiskPct > 10 ? 'bad' : r.accumulatedRiskPct > 5 ? 'warn' : 'good'} hint={usd(r.accumulatedRiskMoney)} />
-              <MetricCard label={tr('Exposición nominal máxima teórica')} value={usd(r.maxExposure)} hint={`${usd(r.capital)} × ${r.leverage}x`} />
-            </MetricGrid>
-            <ExplainRows rows={[
-              ['Tú defines el capital operativo', usd(r.capital)],
-              ['Asignas un riesgo simulado por operación', usd(r.riskMoneyPerTrade)],
-              ['Lo multiplicas por las operaciones simultáneas', usd(r.accumulatedRiskMoney)],
-              ['El sistema calcula la exposición nominal máxima teórica', usd(r.maxExposure)],
-            ]} final={{ label: tr('La operación profesional agrega control y monitoreo ({automation} · {monitoring})', { automation: AUTOMATION_LEVELS[r.automation], monitoring: MONITORING_LEVELS[r.monitoring] }), value: r.level.label, tone: LEVEL_TONE[r.level.key] === 'bad' ? 'down' : LEVEL_TONE[r.level.key] === 'warn' ? 'warn-text' : 'up' }} />
-          </ToolCard>
-        )}
-      </div>
-      {r && (
-        <ToolCard title={tr('Riesgo agregado: 1, 5 y 10 operaciones')} description={tr('¿Por qué un sistema profesional necesita conocer la exposición total y no solamente el riesgo de cada operación?')}>
-          <DataTable rowKey="positions" rows={r.comparison} columns={[
-            { key: 'positions', label: 'Operaciones' },
-            { key: 'accumulatedRiskPct', label: tr('Riesgo acumulado'), align: 'right', render: (c) => pct(c.accumulatedRiskPct) },
-            { key: 'accumulatedRiskMoney', label: tr('Riesgo monetario'), align: 'right', render: (c) => usd(c.accumulatedRiskMoney) },
-          ]} />
-          <div className="pro-flow">{COMPONENTS.map((c, i) => <span key={c}><b>{String(i + 1).padStart(2, '0')}</b>{tr(c)}</span>)}</div>
-        </ToolCard>
-      )}
-      <RiskNote>{tr('“Profesional” no significa “seguro” ni “rentable”. Automatizar no elimina el riesgo de mercado ni garantiza resultados. La clasificación es exclusivamente educativa.')}</RiskNote>
-      <History sim={sim} columns={[
-        { key: 'pos', label: 'Operaciones', render: (s) => s.input.positions },
-        { key: 'risk', label: tr('Riesgo acumulado'), align: 'right', render: (s) => pct(s.result.accumulatedRiskPct) },
-        { key: 'lvl', label: tr('Nivel'), render: (s) => s.result.level.label },
-      ]} />
       <MultiPositionLab />
     </div>
   );

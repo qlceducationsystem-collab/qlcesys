@@ -11,7 +11,7 @@ import { NOTICE_TEXT } from '../../features/notice/noticeContent.js';
 import { tr } from '../../i18n/tr.js';
 
 const METRICS = [
-  ['returnPct', 'Retorno acumulado (%)', '0.01'],
+  ['returnPct', 'Retorno sobre inversión (%)', '0.01'],
   ['days', 'Días del periodo', '1'],
   ['wins', 'Operaciones ganadas', '1'],
   ['losses', 'Operaciones perdidas', '1'],
