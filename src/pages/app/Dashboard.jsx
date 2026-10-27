@@ -63,7 +63,7 @@ function DiagnosisCard({ diagnosis }) {
   return (
     <Card title="Diagnóstico financiero (línea base)" actions={<span className="small muted">{dateTime(diagnosis.savedAt)}</span>}>
       <Row label={tr('Tasa de ahorro')} value={pct(r.savingRate)} sub={r.savingLevel?.label} />
-      <Row label={tr('Meses de liquidez')} value={r.liquidityMonths === null ? 'N/D' : tr('{n} meses', { n: r.liquidityMonths.toFixed(1) })} sub={tr('Fondo de emergencia ÷ gastos mensuales declarados en el Módulo 1')} />
+      <Row label={tr('Meses de liquidez')} value={r.liquidityMonths === null ? 'N/D' : tr('{n} meses', { n: r.liquidityMonths.toFixed(1) })} sub={tr('Efectivo y liquidez ÷ gastos mensuales declarados en el Módulo 1')} />
       <Row label={tr('Inversión / patrimonio')} value={pct(r.investmentToNetWorth)} />
       <Row label={tr('Deuda / patrimonio')} value={pct(r.debtToNetWorth)} />
       <Row label={tr('Flujo disponible')} value={money(r.freeCashFlow)} valueTone="auto" />
