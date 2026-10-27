@@ -106,6 +106,7 @@ export function M9Obligations({ onSaved }) {
   const { items, totals, period } = res.data;
   const closed = period?.status === 'CLOSED';
   const editable = canEdit && !closed;
+  const pendingDebt = items.find(isDiagnosisDebt);
 
   const refresh = async () => {
     await res.reload();
@@ -161,8 +162,8 @@ export function M9Obligations({ onSaved }) {
             { key: 'balance', label: tr('Saldo'), align: 'right', render: (d) => money(d.balance) },
             { key: 'annualRate', label: tr('Tasa anual'), align: 'right', render: (d) => (d.rateKnown ? pct(d.annualRate) : <Pill variant="warn">{tr('Tasa pendiente')}</Pill>) },
             { key: 'payment', label: tr('Pago planeado'), align: 'right', render: (d) => <>{money(d.payment)}{d.payment > 0 && <span className="small block muted">{tr('Interés {interest} · capital {capital}', { interest: money(d.monthlyInterest ?? 0), capital: money(Math.max(0, d.principalContribution)) })}</span>}</> },
-            { key: 'monthlyInterest', label: tr('Interés est.'), align: 'right', render: (d) => (d.monthlyInterest === null ? 'Incompleto' : money(d.monthlyInterest)) },
-            { key: 'monthlyCost', label: tr('Interés + cargos'), align: 'right', render: (d) => money(d.monthlyCost) },
+            { key: 'monthlyInterest', label: tr('Interés est.'), align: 'right', render: (d) => (d.monthlyInterest === null ? tr('Tasa pendiente') : money(d.monthlyInterest)) },
+            { key: 'fees', label: tr('Comisiones y seguros'), align: 'right', render: (d) => money(d.fees) },
             { key: 'principalContribution', label: tr('Aporte est. a capital'), align: 'right', render: (d) => <span className={d.paymentBelowCost ? 'down' : ''}>{money(d.principalContribution)}</span> },
             ...(editable ? [{
               key: 'x', label: tr('Acciones'), align: 'right', render: (d) => (
@@ -195,10 +196,17 @@ export function M9Obligations({ onSaved }) {
               rows={[
                 ['Número de obligaciones', totals.count],
                 ['Saldo total pendiente', money(totals.balance)],
-                ['Intereses estimados', money(totals.interest)],
-                ['Cargos mensuales', money(totals.fees)],
-                ['Intereses + cargos', money(totals.cost)],
+                ...(pendingDebt ? [
+                  ['Saldo ya desglosado', money(totals.balance - pendingDebt.balance)],
+                  ['Saldo pendiente por desglosar (diagnóstico)', money(pendingDebt.balance), 'warn-text'],
+                ] : []),
                 ['Pago mensual planeado', money(totals.payments)],
+                ...(pendingDebt ? [
+                  ['Pago ya desglosado', money(totals.payments - pendingDebt.payment)],
+                  ['Pago pendiente por desglosar (diagnóstico)', money(pendingDebt.payment), 'warn-text'],
+                ] : []),
+                ['Intereses estimados', money(totals.interest)],
+                ['Comisiones y seguros', money(totals.fees)],
               ]}
               final={{ label: tr('Aportación estimada a capital'), value: money(totals.principalContribution), tone: totals.principalContribution < 0 ? 'down' : 'up' }}
             />

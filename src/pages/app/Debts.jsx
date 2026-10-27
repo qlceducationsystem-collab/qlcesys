@@ -32,7 +32,8 @@ const columns = [
   { key: 'balance', label: 'Saldo', align: 'right', render: (d) => money(d.balance) },
   { key: 'payment', label: 'Pago', align: 'right', render: (d) => money(d.payment) },
   { key: 'annualRate', label: 'Tasa anual', align: 'right', render: (d) => (d.rateKnown ? pct(d.annualRate) : <Pill variant="warn">{tr('Pendiente')}</Pill>) },
-  { key: 'monthlyCost', label: 'Interés + cargos est.', align: 'right', render: (d) => money(d.monthlyCost) },
+  { key: 'monthlyInterest', label: 'Interés est.', align: 'right', render: (d) => (d.monthlyInterest === null ? tr('Tasa pendiente') : money(d.monthlyInterest)) },
+  { key: 'fees', label: 'Comisiones y seguros', align: 'right', render: (d) => money(d.fees) },
   { key: 'principalContribution', label: 'Abono est. a capital', align: 'right', render: (d) => <span className={d.paymentBelowCost ? 'down' : ''}>{money(d.principalContribution)}</span> },
   { key: 'status', label: 'Estado', render: (d) => <Pill variant={d.status === 'PAID' ? '' : 'warn'}>{tr(STATUS[d.status])}</Pill> },
 ];
