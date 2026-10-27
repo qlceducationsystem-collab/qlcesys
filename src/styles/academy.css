@@ -473,3 +473,4 @@ a.module-tile:hover { transform: translateY(-2px); border-color: rgba(0, 168, 25
 .pending-diagnosis > b { color: var(--blue2); }
 .pending-diagnosis p { margin: 0; color: var(--silver); line-height: 1.6; }
 .budget-saved { margin: 0; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--line); background: rgba(91, 212, 165, 0.06); color: var(--silver); line-height: 1.6; }
+.table-total td { border-top: 1px solid var(--line2); background: rgba(0, 168, 255, 0.05); }

@@ -163,6 +163,20 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
     setTemplate('');
   };
   const over = view.rows.filter((r) => r.status === 'OVER');
+  const sumOf = (rows, key) => rows.reduce((acc, r) => acc + r[key], 0);
+  const expenseRows = view.rows.filter((r) => r.kind === 'EXPENSE');
+  const tableActual = sumOf(view.rows, 'actual');
+  const tableBalance = view.netIncome - tableActual;
+  const outside = view.unbudgetedExpenses + view.diagnosisPending;
+  const totalRow = (label, rows) => (
+    <tr className="table-total">
+      <td data-label={tr('Categoría')}><b>{tr(label)}</b></td>
+      <td data-label={tr('Planeado')} className="right"><b>{money(sumOf(rows, 'planned'))}</b></td>
+      <td data-label={tr('Real')} className="right"><b>{money(sumOf(rows, 'actual'))}</b></td>
+      <td data-label={tr('Diferencia')} className="right"><b>{money(sumOf(rows, 'planned') - sumOf(rows, 'actual'))}</b></td>
+      <td />
+    </tr>
+  );
   const pending = view.rows.filter((r) => r.status === 'PENDING' && r.planned > 0);
 
   const save = async () => {
@@ -269,6 +283,7 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
                 { key: 'difference', label: tr('Diferencia'), align: 'right', render: (r) => <span className={r.status === 'OVER' ? 'down' : r.status === 'PENDING' ? 'warn-text' : 'up'}>{differenceText(r)}</span> },
                 { key: 'status', label: tr('Estado'), render: (r) => <span className={`status-chip tone-${STATUS[r.status][1]}`}>{tr(STATUS[r.status][0])}</span> },
               ]}
+              footer={<>{totalRow('Total de gastos', expenseRows)}{totalRow('Total con ahorro e inversión', view.rows)}</>}
             />
             <FormError error={realAction.error} />
             <SaveStatus action={realAction} savedText={tr('Importe real actualizado.')} />
@@ -306,15 +321,15 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
         <MetricGrid>
           <MetricCard label={tr('Ingreso mensual neto')} value={money(view.netIncome)} />
           <MetricCard label={tr('Gastos planeados')} value={money(view.expensesPlanned)} hint={tr('Vivienda, alimentación, deudas y demás gastos')} />
-          <MetricCard label={tr('Gastos reales')} value={money(view.expensesActualTotal)} tone={view.expensesActualTotal > view.expensesPlanned ? 'bad' : 'good'} hint={view.unbudgetedExpenses + view.diagnosisPending > 0 ? tr('Incluye {amount} fuera de tus categorías o por desglosar', { amount: money(view.unbudgetedExpenses + view.diagnosisPending) }) : tr('Todos dentro de categorías presupuestadas')} />
+          <MetricCard label={tr('Gastos reales')} value={money(view.expensesActual)} tone={view.expensesActual > view.expensesPlanned ? 'bad' : 'good'} hint={outside > 0 ? tr('Suma de las categorías de gasto de tu tabla. No incluye {amount} fuera de tus categorías o por desglosar', { amount: money(outside) }) : tr('Suma de las categorías de gasto de tu tabla')} />
           <MetricCard label={tr('Ahorro real')} value={money(view.savingsActual)} hint={tr('Meta: {amount}', { amount: money(view.savingsPlanned) })} tone={view.savingsPlanned > 0 && view.savingsActual >= view.savingsPlanned ? 'good' : 'warn'} />
           <MetricCard label={tr('Inversión real')} value={money(view.investmentActual)} hint={tr('Meta: {amount}', { amount: money(view.investmentPlanned) })} tone={view.investmentPlanned > 0 && view.investmentActual >= view.investmentPlanned ? 'good' : 'warn'} />
           <MetricCard
             label={tr('Saldo estimado')}
-            value={money(view.estimatedBalance)}
-            tone={view.estimatedBalance < 0 ? 'bad' : ''}
-            hint={tr('{income} − {actual} registrados', { income: money(view.netIncome), actual: money(view.totalActual) })}
-            explanation="Ingreso menos todo lo que registraste como gastado, ahorrado o invertido este mes. Es una estimación: no equivale a tu saldo bancario ni a tu patrimonio neto."
+            value={money(tableBalance)}
+            tone={tableBalance < 0 ? 'bad' : ''}
+            hint={tr('{income} − {actual} de gastos, ahorro e inversión de tu tabla', { income: money(view.netIncome), actual: money(tableActual) })}
+            explanation="Ingreso menos el total real de tu tabla: gastos de tus categorías, ahorro e inversión. Es una estimación: no equivale a tu saldo bancario ni a tu patrimonio neto."
           />
         </MetricGrid>
         <div className="month-close">

@@ -32,7 +32,7 @@ function CurrentPortfolio() {
         <div className="split-panel">
           <div>
             <AllocationBars allocation={allocation} />
-            <MetricGrid cols={2}>
+            <MetricGrid cols={1}>
               <MetricCard label={tr('Cartera total')} value={money(allocation.total)} />
               <MetricCard label={tr('Categorías utilizadas')} value={`${allocation.categoriesUsed} / 6`} />
             </MetricGrid>
