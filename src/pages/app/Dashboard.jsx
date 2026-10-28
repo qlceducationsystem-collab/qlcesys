@@ -66,6 +66,7 @@ function DiagnosisCard({ diagnosis, liquidity, expenses }) {
       <Row label={tr('Tasa de ahorro')} value={pct(r.savingRate)} sub={r.savingLevel?.label} />
       <Row label={tr('Meses de liquidez')} value={months === null ? 'N/D' : tr('{n} meses', { n: months.toFixed(1) })} sub={tr('{liquidity} de liquidez ÷ {expenses} de gastos mensuales del periodo', { liquidity: money(liquidity), expenses: money(expenses) })} />
       <Row label={tr('Inversión / patrimonio')} value={pct(r.investmentToNetWorth)} />
+      {r.otherAssetsToNetWorth !== undefined && <Row label={tr('Bienes y otros activos / patrimonio')} value={pct(r.otherAssetsToNetWorth)} />}
       <Row label={tr('Deuda / patrimonio')} value={pct(r.debtToNetWorth)} />
       <Row label={tr('Flujo disponible')} value={money(r.freeCashFlow)} valueTone="auto" />
     </Card>
