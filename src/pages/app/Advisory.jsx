@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useWorkspace } from '../../context/WorkspaceContext.jsx';
 import { useAsync } from '../../hooks/useAsync.js';
-import { dateTime } from '../../utils/format.js';
-import { APPOINTMENT_CHANNELS, APPOINTMENT_REASONS, APPOINTMENT_STATUS, options } from '../../utils/labels.js';
+import { APPOINTMENT_DURATIONS, fromUtcInputs, utcDateTime } from '../../utils/format.js';
+import { APPOINTMENT_CHANNELS, APPOINTMENT_REASONS, APPOINTMENT_STATUS } from '../../utils/labels.js';
 import { Card, PageHeader, Pill } from '../../components/ui/Card.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { Modal } from '../../components/ui/Modal.jsx';
@@ -15,7 +15,7 @@ const STATUS_VARIANT = { PENDING: 'warn', CONFIRMED: '', COMPLETED: '', CANCELLE
 
 function RequestForm({ onDone, onCancel }) {
   const { api } = useWorkspace();
-  const [f, setF] = useState({ reason: APPOINTMENT_REASONS[0], date: '', time: '', durationMin: 60, channel: 'VIDEOLLAMADA', notes: '' });
+  const [f, setF] = useState({ reason: APPOINTMENT_REASONS[0], date: '', time: '', durationMin: 60, notes: '' });
   const [state, setState] = useState({ saving: false, error: null });
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
 
@@ -23,8 +23,8 @@ function RequestForm({ onDone, onCancel }) {
     e.preventDefault();
     setState({ saving: true, error: null });
     try {
-      const scheduledAt = new Date(`${f.date}T${f.time}`).toISOString();
-      await api.post('/appointments', { reason: f.reason, scheduledAt, durationMin: Number(f.durationMin), channel: f.channel, notes: f.notes || null });
+      const scheduledAt = fromUtcInputs(f.date, f.time);
+      await api.post('/appointments', { reason: f.reason, scheduledAt, durationMin: Number(f.durationMin), channel: 'CHAT_INTERNO', notes: f.notes || null });
       onDone();
     } catch (error) {
       setState({ saving: false, error });
@@ -35,10 +35,10 @@ function RequestForm({ onDone, onCancel }) {
     <form className="stack" onSubmit={submit}>
       <FormGrid>
         <Field label={tr('Motivo')} full><Select value={f.reason} onChange={set('reason')} options={APPOINTMENT_REASONS.map((r) => ({ value: r, label: r }))} /></Field>
-        <Field label={tr('Fecha')}><Input type="date" required value={f.date} onChange={set('date')} min={new Date().toISOString().slice(0, 10)} /></Field>
-        <Field label={tr('Hora')}><Input type="time" required value={f.time} onChange={set('time')} /></Field>
-        <Field label={tr('Duración')}><Select value={f.durationMin} onChange={set('durationMin')} options={[30, 45, 60, 90].map((m) => ({ value: m, label: `${m} minutos` }))} /></Field>
-        <Field label={tr('Canal de atención')}><Select value={f.channel} onChange={set('channel')} options={options.channel} /></Field>
+        <Field label={tr('Fecha (UTC)')}><Input type="date" required value={f.date} onChange={set('date')} min={new Date().toISOString().slice(0, 10)} /></Field>
+        <Field label={tr('Hora (UTC, formato 24 h)')} hint={tr('Hora universal coordinada. Ahora son las {time} UTC.', { time: new Date().toISOString().slice(11, 16) })}><Input type="time" required value={f.time} onChange={set('time')} /></Field>
+        <Field label={tr('Duración')}><Select value={f.durationMin} onChange={set('durationMin')} options={APPOINTMENT_DURATIONS.map((m) => ({ value: m, label: `${m} minutos` }))} /></Field>
+        <Field label={tr('Canal de atención')} hint={tr('La asesoría se atiende por el chat interno de la plataforma.')}><Input value={tr('Chat interno')} readOnly /></Field>
         <Field label={tr('Notas (opcional)')} full><Textarea value={f.notes} onChange={set('notes')} maxLength={1000} /></Field>
       </FormGrid>
       <FormError error={state.error} />
@@ -73,7 +73,7 @@ export default function Advisory() {
         {(list) => (
           <Card title={tr('Mis citas')}>
             <DataTable rows={list} empty={tr('Sin citas solicitadas.')} columns={[
-              { key: 'scheduledAt', label: tr('Fecha y hora'), render: (a) => dateTime(a.scheduledAt) },
+              { key: 'scheduledAt', label: tr('Fecha y hora'), render: (a) => utcDateTime(a.scheduledAt) },
               { key: 'reason', label: tr('Motivo') },
               { key: 'channel', label: tr('Canal'), render: (a) => `${APPOINTMENT_CHANNELS[a.channel]} · ${a.durationMin} min` },
               { key: 'status', label: tr('Estado'), render: (a) => <Pill variant={STATUS_VARIANT[a.status]}>{tr(APPOINTMENT_STATUS[a.status])}</Pill> },

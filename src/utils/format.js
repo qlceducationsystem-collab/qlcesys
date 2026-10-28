@@ -81,6 +81,13 @@ export const date = (d) => (d ? new Date(d).toLocaleDateString(locale, { year: '
 export const dateTime = (d) =>
   d ? new Date(d).toLocaleString(locale, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
 
+export const utcDateTime = (d) =>
+  d ? `${new Date(d).toLocaleString(locale, { timeZone: 'UTC', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false })} UTC` : '—';
+export const utcDateInput = (d) => new Date(d).toISOString().slice(0, 10);
+export const utcTimeInput = (d) => new Date(d).toISOString().slice(11, 16);
+export const fromUtcInputs = (date, time) => new Date(`${date}T${time}:00Z`).toISOString();
+export const APPOINTMENT_DURATIONS = [20, 40, 60];
+
 export const toDateInput = (d) => {
   const x = d ? new Date(d) : new Date();
   return new Date(x.getTime() - x.getTimezoneOffset() * 60000).toISOString().slice(0, 10);

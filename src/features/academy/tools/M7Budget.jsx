@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BUDGET_CATEGORIES, BUDGET_EXPENSE_CATEGORIES, budgetView, CUSTOM_NAME_MAX, customCategory, customName, isCustomCategory } from '@shared/patrimonial.js';
+import { BUDGET_EXPENSE_CATEGORIES, BUDGET_OPTIONAL_CATEGORIES, budgetView, CUSTOM_NAME_MAX, customCategory, customName, isCustomCategory } from '@shared/patrimonial.js';
 import { useWorkspace } from '../../../context/WorkspaceContext.jsx';
 import { useAsync } from '../../../hooks/useAsync.js';
 import { dateTime, money, pct, periodLabel } from '../../../utils/format.js';
@@ -37,14 +37,14 @@ const round = (n, d) => Math.round(n * 10 ** d) / 10 ** d;
 const CUSTOM_OPTION = '__custom';
 const categoryLabel = (c) => (isCustomCategory(c) ? customName(c) : tr(BUDGET_LABELS[c]));
 const actualOptions = (lines) => [
-  ...BUDGET_EXPENSE_CATEGORIES.map((c) => ({ value: c, label: BUDGET_LABELS[c] })),
+  ...BUDGET_EXPENSE_CATEGORIES.filter((c) => c !== 'DEUDAS').map((c) => ({ value: c, label: BUDGET_LABELS[c] })),
   ...lines.filter((l) => isCustomCategory(l.category)).map((l) => ({ value: l.category, label: customName(l.category) })),
   { value: 'AHORRO', label: BUDGET_LABELS.AHORRO },
 ];
 const sameLines = (a, b) => a.length === b.length && a.every((l) => Number(l.percent || 0) === b.find((x) => x.category === l.category)?.percent);
 
 function differenceText(row) {
-  if (row.kind === 'TARGET') return row.difference > 0 ? tr('Faltan {amount} para la meta', { amount: money(row.difference) }) : tr('Meta cumplida (+{amount})', { amount: money(Math.abs(row.difference)) });
+  if (row.kind !== 'EXPENSE') return row.difference > 0 ? tr('Faltan {amount} para la meta', { amount: money(row.difference) }) : tr('Meta cumplida (+{amount})', { amount: money(Math.abs(row.difference)) });
   return row.difference < 0 ? tr('{amount} por encima del plan', { amount: money(Math.abs(row.difference)) }) : tr('{amount} de margen', { amount: money(row.difference) });
 }
 
@@ -57,6 +57,7 @@ function RealCell({ row, month, editable, action, onSaved }) {
     if (ok) onSaved();
     else setValue(String(row.actual || ''));
   };
+  if (row.kind === 'FREE') return <span>{money(row.actual)}<span className="small block muted">{tr('Se calcula solo')}</span></span>;
   if (!editable) return money(row.actual);
   return (
     <div className="real-cell">
@@ -146,7 +147,7 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
   const closed = data.period?.status === 'CLOSED';
   const editable = canEdit && !closed;
   const income = Number(netIncome || 0);
-  const available = BUDGET_CATEGORIES.filter((c) => !lines.some((l) => l.category === c));
+  const available = BUDGET_OPTIONAL_CATEGORIES.filter((c) => !lines.some((l) => l.category === c));
   const setPercent = (category, percent) => setLines(lines.map((l) => (l.category === category ? { ...l, percent } : l)));
   const setPlanned = (category, amount) => {
     setDrafts({ ...drafts, [category]: amount });
@@ -165,18 +166,22 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
   const over = view.rows.filter((r) => r.status === 'OVER');
   const sumOf = (rows, key) => rows.reduce((acc, r) => acc + r[key], 0);
   const expenseRows = view.rows.filter((r) => r.kind === 'EXPENSE');
-  const tableActual = sumOf(view.rows, 'actual');
-  const tableBalance = view.netIncome - tableActual;
+  const fixedRows = view.rows.filter((r) => r.kind !== 'FREE');
   const outside = view.unbudgetedExpenses + view.diagnosisPending;
-  const totalRow = (label, rows) => (
+  const debtRow = { planned: 0, actual: view.debtPayments };
+  const totalRow = (label, rows, plannedText) => (
     <tr className="table-total">
       <td data-label={tr('Categoría')}><b>{tr(label)}</b></td>
-      <td data-label={tr('Planeado')} className="right"><b>{money(sumOf(rows, 'planned'))}</b></td>
+      <td data-label={tr('Planeado')} className="right"><b>{plannedText ?? money(sumOf(rows, 'planned'))}</b></td>
       <td data-label={tr('Real')} className="right"><b>{money(sumOf(rows, 'actual'))}</b></td>
-      <td data-label={tr('Diferencia')} className="right"><b>{money(sumOf(rows, 'planned') - sumOf(rows, 'actual'))}</b></td>
+      <td data-label={tr('Diferencia')} className="right"><b>{plannedText ? '—' : money(sumOf(rows, 'planned') - sumOf(rows, 'actual'))}</b></td>
       <td />
     </tr>
   );
+  const confirmAction = useAction();
+  const confirmReal = async () => {
+    if (await confirmAction.run(() => api.post('/academy/budget/confirm-real', month))) await reload();
+  };
   const pending = view.rows.filter((r) => r.status === 'PENDING' && r.planned > 0);
 
   const save = async () => {
@@ -283,7 +288,13 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
                 { key: 'difference', label: tr('Diferencia'), align: 'right', render: (r) => <span className={r.status === 'OVER' ? 'down' : r.status === 'PENDING' ? 'warn-text' : 'up'}>{differenceText(r)}</span> },
                 { key: 'status', label: tr('Estado'), render: (r) => <span className={`status-chip tone-${STATUS[r.status][1]}`}>{tr(STATUS[r.status][0])}</span> },
               ]}
-              footer={<>{totalRow('Total de gastos', expenseRows)}{totalRow('Total con ahorro e inversión', view.rows)}</>}
+              footer={(
+                <>
+                  {totalRow('Total de gastos', expenseRows)}
+                  {view.debtPayments > 0 && totalRow('Pagos de deudas (Módulo 9)', [debtRow], tr('Ver Módulo 9'))}
+                  {totalRow('Total con deudas, ahorro e inversión', [...fixedRows, debtRow])}
+                </>
+              )}
             />
             <FormError error={realAction.error} />
             <SaveStatus action={realAction} savedText={tr('Importe real actualizado.')} />
@@ -291,7 +302,9 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
             {view.diagnosisPending > 0 && (
               <div className="pending-diagnosis">
                 <b>{tr('Gasto del diagnóstico por desglosar: {amount}', { amount: money(view.diagnosisPending) })}</b>
-                <p className="small">{tr('Es el gasto mensual global y el pago de deudas que declaraste en el Módulo 1. No es una categoría: se reduce automáticamente cada vez que registras un gasto real por categoría, para que nada se cuente dos veces. Mientras exista, se incluye en el saldo estimado.')}</p>
+                <p className="small">{tr('Es el gasto mensual global que declaraste en el Módulo 1. Se reduce automáticamente cada vez que registras un gasto real por categoría. Cuando termines de anotar tus gastos reales, confírmalos para que Inicio e Ingresos y gastos usen solo tus cifras reales.')}</p>
+                {editable && <Button type="button" variant="secondary" loading={confirmAction.busy} onClick={confirmReal}>{tr('Confirmar mis gastos reales del mes')}</Button>}
+                <FormError error={confirmAction.error} />
               </div>
             )}
             {view.unbudgeted.length > 0 && (
@@ -320,16 +333,16 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
       <ToolCard step="4" title={tr('¿Cómo terminaste el mes?')} description={tr('Resumen del mes con todos los importes reales registrados, incluidos los que están fuera de tu presupuesto.')}>
         <MetricGrid>
           <MetricCard label={tr('Ingreso mensual neto')} value={money(view.netIncome)} />
-          <MetricCard label={tr('Gastos planeados')} value={money(view.expensesPlanned)} hint={tr('Vivienda, alimentación, deudas y demás gastos')} />
-          <MetricCard label={tr('Gastos reales')} value={money(view.expensesActual)} tone={view.expensesActual > view.expensesPlanned ? 'bad' : 'good'} hint={outside > 0 ? tr('Suma de las categorías de gasto de tu tabla. No incluye {amount} fuera de tus categorías o por desglosar', { amount: money(outside) }) : tr('Suma de las categorías de gasto de tu tabla')} />
+          <MetricCard label={tr('Gastos planeados')} value={money(view.expensesPlanned)} hint={tr('Categorías de gasto de tu tabla')} />
+          <MetricCard label={tr('Gastos reales')} value={money(view.expensesActual)} tone={view.expensesActual > view.expensesPlanned ? 'bad' : 'good'} hint={[tr('Suma de las categorías de gasto de tu tabla.'), view.debtPayments > 0 ? tr('Además pagas {amount} de deudas (Módulo 9).', { amount: money(view.debtPayments) }) : '', outside > 0 ? tr('No incluye {amount} fuera de tus categorías o por desglosar.', { amount: money(outside) }) : ''].filter(Boolean).join(' ')} />
           <MetricCard label={tr('Ahorro real')} value={money(view.savingsActual)} hint={tr('Meta: {amount}', { amount: money(view.savingsPlanned) })} tone={view.savingsPlanned > 0 && view.savingsActual >= view.savingsPlanned ? 'good' : 'warn'} />
           <MetricCard label={tr('Inversión real')} value={money(view.investmentActual)} hint={tr('Meta: {amount}', { amount: money(view.investmentPlanned) })} tone={view.investmentPlanned > 0 && view.investmentActual >= view.investmentPlanned ? 'good' : 'warn'} />
           <MetricCard
             label={tr('Saldo estimado')}
-            value={money(tableBalance)}
-            tone={tableBalance < 0 ? 'bad' : ''}
-            hint={tr('{income} − {actual} de gastos, ahorro e inversión de tu tabla', { income: money(view.netIncome), actual: money(tableActual) })}
-            explanation="Ingreso menos el total real de tu tabla: gastos de tus categorías, ahorro e inversión. Es una estimación: no equivale a tu saldo bancario ni a tu patrimonio neto."
+            value={money(view.tableBalance)}
+            tone={view.tableBalance < 0 ? 'bad' : ''}
+            hint={tr('{income} − {actual} de gastos, deudas, ahorro e inversión', { income: money(view.netIncome), actual: money(view.netIncome - view.tableBalance) })}
+            explanation="Ingreso menos el total real de tu tabla: gastos de tus categorías, pagos de deudas, ahorro e inversión. Es igual a tu flujo disponible real. Es una estimación: no equivale a tu saldo bancario ni a tu patrimonio neto."
           />
         </MetricGrid>
         <div className="month-close">

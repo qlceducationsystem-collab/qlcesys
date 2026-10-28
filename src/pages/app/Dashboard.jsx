@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useWorkspace } from '../../context/WorkspaceContext.jsx';
 import { useAsync } from '../../hooks/useAsync.js';
-import { dateTime, money, pct, periodLabel, shortMonth, signedMoney, tone } from '../../utils/format.js';
+import { dateTime, money, pct, periodLabel, shortMonth, signedMoney, tone, utcDateTime } from '../../utils/format.js';
 import { MODULE_STATE } from '../../utils/labels.js';
 import { Card, PageHeader, Pill, ProgressBar, Row, StatCard, StatGrid } from '../../components/ui/Card.jsx';
 import { AsyncView, Loading } from '../../components/ui/States.jsx';
@@ -112,7 +112,7 @@ function DashboardBody({ d }) {
       <div className="layout">
         <Card title="Evolución patrimonial (patrimonio neto)"><BarChart data={evolution} ariaLabel={tr('Evolución del patrimonio neto')} /></Card>
         <Card title={tr('Próxima asesoría')}>
-          {d.nextAppointment ? <Row label={d.nextAppointment.reason} value={dateTime(d.nextAppointment.scheduledAt)} /> : <p className="muted">{tr('Sin cita programada.')}</p>}
+          {d.nextAppointment ? <Row label={d.nextAppointment.reason} value={utcDateTime(d.nextAppointment.scheduledAt)} /> : <p className="muted">{tr('Sin cita programada.')}</p>}
           <Pill variant="muted">{tr('Herramienta educativa: no constituye asesoría de inversión')}</Pill>
         </Card>
       </div>

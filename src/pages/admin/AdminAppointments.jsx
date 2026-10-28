@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useAsync } from '../../hooks/useAsync.js';
-import { dateTime, toDateInput } from '../../utils/format.js';
+import { APPOINTMENT_DURATIONS, fromUtcInputs, utcDateInput, utcDateTime, utcTimeInput } from '../../utils/format.js';
 import { APPOINTMENT_CHANNELS, APPOINTMENT_STATUS } from '../../utils/labels.js';
 import { Card, PageHeader, Pill } from '../../components/ui/Card.jsx';
 import { Button } from '../../components/ui/Button.jsx';
@@ -14,10 +14,10 @@ import { DataTable } from '../../components/ui/DataTable.jsx';
 import { tr } from '../../i18n/tr.js';
 
 const statusOptions = Object.entries(APPOINTMENT_STATUS).map(([value, label]) => ({ value, label }));
-const timeOf = (d) => new Date(d).toTimeString().slice(0, 5);
+
 
 function EditAppointment({ appt, onClose, onSaved }) {
-  const [f, setF] = useState({ status: appt.status, date: toDateInput(appt.scheduledAt), time: timeOf(appt.scheduledAt), durationMin: appt.durationMin, adminNotes: appt.adminNotes || '' });
+  const [f, setF] = useState({ status: appt.status, date: utcDateInput(appt.scheduledAt), time: utcTimeInput(appt.scheduledAt), durationMin: appt.durationMin, adminNotes: appt.adminNotes || '' });
   const [state, setState] = useState({ busy: false, error: null });
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
   const save = async (e) => {
@@ -25,7 +25,7 @@ function EditAppointment({ appt, onClose, onSaved }) {
     setState({ busy: true, error: null });
     try {
       await api.patch(`/admin/appointments/${appt.id}`, {
-        status: f.status, scheduledAt: new Date(`${f.date}T${f.time}`).toISOString(), durationMin: Number(f.durationMin), adminNotes: f.adminNotes || null,
+        status: f.status, scheduledAt: fromUtcInputs(f.date, f.time), durationMin: Number(f.durationMin), adminNotes: f.adminNotes || null,
       });
       onSaved();
     } catch (error) {
@@ -38,7 +38,7 @@ function EditAppointment({ appt, onClose, onSaved }) {
         <p className="muted small">{tr(appt.reason)} · {tr(APPOINTMENT_CHANNELS[appt.channel])}{appt.notes ? ` · “${appt.notes}”` : ''}</p>
         <FormGrid>
           <Field label={tr('Estado')}><Select value={f.status} onChange={set('status')} options={statusOptions} /></Field>
-          <Field label="Duración (min)"><Input type="number" min={15} max={240} value={f.durationMin} onChange={set('durationMin')} /></Field>
+          <Field label={tr('Duración')}><Select value={f.durationMin} onChange={set('durationMin')} options={APPOINTMENT_DURATIONS.map((m) => ({ value: m, label: `${m} minutos` }))} /></Field>
           <Field label={tr('Fecha')}><Input type="date" value={f.date} onChange={set('date')} /></Field>
           <Field label={tr('Hora')}><Input type="time" value={f.time} onChange={set('time')} /></Field>
           <Field label={tr('Notas del asesor')} full><Textarea value={f.adminNotes} onChange={set('adminNotes')} maxLength={1000} /></Field>
@@ -68,7 +68,7 @@ export default function AdminAppointments() {
         <AsyncView {...res} onRetry={res.reload}>
           {(list) => (
             <DataTable rows={list} empty={tr('Sin citas en este estado.')} columns={[
-              { key: 'scheduledAt', label: tr('Fecha'), render: (a) => dateTime(a.scheduledAt) },
+              { key: 'scheduledAt', label: tr('Fecha'), render: (a) => utcDateTime(a.scheduledAt) },
               { key: 'user', label: tr('Cliente'), render: (a) => <Link to={`/admin/clientes/${a.user.id}`}>{tr(a.user.name)}<span className="small block">{a.user.email}{a.user.phone ? ` · ${a.user.phone}` : ''}</span></Link> },
               { key: 'reason', label: tr('Motivo') },
               { key: 'channel', label: tr('Canal'), render: (a) => `${APPOINTMENT_CHANNELS[a.channel]} · ${a.durationMin} min` },

@@ -18,7 +18,7 @@ export const INSURANCE_TYPES = ['SEGURO_GASTOS_MEDICOS', 'SEGURO_VIDA', 'OTRO_SE
 export const MOVEMENT_TYPES = { APORTACION: 'Aportación', DEDUCCION: 'Deducción' };
 
 export const APPOINTMENT_STATUS = { PENDING: 'Pendiente', CONFIRMED: 'Confirmada', COMPLETED: 'Completada', CANCELLED: 'Cancelada' };
-export const APPOINTMENT_CHANNELS = { VIDEOLLAMADA: 'Videollamada', LLAMADA: 'Llamada', WHATSAPP: 'WhatsApp', PRESENCIAL: 'Presencial' };
+export const APPOINTMENT_CHANNELS = { CHAT_INTERNO: 'Chat interno', VIDEOLLAMADA: 'Videollamada', LLAMADA: 'Llamada', WHATSAPP: 'WhatsApp', PRESENCIAL: 'Presencial' };
 export const APPOINTMENT_REASONS = [
   'Organización financiera', 'Planificación de metas', 'Presupuesto', 'Deudas',
   'Construcción patrimonial', 'Diversificación', 'Educación sobre inversiones',
@@ -72,7 +72,7 @@ export const options = {
   leverage: LEVERAGE_OPTIONS.map((l) => ({ value: l, label: `${l}x` })),
 };
 
-export const BUDGET_LABELS = { ...EXPENSE_CATEGORIES, AHORRO: 'Ahorro', INVERSION: 'Inversión' };
+export const BUDGET_LABELS = { ...EXPENSE_CATEGORIES, FLUJO_DISPONIBLE: 'Flujo disponible', AHORRO: 'Ahorro', INVERSION: 'Inversión' };
 export const DEBT_TYPES = {
   TARJETA_CREDITO: 'Tarjeta de crédito', PRESTAMO_PERSONAL: 'Préstamo personal', CREDITO_AUTOMOTRIZ: 'Crédito automotriz',
   HIPOTECA: 'Hipoteca', CREDITO_NOMINA: 'Crédito de nómina', PRESTAMO_FAMILIAR: 'Préstamo familiar', BNPL: 'Compra a meses / BNPL',
@@ -109,7 +109,7 @@ const EN = {
   },
   MOVEMENT_TYPES: { APORTACION: 'Contribution', DEDUCCION: 'Withdrawal' },
   APPOINTMENT_STATUS: { PENDING: 'Pending', CONFIRMED: 'Confirmed', COMPLETED: 'Completed', CANCELLED: 'Cancelled' },
-  APPOINTMENT_CHANNELS: { VIDEOLLAMADA: 'Video call', LLAMADA: 'Phone call', WHATSAPP: 'WhatsApp', PRESENCIAL: 'In person' },
+  APPOINTMENT_CHANNELS: { CHAT_INTERNO: 'Internal chat', VIDEOLLAMADA: 'Video call', LLAMADA: 'Phone call', WHATSAPP: 'WhatsApp', PRESENCIAL: 'In person' },
   APPOINTMENT_REASONS: ['Financial organization', 'Goal planning', 'Budget', 'Debts', 'Wealth building', 'Diversification', 'Investment education'],
   ACCESS_MODES: { FULL: 'Full annual access', TOOLS: 'Tools only', NONE: 'No access' },
   PAYMENT_STATUS: { PENDING: 'Pending', APPROVED: 'Approved', REJECTED: 'Rejected' },
@@ -129,7 +129,7 @@ const EN = {
     COMPLETED: 'Completed', AVAILABLE: 'Available', LOCKED_ORDER: 'Complete the previous module', LOCKED_ACCESS: 'Requires access',
     LOCKED_FILTER: 'Requires the markets filter', LOCKED_ROUTE: 'Choose the Markets Path', COMING_SOON: 'Next stage',
   },
-  BUDGET_EXTRA: { AHORRO: 'Savings', INVERSION: 'Investment' },
+  BUDGET_EXTRA: { FLUJO_DISPONIBLE: 'Available cash flow', AHORRO: 'Savings', INVERSION: 'Investment' },
   DEBT_TYPES: {
     TARJETA_CREDITO: 'Credit card', PRESTAMO_PERSONAL: 'Personal loan', CREDITO_AUTOMOTRIZ: 'Car loan',
     HIPOTECA: 'Mortgage', CREDITO_NOMINA: 'Payroll loan', PRESTAMO_FAMILIAR: 'Family loan', BNPL: 'Installments / BNPL',
@@ -155,7 +155,7 @@ const ES = {
   ...Object.fromEntries(Object.entries(MAPS).map(([name, map]) => [name, { ...map }])),
   APPOINTMENT_REASONS: [...APPOINTMENT_REASONS],
   MODULE_STATE: Object.fromEntries(Object.entries(MODULE_STATE).map(([key, state]) => [key, state.label])),
-  BUDGET_EXTRA: { AHORRO: BUDGET_LABELS.AHORRO, INVERSION: BUDGET_LABELS.INVERSION },
+  BUDGET_EXTRA: { FLUJO_DISPONIBLE: BUDGET_LABELS.FLUJO_DISPONIBLE, AHORRO: BUDGET_LABELS.AHORRO, INVERSION: BUDGET_LABELS.INVERSION },
 };
 
 const OPTION_SOURCES = {
