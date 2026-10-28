@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useWorkspace } from '../context/WorkspaceContext.jsx';
 import { Brand, Disclaimer } from '../components/layout/Brand.jsx';
+import { SessionClock } from '../components/layout/SessionClock.jsx';
 import { PeriodSelector } from '../features/periods/PeriodControls.jsx';
 import { AccessOffers } from '../features/access/AccessOffers.jsx';
 import { SecurityNavButton } from '../features/security/AccountSecurity.jsx';
@@ -64,6 +65,7 @@ export function AppLayout() {
             {menuOpen ? '×' : '☰'}
           </button>
         </div>
+        <SessionClock />
         <nav className="nav">
           {NAV.map((n) => (
             <NavLink key={n.to} to={n.to ? `${basePath}/${n.to}` : basePath} end={n.end} className={({ isActive }) => (isActive ? 'active' : '')}>

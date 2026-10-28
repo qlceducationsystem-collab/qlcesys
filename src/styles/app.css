@@ -165,7 +165,8 @@ h1 { font-size: clamp(28px, 4vw, 44px); line-height: 1.12; letter-spacing: -.04e
   .sidebar { position: sticky; top: 0; inset: auto; width: 100%; height: auto; padding: 10px 14px; border-right: 0; border-bottom: 1px solid var(--line); }
   .brand { padding: 4px 4px; }
   .menu-toggle { display: inline-block; }
-  .nav, .userbox, .sidebar-lang { display: none; }
+  .nav, .userbox, .sidebar-lang, .session-clock { display: none; }
+  .menu-open .session-clock { display: grid; }
   .menu-open .sidebar { max-height: 100vh; overflow-y: auto; }
   .menu-open .nav { display: flex; padding: 10px 0; }
   .menu-open .userbox { display: block; }
@@ -198,3 +199,10 @@ h1 { font-size: clamp(28px, 4vw, 44px); line-height: 1.12; letter-spacing: -.04e
   .currency-select { width: 100%; }
   .currency-select .input { flex: 1; min-width: 0; }
 }
+
+.session-clock { display: grid; gap: 8px; margin: 14px 0 6px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: rgba(9, 13, 18, 0.7); transition: opacity 0.3s ease; }
+.session-clock.is-syncing { opacity: 0.6; }
+.session-clock-row { display: grid; grid-template-columns: 44px 1fr auto; align-items: baseline; gap: 8px; }
+.session-clock-row b { color: var(--blue2); font-size: 12px; font-weight: 700; letter-spacing: 0.04em; }
+.session-clock-row span { color: var(--muted); font-size: 12px; }
+.session-clock-row strong { color: var(--text); font-size: 16px; font-variant-numeric: tabular-nums; }

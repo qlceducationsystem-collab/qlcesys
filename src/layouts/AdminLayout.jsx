@@ -4,6 +4,7 @@ import { api } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { WorkspaceProvider } from '../context/WorkspaceContext.jsx';
 import { Brand, Disclaimer } from '../components/layout/Brand.jsx';
+import { SessionClock } from '../components/layout/SessionClock.jsx';
 import { ErrorState, Loading } from '../components/ui/States.jsx';
 import { SecurityNavButton } from '../features/security/AccountSecurity.jsx';
 import { ADMIN_LEVELS } from '../utils/labels.js';
@@ -45,6 +46,7 @@ export function AdminLayout() {
           <Brand to="/admin" />
           <button type="button" className="icon-btn menu-toggle" onClick={() => setMenuOpen((v) => !v)} aria-label={t('app.openMenu')} aria-expanded={menuOpen}>{menuOpen ? '×' : '☰'}</button>
         </div>
+        <SessionClock />
         <nav className="nav">
           {NAV.filter((n) => !n.full || user?.adminLevel === 'FULL').map((n) =>
             n.group ? (
