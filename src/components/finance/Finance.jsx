@@ -35,8 +35,8 @@ export function PatrimonyBreakdown({ patrimony, roi }) {
       <Row label={tr('Patrimonio inicial')} value={money(patrimony.opening)} />
       <Row label={tr('Aportaciones')} value={signedMoney(patrimony.contributions)} valueTone={patrimony.contributions ? 'up' : ''} />
       <Row label={tr('Deducciones')} value={signedMoney(-patrimony.withdrawals)} valueTone={patrimony.withdrawals ? 'down' : ''} />
-      <Row label={tr('Movimiento neto')} value={signedMoney(patrimony.netMovement)} valueTone="auto" />
-      <Row label={tr('Rentabilidad')} value={signedMoney(patrimony.profitability)} valueTone="auto" sub={`ROI ${pct(roi, { signed: true })}`} />
+      <Row label={tr('Movimiento neto')} value={signedMoney(patrimony.netMovement)} valueTone="auto" toneValue={patrimony.netMovement} />
+      <Row label={tr('Rentabilidad')} value={signedMoney(patrimony.profitability)} valueTone="auto" toneValue={patrimony.profitability} sub={`ROI ${pct(roi, { signed: true })}`} />
       <div className="final-row">
         <span>{tr('Patrimonio final')}</span>
         <strong>{money(patrimony.final)}</strong>

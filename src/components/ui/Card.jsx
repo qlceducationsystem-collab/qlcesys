@@ -55,14 +55,14 @@ export function ProgressBar({ value = 0, label }) {
   );
 }
 
-export function Row({ label, value, valueTone, sub }) {
+export function Row({ label, value, valueTone, toneValue, sub }) {
   return (
     <div className="row">
       <span>
         {tr(label)}
         {sub && <span className="small block">{tr(sub)}</span>}
       </span>
-      <b className={valueTone === 'auto' ? tone(value) : valueTone || ''}>{value}</b>
+      <b className={valueTone === 'auto' ? tone(toneValue ?? value) : valueTone || ''}>{value}</b>
     </div>
   );
 }

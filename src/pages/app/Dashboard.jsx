@@ -68,7 +68,7 @@ function DiagnosisCard({ diagnosis, liquidity, expenses }) {
       <Row label={tr('Inversión / patrimonio')} value={pct(r.investmentToNetWorth)} />
       {r.otherAssetsToNetWorth !== undefined && <Row label={tr('Bienes y otros activos / patrimonio')} value={pct(r.otherAssetsToNetWorth)} />}
       <Row label={tr('Deuda / patrimonio')} value={pct(r.debtToNetWorth)} />
-      <Row label={tr('Flujo disponible')} value={money(r.freeCashFlow)} valueTone="auto" />
+      <Row label={tr('Flujo disponible')} value={money(r.freeCashFlow)} valueTone="auto" toneValue={r.freeCashFlow} />
     </Card>
   );
 }
