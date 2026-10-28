@@ -46,7 +46,7 @@ export function AdminLayout() {
           <Brand to="/admin" />
           <button type="button" className="icon-btn menu-toggle" onClick={() => setMenuOpen((v) => !v)} aria-label={t('app.openMenu')} aria-expanded={menuOpen}>{menuOpen ? '×' : '☰'}</button>
         </div>
-        <SessionClock />
+        <SessionClock zones={['CDMX', 'UTC']} />
         <nav className="nav">
           {NAV.filter((n) => !n.full || user?.adminLevel === 'FULL').map((n) =>
             n.group ? (

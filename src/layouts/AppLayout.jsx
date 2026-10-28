@@ -65,7 +65,7 @@ export function AppLayout() {
             {menuOpen ? '×' : '☰'}
           </button>
         </div>
-        <SessionClock />
+        <SessionClock zones={user?.role === 'ADMIN' ? ['CDMX', 'UTC'] : ['UTC']} />
         <nav className="nav">
           {NAV.map((n) => (
             <NavLink key={n.to} to={n.to ? `${basePath}/${n.to}` : basePath} end={n.end} className={({ isActive }) => (isActive ? 'active' : '')}>

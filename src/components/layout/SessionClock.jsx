@@ -3,10 +3,10 @@ import { api } from '../../api/client.js';
 import { useI18n } from '../../i18n/I18nContext.jsx';
 import { tr } from '../../i18n/tr.js';
 
-const ZONES = [
-  ['CDMX', 'America/Mexico_City'],
-  ['UTC', 'UTC'],
-];
+const ZONES = {
+  CDMX: 'America/Mexico_City',
+  UTC: 'UTC',
+};
 const RESYNC_MS = 10 * 60 * 1000;
 
 const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
@@ -27,7 +27,7 @@ async function measureOffset() {
   return new Date(time).getTime() + (received - sent) / 2 - received;
 }
 
-export function SessionClock() {
+export function SessionClock({ zones = ['UTC'] }) {
   const { lang } = useI18n();
   const locale = lang === 'en' ? 'en-US' : 'es-MX';
   const [offset, setOffset] = useState(null);
@@ -55,8 +55,8 @@ export function SessionClock() {
   const current = new Date(now + (offset ?? 0));
   return (
     <div className={`session-clock ${offset === null ? 'is-syncing' : ''}`} title={tr('Hora sincronizada con el servidor')} aria-live="off">
-      {ZONES.map(([label, zone]) => {
-        const p = partsIn(current, zone, locale);
+      {zones.map((label) => {
+        const p = partsIn(current, ZONES[label], locale);
         return (
           <div key={label} className="session-clock-row">
             <b>{label}</b>

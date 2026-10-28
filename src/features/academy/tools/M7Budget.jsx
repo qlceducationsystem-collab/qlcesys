@@ -291,13 +291,16 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
               footer={(
                 <>
                   {totalRow('Total de gastos', expenseRows)}
-                  {view.debtPayments > 0 && totalRow('Pagos de deudas (Módulo 9)', [debtRow], tr('Ver Módulo 9'))}
+                  {view.debtPayments > 0 && totalRow('Pagos de deudas (pago mensual del Módulo 9)', [debtRow], tr('Del Módulo 9'))}
                   {totalRow('Total con deudas, ahorro e inversión', [...fixedRows, debtRow])}
                 </>
               )}
             />
             <FormError error={realAction.error} />
             <SaveStatus action={realAction} savedText={tr('Importe real actualizado.')} />
+            {Math.abs(view.debtRecorded - view.debtPayments) > 0.005 && view.debtPayments > 0 && (
+              <p className="small warn-text">{tr('El renglón de deudas usa el pago mensual planeado del Módulo 9 ({plan}). En Ingresos y gastos hay {recorded} registrados este mes en la categoría Deudas (pagos confirmados y, si existe, el pago declarado en el diagnóstico). Revisa esa lista por si hay pagos duplicados.', { plan: money(view.debtPayments), recorded: money(view.debtRecorded) })}</p>
+            )}
             <p className="small muted">{tr('Diferencia = planeado − real. En gastos, un número positivo es margen y uno negativo es exceso. En ahorro e inversión indica cuánto falta para la meta. La inversión real que escribas aquí se registra como aportación en')}{' '}<Link to={`${basePath}/movimientos`}>{tr('Movimientos')}</Link>{tr('; agrega o actualiza el producto en')}{' '}<Link to={`${basePath}/cartera`}>{tr('Mi cartera')}</Link>{' '}{tr('para mantenerla conciliada.')}</p>
             {view.diagnosisPending > 0 && (
               <div className="pending-diagnosis">
