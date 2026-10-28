@@ -168,7 +168,7 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
   const expenseRows = view.rows.filter((r) => r.kind === 'EXPENSE');
   const fixedRows = view.rows.filter((r) => r.kind !== 'FREE');
   const outside = view.unbudgetedExpenses + view.diagnosisPending;
-  const debtRow = { planned: 0, actual: view.debtPayments };
+  const debtRow = { planned: view.debtPlanned, actual: view.debtPayments };
   const totalRow = (label, rows, plannedText) => (
     <tr className="table-total">
       <td data-label={tr('Categoría')}><b>{tr(label)}</b></td>
@@ -242,6 +242,14 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
             ...(editable ? [{ key: 'x', label: '', align: 'right', render: (r) => <button type="button" className="btn-link danger" onClick={() => setLines(lines.filter((l) => l.category !== r.category))} aria-label={tr('Quitar {label}', { label: categoryLabel(r.category) })}>{tr('Quitar')}</button> }] : []),
           ]}
         />
+        {view.debtPlanned > 0 && (
+          <div className="budget-debt">
+            <b>{tr('Pagos de deudas (pago mensual del Módulo 9)')}</b>
+            <span>{pct(view.debtPercent)}</span>
+            <span>{money(view.debtPlanned)}</span>
+            <small className="muted">{tr('Se toma del Módulo 9 y cuenta dentro del 100%. Para cambiarlo, edita tus obligaciones en el Módulo 9.')}</small>
+          </div>
+        )}
         <div className="budget-total">
           <ProgressBar value={Math.min(100, view.percentTotal)} label={tr('Ingreso distribuido')} />
           <b className={view.complete ? '' : 'is-off'}>{pct(view.percentTotal)} · {money(view.totalPlanned)}</b>
@@ -291,7 +299,7 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
               footer={(
                 <>
                   {totalRow('Total de gastos', expenseRows)}
-                  {view.debtPayments > 0 && totalRow('Pagos de deudas (pago mensual del Módulo 9)', [debtRow], tr('Del Módulo 9'))}
+                  {view.debtPayments > 0 && totalRow('Pagos de deudas (pago mensual del Módulo 9)', [debtRow])}
                   {totalRow('Total con deudas, ahorro e inversión', [...fixedRows, debtRow])}
                 </>
               )}

@@ -315,7 +315,8 @@ a.module-tile:hover { transform: translateY(-2px); border-color: rgba(0, 168, 25
 .badge-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .pct-input { max-width: 96px; text-align: right; }
 .amount-input { max-width: 140px; text-align: right; }
-.real-cell { display: inline-flex; align-items: center; gap: 8px; justify-content: flex-end; }
+.real-cell { display: inline-flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.real-cell .amount-input { width: 140px; min-width: 140px; }
 .unbudgeted { padding: 14px 16px; border-radius: 12px; border: 1px solid rgba(200, 155, 60, 0.35); background: rgba(200, 155, 60, 0.07); display: grid; gap: 8px; }
 .unbudgeted > b { color: var(--gold2); }
 .unbudgeted p { margin: 0; color: var(--silver); line-height: 1.6; }
@@ -474,3 +475,6 @@ a.module-tile:hover { transform: translateY(-2px); border-color: rgba(0, 168, 25
 .pending-diagnosis p { margin: 0; color: var(--silver); line-height: 1.6; }
 .budget-saved { margin: 0; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--line); background: rgba(91, 212, 165, 0.06); color: var(--silver); line-height: 1.6; }
 .table-total td { border-top: 1px solid var(--line2); background: rgba(0, 168, 255, 0.05); }
+.budget-debt { display: grid; grid-template-columns: 1fr auto auto; gap: 6px 18px; align-items: center; padding: 12px 14px; border: 1px dashed var(--line2); border-radius: 12px; background: rgba(0, 168, 255, 0.05); }
+.budget-debt span { text-align: right; font-variant-numeric: tabular-nums; color: var(--text); }
+.budget-debt small { grid-column: 1 / -1; }
