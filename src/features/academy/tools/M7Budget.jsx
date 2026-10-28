@@ -242,14 +242,17 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
             ...(editable ? [{ key: 'x', label: '', align: 'right', render: (r) => <button type="button" className="btn-link danger" onClick={() => setLines(lines.filter((l) => l.category !== r.category))} aria-label={tr('Quitar {label}', { label: categoryLabel(r.category) })}>{tr('Quitar')}</button> }] : []),
           ]}
         />
-        {view.debtPlanned > 0 && (
-          <div className="budget-debt">
-            <b>{tr('Pagos de deudas (pago mensual del Módulo 9)')}</b>
-            <span>{pct(view.debtPercent)}</span>
-            <span>{money(view.debtPlanned)}</span>
-            <small className="muted">{tr('Se toma del Módulo 9 y cuenta dentro del 100%. Para cambiarlo, edita tus obligaciones en el Módulo 9.')}</small>
-          </div>
-        )}
+        <div className="budget-debt">
+          <b>{tr('Pagos de deudas (pago mensual del Módulo 9)')}</b>
+          <span>{pct(view.debtPercent)}</span>
+          <span>{money(view.debtPlanned)}</span>
+          <small className="muted">
+            {view.debtPlanned > 0
+              ? tr('Se llena solo con el pago mensual de tus obligaciones del Módulo 9 y cuenta dentro del 100%.')
+              : tr('Sin deudas registradas: queda en $0. Si tienes obligaciones, regístralas en el Módulo 9 y este renglón se llenará solo.')}
+            {' '}<Link to={`${basePath}/academia/m/9`}>{tr('Ir al Módulo 9')}</Link>
+          </small>
+        </div>
         <div className="budget-total">
           <ProgressBar value={Math.min(100, view.percentTotal)} label={tr('Ingreso distribuido')} />
           <b className={view.complete ? '' : 'is-off'}>{pct(view.percentTotal)} · {money(view.totalPlanned)}</b>
