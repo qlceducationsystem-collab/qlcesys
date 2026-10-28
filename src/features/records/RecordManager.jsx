@@ -15,7 +15,7 @@ function FieldInput({ field, value, onChange }) {
   if (field.type === 'select') return <Select {...common} options={field.options} placeholder={tr('Selecciona…')} />;
   if (field.type === 'money') return <MoneyInput {...common} />;
   if (field.type === 'textarea') return <Textarea {...common} required={false} />;
-  return <Input type={field.type || 'text'} maxLength={field.maxLength || 200} {...common} />;
+  return <Input type={field.type || 'text'} maxLength={field.maxLength || 200} step={field.step} min={field.min} max={field.max} {...common} />;
 }
 
 const describeChanges = (fields, before, after) =>

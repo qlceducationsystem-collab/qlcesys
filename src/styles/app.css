@@ -206,3 +206,5 @@ h1 { font-size: clamp(28px, 4vw, 44px); line-height: 1.12; letter-spacing: -.04e
 .session-clock-row b { color: var(--blue2); font-size: 12px; font-weight: 700; letter-spacing: 0.04em; }
 .session-clock-row span { color: var(--muted); font-size: 12px; }
 .session-clock-row strong { color: var(--text); font-size: 16px; font-variant-numeric: tabular-nums; }
+.asset-income { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 13px; color: var(--muted); }
+.asset-income b { color: var(--text); font-weight: 600; }

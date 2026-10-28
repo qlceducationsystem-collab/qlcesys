@@ -109,6 +109,7 @@ export function M10NetReturn({ onSaved }) {
 
   return (
     <div className="tool">
+      <div className="badge-row"><KindBadge kind="SIMULATION" /></div>
       <MetricGrid>
         <MetricCard label={tr('Capital invertido')} value={money(c.capital)} hint={tr('{n} registros', { n: c.count })} />
         <MetricCard label={tr('Ganancia bruta estimada')} value={money(c.grossProfit)} hint={tr('Antes de costos e impuestos')} />

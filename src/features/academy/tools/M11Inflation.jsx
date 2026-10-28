@@ -30,6 +30,16 @@ const toForm = (s) => ({
 });
 const rateInput = { type: 'number', inputMode: 'decimal', step: '0.01', min: '-99.99', max: '1000' };
 
+const INDICATORS = [
+  ['Capital actual', 'Valor del capital inicial utilizado para realizar la simulación.'],
+  ['Valor futuro nominal', 'Valor estimado del capital al finalizar el periodo, suponiendo que los rendimientos se reinvierten y se mantiene la tasa anual indicada, antes de descontar la inflación.'],
+  ['Valor futuro en pesos de hoy', 'Valor futuro del capital expresado en poder adquisitivo actual, descontando la inflación supuesta durante el periodo.'],
+  ['Costo futuro de una compra de hoy', 'Costo estimado que tendrá en el futuro un bien o servicio que hoy tiene ese precio, suponiendo que los precios aumentan según la inflación indicada.'],
+  ['Valor real del capital sin rendimiento', 'Poder adquisitivo que conservaría el capital inicial al finalizar el periodo si no generara rendimientos, considerando la inflación supuesta.'],
+  ['Pérdida estimada de poder adquisitivo', 'Disminución estimada del poder de compra del capital inicial debido a la inflación, suponiendo que no genera rendimientos.'],
+  ['Rendimiento real anual supuesto', 'Tasa anual estimada de crecimiento del capital después de descontar el efecto de la inflación.'],
+];
+
 function ScenarioForm({ initial, sources, onSubmit, onCancel, busy, error }) {
   const [f, setF] = useState(initial);
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
@@ -177,6 +187,17 @@ export function M11Inflation({ onSaved }) {
           ]}
         />
       </ToolCard>
+      <ToolCard title={tr('¿Qué significa cada indicador?')} description={tr('Descripciones de los indicadores del simulador QLC.')}>
+        <dl className="indicator-glossary">
+          {INDICATORS.map(([term, text]) => (
+            <div key={term}>
+              <dt>{tr(term)}</dt>
+              <dd>{tr(text)}</dd>
+            </div>
+          ))}
+        </dl>
+      </ToolCard>
+
       <RiskNote>{tr('La inflación y el rendimiento son supuestos, no pronósticos. Los valores futuros son proyecciones y estimaciones de un escenario: no incluyen aportaciones adicionales, comisiones ni impuestos.')}</RiskNote>
 
       <ConfirmDialog
