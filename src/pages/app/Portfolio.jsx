@@ -14,8 +14,9 @@ import { RecordForm } from '../../features/records/RecordManager.jsx';
 import { RequirePeriod } from '../../features/periods/PeriodControls.jsx';
 import { tr } from '../../i18n/tr.js';
 
-const Totals = ({ initial, final, result, roi, labels = ['Capital inicial', 'Capital final', 'Resultado', 'ROI'] }) => (
+const Totals = ({ initial, final, result, roi, title, labels = ['Capital inicial', 'Capital final', 'Resultado', 'ROI'] }) => (
   <div className="totals">
+    {title && <div className="totals-title">{title}</div>}
     <div className="total"><span>{tr(labels[0])}</span><strong>{money(initial)}</strong></div>
     <div className="total"><span>{tr(labels[1])}</span><strong>{money(final)}</strong></div>
     <div className="total"><span>{tr(labels[2])}</span><strong className={result > 0 ? 'up' : result < 0 ? 'down' : ''}>{signedMoney(result)}</strong></div>
@@ -203,7 +204,7 @@ function PortfolioBody({ summary, categories, reload }) {
                 onEdit={() => setForm({ product: p })} onDelete={() => setPending({ kind: 'delete', product: p })} onIncome={() => setIncome(p)} />
             ))}
             {writable && <Button variant="add" onClick={() => setForm({ product: null, categoryCode: c.code })}>{tr('+ Agregar producto')}</Button>}
-            <Totals {...cat} />
+            <Totals {...cat} title={tr('Total de la categoría {name} · {n} {label}', { name: c.name, n: items.length, label: tr(items.length === 1 ? 'producto' : 'productos') })} labels={['Capital inicial de la categoría', 'Capital final de la categoría', 'Resultado de la categoría', 'ROI de la categoría']} />
           </Card>
         );
       })}
