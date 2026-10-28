@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api/client.js';
+import { useI18n } from '../../i18n/I18nContext.jsx';
 import { tr } from '../../i18n/tr.js';
 
 const ZONES = [
@@ -10,9 +11,9 @@ const RESYNC_MS = 10 * 60 * 1000;
 
 const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
 
-function partsIn(date, timeZone) {
+function partsIn(date, timeZone, locale) {
   const parts = Object.fromEntries(
-    new Intl.DateTimeFormat('es-MX', { timeZone, weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
+    new Intl.DateTimeFormat(locale, { timeZone, weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
       .formatToParts(date)
       .map((p) => [p.type, p.value]),
   );
@@ -27,6 +28,8 @@ async function measureOffset() {
 }
 
 export function SessionClock() {
+  const { lang } = useI18n();
+  const locale = lang === 'en' ? 'en-US' : 'es-MX';
   const [offset, setOffset] = useState(null);
   const [now, setNow] = useState(() => Date.now());
 
@@ -53,7 +56,7 @@ export function SessionClock() {
   return (
     <div className={`session-clock ${offset === null ? 'is-syncing' : ''}`} title={tr('Hora sincronizada con el servidor')} aria-live="off">
       {ZONES.map(([label, zone]) => {
-        const p = partsIn(current, zone);
+        const p = partsIn(current, zone, locale);
         return (
           <div key={label} className="session-clock-row">
             <b>{label}</b>
