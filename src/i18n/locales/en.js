@@ -96,8 +96,8 @@ export const en = {
     notFoundTitle: 'Page not found',
     notFoundText: 'This address does not exist.',
     nav: {
-      home: 'Home', academy: 'Academy', portfolio: 'My portfolio', patrimony: 'Net worth', cashflow: 'Income and expenses',
-      protection: 'Financial protection', debts: 'Debts', business: 'Business and cash flow', allocation: 'Allocation',
+      home: 'Home', academy: 'Academy', portfolio: 'My investment portfolio', patrimony: 'Net worth', cashflow: 'Income and expenses',
+      protection: 'Wealth protection', debts: 'Debts', business: 'Business and cash flow', allocation: 'Allocation',
       movements: 'Wealth movements', closes: 'Monthly closings', annual: 'Annual report', advisory: 'Personal advisory',
     },
     adminNav: {

@@ -8,7 +8,7 @@ import { CheckoutModal, offerPrice } from './CheckoutModal.jsx';
 import { tr } from '../../i18n/tr.js';
 
 const TOOL_LABELS = [
-  'Diagnóstico financiero', 'Mapa de productos', 'Constructor de cartera', 'Riesgo y exposición', 'Simulador de operación', 'Operación profesional',
+  'Diagnóstico financiero', 'Mapa de productos', 'Constructor de portafolio', 'Riesgo y exposición', 'Simulador de operación', 'Operación profesional',
   'Presupuesto y control', 'Fondo de emergencia', 'Panel de obligaciones', 'Rendimiento neto', 'Poder adquisitivo', 'Evolución patrimonial',
 ];
 
@@ -40,7 +40,7 @@ export function AccessOffers({ title = 'Dos formas de adquirir QLC Financial Edu
             <ul className="offer-list">
               <li>{tr('Clases y explicaciones de cada módulo')}</li>
               <li>{tr('Herramientas M1–M12 conectadas a tu plataforma')}</li>
-              <li>{tr('Mi cartera, patrimonio, cortes e informe anual')}</li>
+              <li>{tr('Mi portafolio de inversión, patrimonio, cortes e informe anual')}</li>
               <li>{tr('Orientación financiera personalizada en sesiones 1 a 1')}</li>
             </ul>
             <div className="offer-price">{offerPrice(full)}</div>

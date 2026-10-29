@@ -29,8 +29,8 @@ function Body() {
       </StatGrid>
       {businesses.length === 0 ? (
         <Empty title={tr('Aún no tienes negocios registrados')}
-          text={tr('Registra primero tu negocio en Mi cartera, categoría Negocios (capital invertido). Después podrás registrar aquí su flujo mensual.')}
-          action={<Link className="btn-primary" to={`${basePath}/cartera`}>{tr('Ir a Mi cartera')}</Link>} />
+          text={tr('Registra primero tu negocio en Mi portafolio de inversión, categoría Negocios (capital invertido). Después podrás registrar aquí su flujo mensual.')}
+          action={<Link className="btn-primary" to={`${basePath}/cartera`}>{tr('Ir a Mi portafolio de inversión')}</Link>} />
       ) : (
         <RecordManager endpoint="/business" title={tr('Flujo mensual por negocio')} addLabel="+ Registrar flujo" onChanged={reload}
           fields={[

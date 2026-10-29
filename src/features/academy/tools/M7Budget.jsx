@@ -310,12 +310,12 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
             <FormError error={realAction.error} />
             <SaveStatus action={realAction} savedText={tr('Importe real actualizado.')} />
             {view.investmentActual > 0 && (
-              <p className="small warn-text">{tr('Registraste {amount} de inversión real.', { amount: money(view.investmentActual) })}{' '}<Link to={`${basePath}/cartera`}>{tr('Dirígete a Mi cartera')}</Link>{' '}{tr('para registrar en qué producto la invertiste. Mientras no la asignes, Inicio te mostrará el aviso.')}</p>
+              <p className="small warn-text">{tr('Registraste {amount} de inversión real.', { amount: money(view.investmentActual) })}{' '}<Link to={`${basePath}/cartera`}>{tr('Dirígete a Mi portafolio de inversión')}</Link>{' '}{tr('para registrar en qué producto la invertiste. Mientras no la asignes, Inicio te mostrará el aviso.')}</p>
             )}
             {Math.abs(view.debtRecorded - view.debtPayments) > 0.005 && view.debtPayments > 0 && (
               <p className="small warn-text">{tr('El renglón de deudas usa el pago mensual planeado del Módulo 9 ({plan}). En Ingresos y gastos hay {recorded} registrados este mes en la categoría Deudas (pagos confirmados y, si existe, el pago declarado en el diagnóstico). Revisa esa lista por si hay pagos duplicados.', { plan: money(view.debtPayments), recorded: money(view.debtRecorded) })}</p>
             )}
-            <p className="small muted">{tr('Diferencia = planeado − real. En gastos, un número positivo es margen y uno negativo es exceso. En ahorro e inversión indica cuánto falta para la meta. La inversión real que escribas aquí se registra como aportación en')}{' '}<Link to={`${basePath}/movimientos`}>{tr('Movimientos')}</Link>{tr('; agrega o actualiza el producto en')}{' '}<Link to={`${basePath}/cartera`}>{tr('Mi cartera')}</Link>{' '}{tr('para mantenerla conciliada.')}</p>
+            <p className="small muted">{tr('Diferencia = planeado − real. En gastos, un número positivo es margen y uno negativo es exceso. En ahorro e inversión indica cuánto falta para la meta. La inversión real que escribas aquí se registra como aportación en')}{' '}<Link to={`${basePath}/movimientos`}>{tr('Movimientos')}</Link>{tr('; agrega o actualiza el producto en')}{' '}<Link to={`${basePath}/cartera`}>{tr('Mi portafolio de inversión')}</Link>{' '}{tr('para mantenerla conciliada.')}</p>
             {view.diagnosisPending > 0 && (
               <div className="pending-diagnosis">
                 <b>{tr('Gasto del diagnóstico por desglosar: {amount}', { amount: money(view.diagnosisPending) })}</b>

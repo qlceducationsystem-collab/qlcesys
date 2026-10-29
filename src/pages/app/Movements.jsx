@@ -55,7 +55,7 @@ function Body() {
       </div>
       <Notice>
         Una aportación aumenta el patrimonio y una deducción lo reduce, pero ninguna es rendimiento. Refleja cada movimiento
-        también en el capital inicial del producto correspondiente en Mi cartera; así ambos módulos muestran el mismo
+        también en el capital inicial del producto correspondiente en Mi portafolio de inversión; así ambos módulos muestran el mismo
         patrimonio final y el periodo queda conciliado.
       </Notice>
     </>

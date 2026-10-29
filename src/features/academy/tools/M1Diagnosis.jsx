@@ -105,7 +105,7 @@ export function M1Diagnosis({ onSaved }) {
             <li><Link to={basePath}>{tr('Inicio')}</Link><span>{tr('Resumen de tu situación')}</span></li>
             <li><Link to={`${basePath}/ingresos-gastos`}>{tr('Ingresos y gastos')}</Link><span>{tr('Ingreso, gastos y pago de deudas')}</span></li>
             <li><Link to={`${basePath}/patrimonio`}>{tr('Patrimonio')}</Link><span>{tr('Activos, deudas y patrimonio neto')}</span></li>
-            <li><Link to={`${basePath}/cartera`}>{tr('Mi cartera')}</Link><span>{tr('Liquidez e inversiones por desglosar')}</span></li>
+            <li><Link to={`${basePath}/cartera`}>{tr('Mi portafolio de inversión')}</Link><span>{tr('Liquidez e inversiones por desglosar')}</span></li>
             <li><Link to={`${basePath}/proteccion`}>{tr('Protección')}</Link><span>{tr('Meses de liquidez')}</span></li>
           </ul>
         </ToolCard>

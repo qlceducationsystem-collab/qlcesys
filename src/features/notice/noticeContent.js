@@ -12,9 +12,9 @@ export const flagNotice = () => {
 
 export const NOTICE_TEXT = {
   es: {
-    title: 'QLC Copytrading | Una oportunidad para diversificar su cartera',
+    title: 'QLC Copytrading | Una oportunidad para diversificar su portafolio',
     intro: (m) => `Estimado inversor: nuestro producto principal, QLC Copytrading, registra actualmente un retorno sobre inversión (ROI) del ${fmt(m.returnPct)}% en ${fmt(m.days)} días, con ${fmt(m.wins)} operaciones ganadas, ${fmt(m.losses)} perdidas y una tasa de aciertos del ${fmt(m.hitRate)}%. El drawdown máximo registrado es del ${fmt(m.drawdown)}%.`,
-    evaluate: 'Evalúe nuestras métricas, analice el riesgo frente al resultado y descubra si QLC Copytrading es una opción para complementar su cartera de inversión.',
+    evaluate: 'Evalúe nuestras métricas, analice el riesgo frente al resultado y descubra si QLC Copytrading es una opción para complementar su portafolio de inversión.',
     live: 'Consulte nuestras operaciones en vivo en nuestro perfil Trader Elite de Bitget o solicite información para acceder a nuestro producto.',
     disclaimer: 'Los resultados pasados no garantizan resultados futuros. Invertir implica riesgos, incluida la pérdida de capital.',
     metrics: (m) => [

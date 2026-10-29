@@ -37,7 +37,7 @@ function PatrimonyBody({ s, history }) {
         <PatrimonyBreakdown patrimony={s.patrimony} roi={s.portfolio.global.roi} />
         <div className="stack">
           <Card title={tr('Activos')}>
-            <Row label="Inversiones (Mi cartera)" value={money(b.investments)} />
+            <Row label="Inversiones (Mi portafolio de inversión)" value={money(b.investments)} />
             {s.protection.byType.map((p) => <Row key={p.key} label={PROTECTION_TYPES[p.key]} value={money(p.amount)} />)}
             <Row label={tr('Total activos')} value={money(b.assets)} />
           </Card>

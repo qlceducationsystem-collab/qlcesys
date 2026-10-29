@@ -51,7 +51,7 @@ function Report({ report }) {
           { key: 'name', label: tr('Categoría') },
           { key: 'result', label: tr('Resultado acumulado'), align: 'right', render: (c) => <Money value={c.result} signed /> },
           { key: 'finalCapital', label: tr('Capital al cierre'), align: 'right', render: (c) => money(c.finalCapital) },
-          { key: 'share', label: tr('% cartera'), align: 'right', render: (c) => pct(c.share) },
+          { key: 'share', label: tr('% portafolio'), align: 'right', render: (c) => pct(c.share) },
         ]} />
       </Card>
       {s.products?.length > 0 && (

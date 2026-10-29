@@ -50,7 +50,7 @@ const QUESTIONS = [
   'Si BTC/USDT sube, ¿qué efecto esperas en una posición LONG y en una SHORT?',
   '¿Cuál es la diferencia entre margen asignado y exposición nominal?',
   '¿Por qué el sistema calcula el riesgo estimado en lugar de pedirte que introduzcas manualmente ese resultado?',
-  '¿Puede una cartera multiposición tener posiciones ganadoras y perdedoras al mismo tiempo? ¿Qué debes revisar para evaluar el conjunto?',
+  '¿Puede un portafolio multiposición tener posiciones ganadoras y perdedoras al mismo tiempo? ¿Qué debes revisar para evaluar el conjunto?',
   '¿Por qué un resultado positivo en una simulación aleatoria no demuestra que exista una ventaja estadística?',
   '¿Qué variables cambiarías para comparar dos escenarios de forma ordenada?',
 ];
@@ -59,7 +59,7 @@ function LabClass() {
   return (
     <details className="mpl-class">
       <summary>{tr('Clase: cómo funciona este laboratorio')}</summary>
-      <p>{tr('En esta práctica aprenderás cómo se comporta una cartera de varias posiciones cuando todas están expuestas a los movimientos de un mismo mercado. Cada operación puede tener dirección, margen, apalancamiento y reglas de salida diferentes; por eso, un mismo movimiento de BTC/USDT no produce el mismo resultado en todas las posiciones. El objetivo no es predecir el mercado ni prometer rentabilidad: es comprender la exposición, el resultado agregado, las salidas por TP o SL y el drawdown en un escenario simulado.')}</p>
+      <p>{tr('En esta práctica aprenderás cómo se comporta un portafolio de varias posiciones cuando todas están expuestas a los movimientos de un mismo mercado. Cada operación puede tener dirección, margen, apalancamiento y reglas de salida diferentes; por eso, un mismo movimiento de BTC/USDT no produce el mismo resultado en todas las posiciones. El objetivo no es predecir el mercado ni prometer rentabilidad: es comprender la exposición, el resultado agregado, las salidas por TP o SL y el drawdown en un escenario simulado.')}</p>
       <h4>{tr('Conceptos fundamentales')}</h4>
       <dl className="mpl-concepts">{CONCEPTS.map(([t, d]) => <div key={t}><dt>{tr(t)}</dt><dd>{tr(d)}</dd></div>)}</dl>
       <h4>{tr('Cómo utilizar la interfaz')}</h4>

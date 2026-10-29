@@ -66,7 +66,7 @@ export default function Advisory() {
         actions={canEdit && <Button onClick={() => setOpen(true)}>{tr('Solicitar cita')}</Button>} />
       <div className="cards3">
         <div className="module-card"><h3>{tr('Mis finanzas')}</h3><p>{tr('Resolver dudas sobre ingresos, gastos, ahorro y estructura financiera.')}</p></div>
-        <div className="module-card"><h3>{tr('Mi cartera')}</h3><p>{tr('Revisar conceptos de diversificación, distribución y lectura de resultados.')}</p></div>
+        <div className="module-card"><h3>{tr('Mi portafolio de inversión')}</h3><p>{tr('Revisar conceptos de diversificación, distribución y lectura de resultados.')}</p></div>
         <div className="module-card"><h3>{tr('Educación financiera')}</h3><p>{tr('Profundizar en los conceptos estudiados dentro de la academia.')}</p></div>
       </div>
       <AsyncView {...res} onRetry={res.reload}>

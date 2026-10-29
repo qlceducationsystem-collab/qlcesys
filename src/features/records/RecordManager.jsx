@@ -31,7 +31,13 @@ export function RecordForm({ fields, initial, onSubmit, onCancel, submitLabel = 
     e.preventDefault();
     setState({ saving: true, error: null });
     try {
-      await onSubmit(values);
+      const visible = Object.fromEntries(Object.entries(values).map(([k, v]) => {
+        const field = fields.find((f) => f.name === k);
+        if (field?.when && !field.when(values)) return [k, ''];
+        if (field?.compute && field.compute(values) !== null) return [k, field.compute(values)];
+        return [k, v];
+      }));
+      await onSubmit(visible);
     } catch (error) {
       setState({ saving: false, error });
       return;
@@ -42,9 +48,11 @@ export function RecordForm({ fields, initial, onSubmit, onCancel, submitLabel = 
   return (
     <form onSubmit={submit} className="stack">
       <FormGrid>
-        {fields.map((f) => (
-          <Field key={f.name} label={f.label} hint={f.hint} full={f.full || f.type === 'textarea'}>
-            <FieldInput field={f} value={values[f.name]} onChange={(v) => setValues((s) => ({ ...s, [f.name]: v }))} />
+        {fields.filter((f) => !f.when || f.when(values)).map((f) => (
+          <Field key={f.name} label={f.label} hint={typeof f.hint === 'function' ? f.hint(values) : f.hint} full={f.full || f.type === 'textarea'}>
+            {f.compute && f.compute(values) !== null
+              ? <Input value={f.display ? f.display(f.compute(values)) : f.compute(values)} readOnly />
+              : <FieldInput field={f} value={values[f.name]} onChange={(v) => setValues((s) => ({ ...s, [f.name]: v }))} />}
           </Field>
         ))}
       </FormGrid>

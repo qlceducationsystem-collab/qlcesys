@@ -53,7 +53,7 @@ export default function RoutePage() {
   };
 
   return (
-    <ModuleLayout overview={a} kicker={tr('Selección de ruta')} title={tr('¿Cómo quieres continuar tu educación?')} subtitle={tr('Ya conoces tu situación financiera, tus productos y la estructura de tu cartera.')}>
+    <ModuleLayout overview={a} kicker={tr('Selección de ruta')} title={tr('¿Cómo quieres continuar tu educación?')} subtitle={tr('Ya conoces tu situación financiera, tus productos y la estructura de tu portafolio.')}>
       <div className="notice">
         <b>{tr('Importante:')}</b>{' '}{tr('la Ruta de Mercados es')}{' '}<span className="gold-text">{tr('opcional')}</span>{tr('. Sus módulos son educativos e informativos. No necesitas operar, hacer trading ni utilizar estrategias de QLC para continuar con tu educación financiera.')}
       </div>

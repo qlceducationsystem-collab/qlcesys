@@ -6,7 +6,7 @@ const ES = [
     title: 'Aprende a invertir antes de aprender a',
     highlight: 'arriesgar.',
     description:
-      'Una guía paso a paso para entender cómo funciona una inversión, cómo se relacionan riesgo y rendimiento, cómo construir una cartera diversificada y por qué una estrategia de alto riesgo debe ocupar solamente una parte controlada del patrimonio.',
+      'Una guía paso a paso para entender cómo funciona una inversión, cómo se relacionan riesgo y rendimiento, cómo construir un portafolio diversificado y por qué una estrategia de alto riesgo debe ocupar solamente una parte controlada del patrimonio.',
     secondaryText: 'No existe una inversión perfecta. Existe una estructura de patrimonio donde cada activo cumple una función diferente.',
     primaryCtaLabel: 'Acceso gratuito',
     primaryCtaTarget: 'curso',
@@ -27,7 +27,7 @@ const ES = [
     subtitle: 'Elige una clase y avanza a tu ritmo.',
     stages: [
       { icon: 'learn', title: 'Etapa 1. Aprende', text: '8 clases gratuitas para comprender los fundamentos financieros, la inversión, la diversificación y el riesgo.' },
-      { icon: 'apply', title: 'Etapa 2. Aplica', text: 'Suscripción al Software Educativo de QLC Financial Education para registrar inversiones, estructurar la cartera, analizar resultados y dar seguimiento al patrimonio.' },
+      { icon: 'apply', title: 'Etapa 2. Aplica', text: 'Suscripción al Software Educativo de QLC Financial Education para registrar inversiones, estructurar el portafolio, analizar resultados y dar seguimiento al patrimonio.' },
       { icon: 'track', title: 'Etapa 3. Da seguimiento', text: 'Utiliza los registros e informes para comprender cómo evoluciona tu situación financiera y tomar decisiones más informadas.' },
     ],
     items: [
@@ -36,8 +36,8 @@ const ES = [
       { title: 'Diversificación', text: 'No pongas todos los huevos en una sola canasta.', tag: 'Clase 3' },
       { title: 'Renta fija, variable y negocios', text: 'Tres piezas con funciones distintas.', tag: 'Clase 4' },
       { title: 'Trading', text: 'Qué es realmente una estrategia de alto riesgo.', tag: 'Clase 5' },
-      { title: 'QLC dentro de una cartera', text: 'Una asignación, no el patrimonio.', tag: 'Clase 6' },
-      { title: 'Construir una cartera', text: 'Un proceso paso a paso.', tag: 'Clase 7' },
+      { title: 'QLC dentro de un portafolio', text: 'Una asignación, no el patrimonio.', tag: 'Clase 6' },
+      { title: 'Construir un portafolio', text: 'Un proceso paso a paso.', tag: 'Clase 7' },
       { title: 'Limitar la exposición', text: 'También es gestionar.', tag: 'Clase 8' },
     ],
   },
@@ -67,7 +67,7 @@ const ES = [
     primaryCtaTarget: 'acceso',
     items: [
       { title: 'Academia progresiva', text: 'Educación, herramienta, ejercicio, registro y seguimiento.' },
-      { title: 'Mi cartera de inversiones', text: 'Crea tu cartera. Registra y clasifica tus inversiones por producto y categoría, organiza su estructura y analiza sus resultados, tanto de forma individual como global.' },
+      { title: 'Mi portafolio de inversión de inversiones', text: 'Crea tu portafolio. Registra y clasifica tus inversiones por producto y categoría, organiza su estructura y analiza sus resultados, tanto de forma individual como global.' },
       { title: 'Patrimonio conciliado', text: 'Aportaciones y deducciones separadas de la rentabilidad.' },
       { title: 'Cortes mensuales', text: 'Historial mensual descargable en PDF.' },
       { title: 'Informe anual', text: 'Qué cambió en tu patrimonio y por qué.' },

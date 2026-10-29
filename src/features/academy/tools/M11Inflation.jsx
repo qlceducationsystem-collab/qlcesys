@@ -146,7 +146,7 @@ export function M11Inflation({ onSaved }) {
         </ToolCard>
       )}
 
-      <ToolCard step="2" title={tr('Mis escenarios')} description={tr('Simulaciones guardadas en tu perfil. No se integran a Patrimonio, Mi cartera ni Cortes.')}>
+      <ToolCard step="2" title={tr('Mis escenarios')} description={tr('Simulaciones guardadas en tu perfil. No se integran a Patrimonio, Mi portafolio de inversión ni Cortes.')}>
         <DataTable
           rows={items}
           empty={tr('Aún no guardas escenarios. Crea el primero para comparar el valor nominal con el valor real.')}

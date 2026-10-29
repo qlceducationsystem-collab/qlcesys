@@ -91,7 +91,7 @@ const ES = [
         items: [
           ['Reserva de liquidez', 'Capital disponible para necesidades, contingencias y oportunidades. Su función es dar estabilidad y evitar vender inversiones en un momento desfavorable por una necesidad inesperada.'],
           ['Renta fija', 'Instrumentos que pueden aportar estabilidad relativa y flujos definidos, aunque tienen riesgos propios como tasas, inflación, emisor y liquidez.'],
-          ['Renta variable', 'Acciones, fondos y otros instrumentos cuyo valor puede fluctuar. Su función dentro de una cartera puede estar relacionada con crecimiento patrimonial.'],
+          ['Renta variable', 'Acciones, fondos y otros instrumentos cuyo valor puede fluctuar. Su función dentro de un portafolio puede estar relacionada con crecimiento patrimonial.'],
           ['Activos digitales', 'Una exposición específica a un mercado de elevada volatilidad y con riesgos particulares.'],
           ['Estrategias especializadas', 'Capital asignado a metodologías concretas de inversión o trading, con parámetros de riesgo y operación definidos.'],
           ['Negocios físicos', 'Empresas o actividades productivas que pueden generar flujo de efectivo y ofrecer una fuente de retorno diferente a los mercados financieros.'],
@@ -101,7 +101,7 @@ const ES = [
         type: 'lesson',
         title: 'Diversificar no significa comprar muchas cosas',
         paragraphs: [
-          'Comprar diez activos que se comportan prácticamente igual no crea necesariamente una buena diversificación. La pregunta importante es **qué tan relacionados están los riesgos**. Una cartera puede tener muchas posiciones y seguir dependiendo demasiado de un mismo mercado o factor.',
+          'Comprar diez activos que se comportan prácticamente igual no crea necesariamente una buena diversificación. La pregunta importante es **qué tan relacionados están los riesgos**. Un portafolio puede tener muchas posiciones y seguir dependiendo demasiado de un mismo mercado o factor.',
           'La diversificación también puede producirse entre **fuentes de flujo**. Por ejemplo, una persona puede combinar ingresos laborales o empresariales, instrumentos financieros y una asignación pequeña a estrategias de mayor riesgo.',
         ],
       },
@@ -111,7 +111,7 @@ const ES = [
         paragraphs: [
           'Los mercados financieros no son la única manera de construir patrimonio. Un **negocio físico** puede aportar una fuente de flujo de efectivo vinculada a una actividad productiva: comercio, servicios, alimentos, manufactura, renta de espacios u otras actividades empresariales.',
           'Esto no significa que un negocio sea automáticamente seguro. También tiene riesgos: gastos, competencia, personal, demanda, inventario, impuestos, mantenimiento y capital inmovilizado. Precisamente por eso se considera otra pieza de la diversificación, no un sustituto de todas las demás inversiones.',
-          'La idea es construir diferentes motores económicos. Mientras una actividad profesional o empresarial puede producir flujo de efectivo, una cartera financiera puede buscar crecimiento o ingresos a largo plazo, y una pequeña asignación de alto riesgo puede participar en oportunidades de mayor volatilidad.',
+          'La idea es construir diferentes motores económicos. Mientras una actividad profesional o empresarial puede producir flujo de efectivo, un portafolio financiera puede buscar crecimiento o ingresos a largo plazo, y una pequeña asignación de alto riesgo puede participar en oportunidades de mayor volatilidad.',
         ],
         example: ['Principio:', 'no necesitas que todos tus activos produzcan dinero de la misma manera. La fortaleza puede estar en combinar fuentes que tengan comportamientos y riesgos diferentes.'],
       },
@@ -130,7 +130,7 @@ const ES = [
   {
     id: '04',
     title: 'Renta fija, renta variable y negocios: tres piezas con funciones distintas',
-    intro: 'Una cartera equilibrada no necesita que todos sus componentes hagan lo mismo. Precisamente su valor está en que cada componente pueda cumplir una función diferente.',
+    intro: 'Un portafolio equilibrado no necesita que todos sus componentes hagan lo mismo. Precisamente su valor está en que cada componente pueda cumplir una función diferente.',
     blocks: [
       {
         type: 'table',
@@ -144,12 +144,12 @@ const ES = [
       },
       {
         type: 'lesson',
-        title: 'La cartera debe responder a tus objetivos',
+        title: 'El portafolio debe responder a tus objetivos',
         paragraphs: [
           'Una persona que necesita liquidez puede priorizar instrumentos diferentes a alguien que tiene un horizonte de muchos años. Del mismo modo, alguien con ingresos empresariales variables puede valorar de forma distinta una reserva de liquidez frente a una persona con ingresos más estables.',
-          'Por eso no existe un porcentaje universal que sea “la cartera correcta” para todo el mundo. Una asignación debe construirse alrededor del objetivo, horizonte, capacidad para asumir pérdidas y necesidad de liquidez.',
+          'Por eso no existe un porcentaje universal que sea “el portafolio correcto” para todo el mundo. Una asignación debe construirse alrededor del objetivo, horizonte, capacidad para asumir pérdidas y necesidad de liquidez.',
         ],
-        example: ['Ejemplo conceptual:', 'piensa en una cartera como una mesa. La liquidez, renta fija, renta variable, negocios y estrategias especializadas son patas diferentes. No todas tienen que ser del mismo tamaño; lo importante es que la estructura completa tenga sentido.'],
+        example: ['Ejemplo conceptual:', 'piensa en un portafolio como una mesa. La liquidez, renta fija, renta variable, negocios y estrategias especializadas son patas diferentes. No todas tienen que ser del mismo tamaño; lo importante es que la estructura completa tenga sentido.'],
       },
     ],
   },
@@ -187,8 +187,8 @@ const ES = [
   },
   {
     id: '06',
-    title: '¿Qué lugar puede ocupar QLC dentro de una cartera?',
-    intro: 'El concepto de QLC parte de una idea sencilla: una estrategia especializada de trading puede existir dentro de una cartera, pero no necesita representar la totalidad del patrimonio.',
+    title: '¿Qué lugar puede ocupar QLC dentro de un portafolio?',
+    intro: 'El concepto de QLC parte de una idea sencilla: una estrategia especializada de trading puede existir dentro de un portafolio, pero no necesita representar la totalidad del patrimonio.',
     blocks: [
       {
         type: 'cards', cols: 2,
@@ -204,7 +204,7 @@ const ES = [
         title: '¿Por qué un límite inicial de 2,000 USDT?',
         paragraphs: [
           'De acuerdo con el documento conceptual de QLC, la asignación inicial contempla un mínimo de **100 USDT** y un máximo de **2,000 USDT** por cuenta principal. La finalidad indicada es mantener el capital administrado dentro de parámetros operativos definidos y evitar una concentración excesiva de capital en una sola cuenta operativa.',
-          'La lógica educativa detrás del límite es importante: cuando una inversión es de alto riesgo, aumentar el capital no necesariamente mejora la estructura de una cartera. Primero debe existir una razón para aumentar la exposición.',
+          'La lógica educativa detrás del límite es importante: cuando una inversión es de alto riesgo, aumentar el capital no necesariamente mejora la estructura de un portafolio. Primero debe existir una razón para aumentar la exposición.',
         ],
         example: ['Idea clave:', 'si una persona tiene un patrimonio diversificado, una asignación limitada a una estrategia especializada puede permitir participar en ella sin convertirla automáticamente en el centro de todo su patrimonio.'],
       },
@@ -213,7 +213,7 @@ const ES = [
   },
   {
     id: '07',
-    title: 'Cómo construir una cartera paso a paso',
+    title: 'Cómo construir un portafolio paso a paso',
     intro: 'Ahora reunimos todo lo aprendido. El objetivo no es darte una fórmula universal, sino enseñarte un proceso mental para tomar mejores decisiones.',
     blocks: [
       {
@@ -224,15 +224,15 @@ const ES = [
           ['Construye una reserva', 'La liquidez evita que una necesidad inmediata te obligue a vender una inversión en un momento desfavorable.'],
           ['Distribuye entre categorías', 'Considera renta fija, renta variable, activos digitales, negocios físicos y estrategias especializadas de acuerdo con tus objetivos y capacidad de riesgo.'],
           ['Define un presupuesto de riesgo', 'Establece de antemano cuánto capital puede estar expuesto a estrategias de alta volatilidad. No improvises este número después de entrar al mercado.'],
-          ['Evalúa cada componente', 'Revisa qué función cumple cada inversión, qué riesgo aporta y si sigue teniendo sentido dentro de la cartera completa.'],
-          ['Reequilibra con disciplina', 'Una cartera puede desviarse de su estructura original porque algunos activos suben más que otros. Revisarla permite decidir si la exposición sigue siendo adecuada.'],
+          ['Evalúa cada componente', 'Revisa qué función cumple cada inversión, qué riesgo aporta y si sigue teniendo sentido dentro del portafolio completo.'],
+          ['Reequilibra con disciplina', 'Un portafolio puede desviarse de su estructura original porque algunos activos suben más que otros. Revisarla permite decidir si la exposición sigue siendo adecuada.'],
         ],
       },
       {
         type: 'lesson',
         title: 'Antes de aumentar tus inversiones, revisa tus protecciones',
         paragraphs: [
-          'Una cartera de inversión debe construirse sobre una base financiera razonablemente protegida. Antes de pensar en incrementar la exposición a activos de alto riesgo, revisa si cuentas con **seguro de gastos médicos mayores** y, cuando corresponda, **seguro de vida**, especialmente si otras personas dependen de tus ingresos.',
+          'Un portafolio de inversión debe construirse sobre una base financiera razonablemente protegida. Antes de pensar en incrementar la exposición a activos de alto riesgo, revisa si cuentas con **seguro de gastos médicos mayores** y, cuando corresponda, **seguro de vida**, especialmente si otras personas dependen de tus ingresos.',
           'En lugares donde la atención sanitaria pública no cubre adecuadamente determinadas necesidades o puede resultar insuficiente ante una emergencia, una cobertura privada puede evitar que un evento médico termine consumiendo el patrimonio que estabas intentando construir.',
           'La educación financiera no consiste únicamente en aprender a obtener rendimiento. También consiste en aprender a **evitar que un solo acontecimiento destruya años de trabajo y ahorro**.',
         ],
@@ -243,7 +243,7 @@ const ES = [
         paragraphs: ['En lugar de preguntar únicamente **“¿cuánto puedo ganar?”**, acostúmbrate a preguntar:'],
         list: [
           '¿Cuánto puedo perder?', '¿Qué porcentaje de mi patrimonio representa?', '¿Qué función cumple esta inversión?',
-          '¿Qué ocurre con mi cartera si este activo cae?', '¿Tengo suficiente liquidez fuera de esta posición?',
+          '¿Qué ocurre con mi portafolio de inversión si este activo cae?', '¿Tengo suficiente liquidez fuera de esta posición?',
           '¿Estoy diversificando realmente o solamente acumulando activos parecidos?',
         ],
       },
@@ -277,7 +277,7 @@ const ES = [
           ['Invitación', 'Si corresponde, QLC puede invitar al participante a incrementar su asignación mediante comunicación formal.'],
         ],
       },
-      { type: 'quote', text: 'Una cartera inteligente no busca eliminar el riesgo. Busca que ningún riesgo individual tenga el poder de destruir toda la estructura patrimonial.' },
+      { type: 'quote', text: 'Un portafolio inteligente no busca eliminar el riesgo. Busca que ningún riesgo individual tenga el poder de destruir toda la estructura patrimonial.' },
       { type: 'risk', label: 'Antes de tomar cualquier decisión:', text: 'QLC es una estrategia relacionada con activos digitales y trading, por lo que existe riesgo de mercado y, dependiendo de la operativa, riesgo asociado al apalancamiento. El límite de capital no convierte la estrategia en segura ni garantiza resultados.' },
     ],
   },

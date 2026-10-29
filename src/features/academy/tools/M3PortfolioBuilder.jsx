@@ -23,7 +23,7 @@ function CurrentPortfolio() {
   if (res.error) return <ErrorState error={res.error} onRetry={res.reload} />;
   const { allocation } = res.data;
   return (
-    <ToolCard step="2" title={tr('Cartera actual')} description={tr('Calculada con los productos que ya registraste. No vuelves a escribir capitales.')} aside={<RealBadge />}>
+    <ToolCard step="2" title={tr('Portafolio actual')} description={tr('Calculado con los productos que ya registraste. No vuelves a escribir capitales.')} aside={<RealBadge />}>
       {allocation.total === 0 ? (
         <div className="empty-inline">
           {tr('Aún no hay productos clasificados.')}{' '}<Link to={`${basePath}/academia/m/2`}>{tr('Registra tus productos en el Módulo 2')}</Link>.
@@ -33,7 +33,7 @@ function CurrentPortfolio() {
           <div>
             <AllocationBars allocation={allocation} />
             <MetricGrid cols={1}>
-              <MetricCard label={tr('Cartera total')} value={money(allocation.total)} />
+              <MetricCard label={tr('Portafolio total')} value={money(allocation.total)} />
               <MetricCard label={tr('Categorías utilizadas')} value={`${allocation.categoriesUsed} / 6`} />
             </MetricGrid>
             {allocation.pendingBreakdown > 0 && (
@@ -52,7 +52,7 @@ function EducationalSimulation() {
   const { canEdit } = useWorkspace();
   const sim = useSimulation(3, SIM_DEFAULT);
   return (
-    <ToolCard step="1" title={tr('Simulación educativa')} description={tr('Experimenta con otra distribución. No modifica tu cartera real.')} aside={<SimBadge />}>
+    <ToolCard step="1" title={tr('Simulación educativa')} description={tr('Experimenta con otra distribución. No modifica tu portafolio real.')} aside={<SimBadge />}>
       <form className="stack" onSubmit={(e) => { e.preventDefault(); sim.run(false); }}>
         <div className="form-grid cols-3">
           {SIM_FIELDS.map(([key, label]) => (
@@ -71,7 +71,7 @@ function EducationalSimulation() {
         <div className="split-panel">
           <div>
             <AllocationBars allocation={sim.result} />
-            <MetricCard label={tr('Cartera simulada')} value={money(sim.result.total)} hint={tr('{n} / 6 categorías', { n: sim.result.categoriesUsed })} />
+            <MetricCard label={tr('Portafolio simulado')} value={money(sim.result.total)} hint={tr('{n} / 6 categorías', { n: sim.result.categoriesUsed })} />
           </div>
           <ReadingCard reading={sim.result.reading} shares={sim.result.shares} />
         </div>

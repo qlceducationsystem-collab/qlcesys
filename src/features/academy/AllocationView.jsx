@@ -4,10 +4,10 @@ import { tr } from '../../i18n/tr.js';
 export const READING_TONE = { EQUILIBRADA: 'good', MODERADA: 'warn', CONCENTRADA: 'bad', MUY_CONCENTRADA: 'bad' };
 
 const READING_SUMMARY = {
-  EQUILIBRADA: 'Tu cartera está distribuida en varias categorías y ninguna domina la estructura.',
-  MODERADA: 'Tu cartera tiene cierta diversificación, pero hay puntos que conviene revisar.',
-  CONCENTRADA: 'Una parte importante de tu cartera depende de pocas categorías.',
-  MUY_CONCENTRADA: 'Tu cartera depende casi por completo de una o muy pocas categorías.',
+  EQUILIBRADA: 'Tu portafolio está distribuido en varias categorías y ninguna domina la estructura.',
+  MODERADA: 'Tu portafolio tiene cierta diversificación, pero hay puntos que conviene revisar.',
+  CONCENTRADA: 'Una parte importante de tu portafolio depende de pocas categorías.',
+  MUY_CONCENTRADA: 'Tu portafolio depende casi por completo de una o muy pocas categorías.',
 };
 
 function readingNotes(reading, shares = []) {
@@ -17,8 +17,8 @@ function readingNotes(reading, shares = []) {
   const liquidity = share('LIQUIDEZ');
   const notes = [];
   if (top) notes.push(tr('La categoría principal es {label} con {pct} del total.', { label: tr(top.label), pct: pct(top.share) }));
-  if (highRisk > 20) notes.push(tr('La exposición a alto riesgo ({pct}) supera el 20% de la cartera.', { pct: pct(highRisk) }));
-  else if (highRisk > 0) notes.push(tr('La exposición a alto riesgo representa {pct} de la cartera.', { pct: pct(highRisk) }));
+  if (highRisk > 20) notes.push(tr('La exposición a alto riesgo ({pct}) supera el 20% del portafolio.', { pct: pct(highRisk) }));
+  else if (highRisk > 0) notes.push(tr('La exposición a alto riesgo representa {pct} del portafolio.', { pct: pct(highRisk) }));
   else notes.push(tr('No hay productos clasificados como alto riesgo.'));
   if (liquidity < 5) notes.push(tr('La liquidez es baja ({pct}); revisa si cubre imprevistos.', { pct: pct(liquidity) }));
   else if (liquidity > 40) notes.push(tr('La liquidez es alta ({pct}); una parte podría no estar trabajando.', { pct: pct(liquidity) }));
@@ -71,7 +71,7 @@ export function ReadingCard({ reading, shares }) {
         ))}
       </ul>
       <p className="reading-note">
-        {tr('“Equilibrada” no significa cartera recomendada, segura ni correcta. Significa únicamente que la estructura presenta una distribución relativamente diversificada y sin una concentración dominante según los parámetros educativos definidos por QLC.')}
+        {tr('“Equilibrada” no significa portafolio recomendado, seguro ni correcto. Significa únicamente que la estructura presenta una distribución relativamente diversificada y sin una concentración dominante según los parámetros educativos definidos por QLC.')}
       </p>
     </div>
   );

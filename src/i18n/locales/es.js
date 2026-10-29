@@ -96,8 +96,8 @@ export const es = {
     notFoundTitle: 'Página no encontrada',
     notFoundText: 'La dirección no existe.',
     nav: {
-      home: 'Inicio', academy: 'Academia', portfolio: 'Mi cartera', patrimony: 'Patrimonio', cashflow: 'Ingresos y gastos',
-      protection: 'Protección financiera', debts: 'Deudas', business: 'Negocios y flujo', allocation: 'Allocation',
+      home: 'Inicio', academy: 'Academia', portfolio: 'Mi portafolio de inversión', patrimony: 'Patrimonio', cashflow: 'Ingresos y gastos',
+      protection: 'Protección patrimonial', debts: 'Deudas', business: 'Negocios y flujo', allocation: 'Allocation',
       movements: 'Movimientos patrimoniales', closes: 'Cortes mensuales', annual: 'Informe anual', advisory: 'Asesoría personalizada',
     },
     adminNav: {

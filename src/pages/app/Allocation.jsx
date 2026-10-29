@@ -16,7 +16,7 @@ function Body({ s, allocation }) {
     return (
       <Empty
         title={tr('Sin distribución todavía')}
-        text={tr('Registra tus productos en el Módulo 2 o en Mi cartera para ver cómo está distribuido tu patrimonio.')}
+        text={tr('Registra tus productos en el Módulo 2 o en Mi portafolio de inversión para ver cómo está distribuido tu patrimonio.')}
         action={<Link className="btn-primary" to={modulePath(basePath, 2)}>{tr('Ir al mapa de productos')}</Link>}
       />
     );
@@ -38,11 +38,11 @@ function Body({ s, allocation }) {
             { key: 'name', label: tr('Producto') },
             { key: 'categoryName', label: tr('Categoría') },
             { key: 'final', label: tr('Capital'), align: 'right', render: (p) => money(p.final) },
-            { key: 'share', label: tr('% de la cartera'), align: 'right', render: (p) => pct(p.share) },
+            { key: 'share', label: tr('% del portafolio'), align: 'right', render: (p) => pct(p.share) },
           ]}
         />
       </Card>
-      <p className="small muted">{tr('Una cartera no debe evaluarse únicamente por rendimiento potencial: también importan su liquidez, riesgo, horizonte y función dentro del patrimonio.')}</p>
+      <p className="small muted">{tr('Un portafolio no debe evaluarse únicamente por rendimiento potencial: también importan su liquidez, riesgo, horizonte y función dentro del patrimonio.')}</p>
     </>
   );
 }

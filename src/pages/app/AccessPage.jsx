@@ -36,7 +36,7 @@ function ResetProfile() {
   };
   return (
     <Card title={tr('Reiniciar mi perfil (pruebas)')}>
-      <p className="small muted">{tr('Borra tu diagnóstico, periodos, cartera, ingresos y gastos, deudas, presupuestos, cortes y avance de la academia para empezar desde cero. Tu cuenta, tu verificación en dos pasos, tus pagos, tu acceso y tus citas se conservan. No se puede deshacer.')}</p>
+      <p className="small muted">{tr('Borra tu diagnóstico, periodos, portafolio, ingresos y gastos, deudas, presupuestos, cortes y avance de la academia para empezar desde cero. Tu cuenta, tu verificación en dos pasos, tus pagos, tu acceso y tus citas se conservan. No se puede deshacer.')}</p>
       <Button variant="secondary" onClick={() => setOpen(true)}>{tr('Reiniciar mi perfil')}</Button>
       <Modal
         open={open}

@@ -30,16 +30,27 @@ function productFields(categories) {
     { name: 'name', label: tr('Producto'), maxLength: 200 },
     { name: 'institution', label: 'Institución (opcional)', required: false, maxLength: 120 },
     { name: 'initialCapital', label: tr('Capital inicial'), type: 'money', display: money, hint: tr('Incluye aportaciones y retiros del periodo en este producto.') },
-    { name: 'finalCapital', label: tr('Capital final'), type: 'money', display: money },
+    {
+      name: 'finalCapital', label: tr('Capital final'), type: 'money', display: money,
+      compute: (v) => (auto(v) ? Number(v.initialCapital || 0) + appliedIncome(v) : null),
+      hint: (v) => {
+        if (!auto(v)) return null;
+        if (Number(v.incomeApplied || 0) > 0) return tr('Se calcula solo: ya incluye la rentabilidad de este mes.');
+        const income = v.incomeType === 'PERCENT' ? (Number(v.initialCapital || 0) * Number(v.incomeValue || 0)) / 100 : Number(v.incomeValue || 0);
+        return income > 0 && v.incomeDay
+          ? tr('Se calcula solo: el día {day} el sistema suma {income} y quedará en {total}.', { day: v.incomeDay, income: money(income), total: money(Number(v.initialCapital || 0) + income) })
+          : tr('Se calcula solo: capital inicial + la rentabilidad del mes, que el sistema suma el día que indicaste.');
+      },
+    },
     {
       name: 'incomeType', label: tr('Rentabilidad automática (opcional)'), type: 'select', required: false,
       options: Object.entries(INCOME_MODES).map(([value, label]) => ({ value, label: tr(label) })), display: (v) => (v ? tr(INCOME_MODES[v]) : tr('Sin automatizar')),
       hint: tr('El sistema la suma sola a tu capital final cada mes, en el día indicado. Déjalo vacío si prefieres registrarla cada mes desde el producto.'),
     },
-    { name: 'incomeValue', label: tr('Monto o % mensual'), type: 'number', step: 'any', min: 0, required: false, hint: tr('Ej. 12000 de renta, o 0.85 si es % mensual.') },
-    { name: 'incomeDay', label: tr('Día del mes en que la recibes'), type: 'number', step: 1, min: 1, max: 31, required: false, hint: tr('Del 1 al 31. Ese día el sistema hace la suma. Si el mes es más corto se usa su último día.') },
+    { name: 'incomeValue', label: tr('Monto o % mensual'), type: 'number', step: 'any', min: 0, when: auto, hint: tr('Ej. 12000 de renta, o 0.85 si es % mensual.') },
+    { name: 'incomeDay', label: tr('Día del mes en que la recibes'), type: 'number', step: 1, min: 1, max: 31, when: auto, hint: tr('Del 1 al 31. Ese día el sistema hace la suma. Si el mes es más corto se usa su último día.') },
     {
-      name: 'incomeTerm', label: tr('Plazo'), type: 'select', required: false,
+      name: 'incomeTerm', label: tr('Plazo'), type: 'select', required: false, when: auto,
       options: INCOME_TERMS.map((m) => ({ value: String(m), label: termLabel(m) })), display: (v) => (v ? termLabel(Number(v)) : tr('Sin plazo')),
       hint: tr('Durante cuántos meses se suma, contando desde el mes actual. Déjalo vacío si no tiene fecha de término.'),
     },
@@ -51,6 +62,7 @@ const INCOME_MODES = { AMOUNT: 'Monto fijo mensual', PERCENT: '% mensual sobre e
 const INCOME_TERMS = [3, 6, 12];
 const termLabel = (m) => (m === 12 ? tr('1 año') : tr('{n} meses', { n: m }));
 const auto = (v) => v.incomeType === 'AMOUNT' || v.incomeType === 'PERCENT';
+const appliedIncome = (v) => Number(v.incomeApplied || 0);
 const incomeBody = (v) => ({
   ...v,
   incomeType: auto(v) ? v.incomeType : null,
@@ -136,7 +148,7 @@ function IncomeModal({ product, period, onClose, onSaved }) {
       )}
     >
       <div className="stack">
-        <p className="small muted">{tr('Se suma a tu capital final de este periodo y actualiza el resultado, el ROI, tu cartera total y el patrimonio en Inicio. Puedes corregirla o dejarla en 0 si este mes no la recibiste.')}</p>
+        <p className="small muted">{tr('Se suma a tu capital final de este periodo y actualiza el resultado, el ROI, tu portafolio total y el patrimonio en Inicio. Puedes corregirla o dejarla en 0 si este mes no la recibiste.')}</p>
         <Field label={tr('Monto recibido este mes')}><MoneyInput value={f.amount} onChange={(e) => setF({ ...f, amount: e.target.value })} /></Field>
         <Field label={tr('Fecha en que la recibiste')}><Input type="date" required value={f.date} onChange={(e) => setF({ ...f, date: e.target.value })} min={dueDate(period, 1)} max={dueDate(period, 31)} /></Field>
         <FormError error={state.error} />
@@ -196,6 +208,7 @@ function PortfolioBody({ summary, categories, reload }) {
     categoryCode: p.categoryCode, name: p.name, institution: p.institution || '', notes: p.notes || '',
     initialCapital: p.initial, finalCapital: p.final,
     incomeType: p.incomeType || '', incomeValue: p.incomeValue ?? '', incomeDay: p.incomeDay ?? '', incomeTerm: p.incomeTerm ? String(p.incomeTerm) : '',
+    incomeApplied: p.incomeDate ? p.incomeAmount : 0,
   });
 
   const save = async (values) => {
@@ -229,9 +242,9 @@ function PortfolioBody({ summary, categories, reload }) {
   return (
     <>
       <PageHeader
-        kicker={tr('Mi cartera · detalle por producto')}
+        kicker={tr('Mi portafolio de inversión · detalle por producto')}
         title={tr('Mis inversiones')}
-        subtitle={tr('Producto individual → categoría → resultado → cartera total')}
+        subtitle={tr('Producto individual → categoría → resultado → portafolio total')}
         actions={writable && <Button onClick={() => setForm({ product: null })}>{tr('+ Agregar producto')}</Button>}
       />
       <ClosedNotice />
@@ -239,7 +252,7 @@ function PortfolioBody({ summary, categories, reload }) {
       {writable && <UnassignedContributions movements={summary.patrimony.unassignedMovements || []} products={portfolio.products} onAssigned={reload} />}
 
       {portfolio.products.length === 0 && (
-        <Empty title={tr('Tu cartera está vacía')} text={tr('Agrega tus productos (CETES, acciones, Casa A, Negocio A…) con su capital inicial y final del periodo.')}
+        <Empty title={tr('Tu portafolio está vacía')} text={tr('Agrega tus productos (CETES, acciones, Casa A, Negocio A…) con su capital inicial y final del periodo.')}
           action={writable && <Button onClick={() => setForm({ product: null })}>{tr('Agregar primer producto')}</Button>} />
       )}
 
@@ -247,7 +260,7 @@ function PortfolioBody({ summary, categories, reload }) {
         const cat = byCat.get(c.code);
         const items = portfolio.products.filter((p) => p.categoryCode === c.code);
         return (
-          <Card key={c.code} title={c.name} actions={<span className="badge">{items.length} {tr(items.length === 1 ? 'producto' : 'productos')} · {pct(cat.share)}{' '}{tr('de la cartera')}</span>}>
+          <Card key={c.code} title={c.name} actions={<span className="badge">{items.length} {tr(items.length === 1 ? 'producto' : 'productos')} · {pct(cat.share)}{' '}{tr('del portafolio')}</span>}>
             {items.map((p) => (
               <ProductCard key={p.positionId} p={p} basePath={basePath} writable={writable}
                 onEdit={() => setForm({ product: p })} onDelete={() => setPending({ kind: 'delete', product: p })} onIncome={() => setIncome(p)} />
@@ -258,7 +271,7 @@ function PortfolioBody({ summary, categories, reload }) {
         );
       })}
 
-      <Card title={tr('Resumen de la cartera')} actions={<span className="badge">{tr('Actualización automática')}</span>}>
+      <Card title={tr('Resumen del portafolio')} actions={<span className="badge">{tr('Actualización automática')}</span>}>
         <Totals {...portfolio.global} labels={['Capital inicial', 'Capital final', 'Resultado global', 'ROI global']} />
         <Notice>
           {tr('El sistema calcula primero cada producto, suma los capitales de cada categoría y después integra las categorías para obtener el resultado global. El ROI global se calcula sobre el capital inicial global, nunca promediando ROI individuales. Las aportaciones y deducciones se registran en Movimientos patrimoniales y no se cuentan como rendimiento.')}
@@ -279,7 +292,7 @@ function PortfolioBody({ summary, categories, reload }) {
       <ConfirmDialog
         open={!!pending}
         title={pending?.kind === 'delete' ? tr('Quitar {label}', { label: pending?.product.name }) : tr('Confirmar modificación')}
-        message={pending?.kind === 'delete' ? tr('Se eliminará el producto de este periodo y se recalcularán categoría, cartera, patrimonio y conciliación.') : tr('Revisa los cambios antes de guardar. Todos los indicadores se recalcularán.')}
+        message={pending?.kind === 'delete' ? tr('Se eliminará el producto de este periodo y se recalcularán categoría, portafolio, patrimonio y conciliación.') : tr('Revisa los cambios antes de guardar. Todos los indicadores se recalcularán.')}
         details={pending?.changes}
         danger={pending?.kind === 'delete'}
         loading={busy}

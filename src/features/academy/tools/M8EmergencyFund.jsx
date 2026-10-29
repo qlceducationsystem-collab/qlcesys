@@ -93,9 +93,9 @@ function PlanEditor({ data, reload, onSaved }) {
           <b>{money(data.liquid.amount)}</b>
         </div>
         <p className="small muted">
-          {tr('Liquidez en Mi cartera')}{' '}{money(data.liquid.portfolio)}
+          {tr('Liquidez en Mi portafolio de inversión')}{' '}{money(data.liquid.portfolio)}
           {data.liquid.byType.map((t) => ` · ${PROTECTION_TYPES[t.key] || t.key} ${money(t.amount)}`)}
-          {tr('. Para corregirla edita')}{' '}<Link to={`${basePath}/proteccion`}>{tr('Protección')}</Link> {tr('o')} <Link to={`${basePath}/cartera`}>{tr('Mi cartera')}</Link>.
+          {tr('. Para corregirla edita')}{' '}<Link to={`${basePath}/proteccion`}>{tr('Protección')}</Link> {tr('o')} <Link to={`${basePath}/cartera`}>{tr('Mi portafolio de inversión')}</Link>.
         </p>
       </ToolCard>
 
@@ -115,7 +115,7 @@ function PlanEditor({ data, reload, onSaved }) {
         <FormError error={action.error} />
         {canEdit && (
           <div className="form-actions">
-            <SaveStatus action={action} savedText={tr('Meta guardada. Protección financiera ya la muestra.')} />
+            <SaveStatus action={action} savedText={tr('Meta guardada. Protección patrimonial ya la muestra.')} />
             <Button onClick={save} loading={action.busy}>{data.saved ? tr('Actualizar meta') : tr('Guardar meta')}</Button>
           </div>
         )}

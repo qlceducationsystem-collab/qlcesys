@@ -79,7 +79,7 @@ export function M2ProductMap({ onSaved }) {
   return (
     <div className="tool">
       {canEdit && (
-        <ToolCard step="1" title={tr('Agregar producto o activo')} description={tr('Registra cada producto individualmente. Alimentará Mi cartera, Allocation y Patrimonio.')} aside={<RealBadge />}>
+        <ToolCard step="1" title={tr('Agregar producto o activo')} description={tr('Registra cada producto individualmente. Alimentará Mi portafolio de inversión, Allocation y Patrimonio.')} aside={<RealBadge />}>
           <ProductForm key={formKey} initial={EMPTY} onSubmit={add} busy={state.busy && !editing} error={!editing ? state.error : null} />
         </ToolCard>
       )}
@@ -94,7 +94,7 @@ export function M2ProductMap({ onSaved }) {
           explanation="El Módulo 1 registró tus inversiones, bienes raíces y otros activos como cifras globales. Aquí las descompones en productos sin duplicarlas."
         />
       </MetricGrid>
-      <ToolCard step="2" title={tr('Mapa de productos registrados')} description={tr('Producto individual → categoría → Mi cartera → Allocation → Patrimonio.')}>
+      <ToolCard step="2" title={tr('Mapa de productos registrados')} description={tr('Producto individual → categoría → Mi portafolio de inversión → Allocation → Patrimonio.')}>
         <DataTable
           rowKey="assetId"
           rows={products}
@@ -114,7 +114,7 @@ export function M2ProductMap({ onSaved }) {
             ) }] : []),
           ]}
         />
-        <p className="small muted">{tr('Estos productos ya aparecen en')}{' '}<Link to={`${basePath}/cartera`}>{tr('Mi cartera')}</Link>{' '}{tr('y en')}{' '}<Link to={`${basePath}/allocation`}>{tr('Allocation')}</Link>.</p>
+        <p className="small muted">{tr('Estos productos ya aparecen en')}{' '}<Link to={`${basePath}/cartera`}>{tr('Mi portafolio de inversión')}</Link>{' '}{tr('y en')}{' '}<Link to={`${basePath}/allocation`}>{tr('Allocation')}</Link>.</p>
       </ToolCard>
       {editing && (
         <ToolCard title={tr('Editar · {title}', { title: editing.name })}>
@@ -130,7 +130,7 @@ export function M2ProductMap({ onSaved }) {
       <ConfirmDialog
         open={!!removing}
         title={`Eliminar ${removing?.name || ''}`}
-        message={tr('El producto se quitará de tu mapa, de Mi cartera y de Allocation del periodo actual.')}
+        message={tr('El producto se quitará de tu mapa, de Mi portafolio de inversión y de Allocation del periodo actual.')}
         danger
         confirmLabel={tr('Eliminar')}
         loading={state.busy}

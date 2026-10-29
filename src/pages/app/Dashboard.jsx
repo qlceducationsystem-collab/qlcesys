@@ -11,6 +11,7 @@ import { AllocationBars, READING_TONE, ReadingCard } from '../../features/academ
 import { modulePath } from '../../features/academy/useAcademy.js';
 import { Block2Summary, EmergencyFundCard } from '../../features/patrimonial/PatrimonialCards.jsx';
 import { CurrencySelect } from '../../context/CurrencyContext.jsx';
+import { ProtectionReadingCard } from '../../features/patrimonial/ProtectionReading.jsx';
 import { tr } from '../../i18n/tr.js';
 
 function Onboarding({ academy }) {
@@ -19,7 +20,7 @@ function Onboarding({ academy }) {
     <div className="onboarding">
       <div className="section-kicker">{tr('Bienvenido')}</div>
       <h1>{tr('Comencemos por tu punto de partida')}</h1>
-      <p className="subtitle">{tr('El Módulo 1 crea tu diagnóstico financiero inicial. Con él se construyen Inicio, Patrimonio, Ingresos y gastos y Mi cartera.')}</p>
+      <p className="subtitle">{tr('El Módulo 1 crea tu diagnóstico financiero inicial. Con él se construyen Inicio, Patrimonio, Ingresos y gastos y Mi portafolio de inversión.')}</p>
       <div className="onboarding-steps">
         {academy.block1.slice(0, 3).map((m) => (
           <div key={m.number} className={`onboarding-step state-${m.state}`}>
@@ -85,6 +86,13 @@ function DashboardBody({ d }) {
     <>
       <PageHeader title={tr('Mi situación financiera')} subtitle={tr('Resumen de tu estructura financiera · {period}', { period: periodLabel(d.period) })} actions={<CurrencySelect />} />
       {!s.reconciliation.reconciled && <ReconciliationBanner reconciliation={s.reconciliation} />}
+      {!s.protection.insuranceTypes?.length && (
+        <div className="notice notice-warn protection-alert">
+          <b>{tr('Presta atención a tu protección patrimonial.')}</b>{' '}
+          {tr('Aún no registras ningún seguro (vida, gastos médicos mayores, auto, desempleo o educativo).')}{' '}
+          <Link to={`${basePath}/proteccion`}>{tr('Registrar mis seguros')}</Link>
+        </div>
+      )}
       <StatGrid>
         <StatCard label={tr('Ingresos mensuales')} value={money(s.cashflow.income)} delta={prev ? tr('{amount} vs. mes anterior', { amount: signedMoney(s.cashflow.income - prev.income) }) : null} deltaTone={prev ? tone(s.cashflow.income - prev.income) : ''} />
         <StatCard label={tr('Gastos mensuales')} value={money(s.cashflow.expenses)} delta={tr('Incluye {debts} de pago de deudas · Capacidad de ahorro: {amount}', { debts: money(debtExpenses), amount: money(s.cashflow.savings) })} />
@@ -92,15 +100,15 @@ function DashboardBody({ d }) {
           label={tr('Inversiones y activos')}
           value={money(s.portfolio.global.final + (s.patrimony.unassignedContributions || 0))}
           delta={s.patrimony.unassignedContributions > 0
-            ? <Link to={`${basePath}/cartera`} className="down">{tr('{amount} sin registro de asignación en inversión en Mi cartera', { amount: money(s.patrimony.unassignedContributions) })}</Link>
-            : tr('{n} productos en Mi cartera', { n: s.portfolio.products.length })}
+            ? <Link to={`${basePath}/cartera`} className="down">{tr('{amount} sin registro de asignación en inversión en Mi portafolio de inversión', { amount: money(s.patrimony.unassignedContributions) })}</Link>
+            : tr('{n} productos en Mi portafolio de inversión', { n: s.portfolio.products.length })}
         />
         <StatCard label={tr('Patrimonio neto')} value={money(s.balanceSheet.netWorth)} accent delta={prev ? tr('{amount} este mes', { amount: signedMoney(s.balanceSheet.netWorth - prev.netWorth) }) : tr('Activos − pasivos')} deltaTone={prev ? tone(s.balanceSheet.netWorth - prev.netWorth) : ''} />
       </StatGrid>
       <StatGrid>
         <StatCard label={tr('Liquidez')} value={money(liquidity)} />
         <StatCard label={tr('Deuda total')} value={money(s.debts.totalBalance)} delta={`Pagos: ${money(s.debts.totalPayment)}`} />
-        <StatCard label={tr('Lectura de cartera')} value={d.allocation?.reading ? tr(d.allocation.reading.label) : tr('Sin datos')} valueTone={READING_TONE[d.allocation?.reading?.key]} delta={d.allocation?.reading ? `${d.allocation.reading.score} / 100 · educativa` : tr('Registra productos en M2')} />
+        <StatCard label={tr('Lectura de portafolio')} value={d.allocation?.reading ? tr(d.allocation.reading.label) : tr('Sin datos')} valueTone={READING_TONE[d.allocation?.reading?.key]} delta={d.allocation?.reading ? `${d.allocation.reading.score} / 100 · educativa` : tr('Registra productos en M2')} />
         <StatCard label={tr('Estado del periodo')} value={period?.status === 'CLOSED' ? tr('Cerrado') : tr('Abierto')} delta={s.reconciliation.reconciled ? tr('Patrimonio conciliado') : tr('Información no conciliada')} deltaTone={s.reconciliation.reconciled ? 'up' : 'down'} />
       </StatGrid>
       <div className="layout">
@@ -109,6 +117,9 @@ function DashboardBody({ d }) {
       </div>
       <div className="layout">
         <Block2Summary patrimonial={d.patrimonial} academy={d.academy} />
+      </div>
+      <div className="layout">
+        <ProtectionReadingCard protection={s.protection} monthsCovered={s.indicators.monthsCovered} />
         <EmergencyFundCard emergency={d.patrimonial.emergency} />
       </div>
       <div className="layout">

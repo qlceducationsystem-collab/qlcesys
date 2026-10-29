@@ -42,7 +42,7 @@ function CurrentPeriodClose({ onClosed }) {
         <div className="total"><span>{tr('Patrimonio inicial')}</span><strong>{money(s.patrimony.opening)}</strong></div>
         <div className="total"><span>{tr('Patrimonio final')}</span><strong>{money(s.patrimony.final)}</strong></div>
         <div className="total"><span>{tr('Variación')}</span><strong><Money value={s.patrimony.variation} signed /></strong></div>
-        <div className="total"><span>{tr('ROI cartera')}</span><strong><Roi value={s.portfolio.global.roi} /></strong></div>
+        <div className="total"><span>{tr('ROI portafolio')}</span><strong><Roi value={s.portfolio.global.roi} /></strong></div>
       </div>
       <ReconciliationBanner reconciliation={s.reconciliation} />
       <div className="form-actions">
@@ -98,7 +98,7 @@ function History({ closes }) {
           { key: 'opening', label: tr('Patrimonio inicial'), align: 'right', render: (c) => money(c.snapshot.patrimony.opening) },
           { key: 'final', label: tr('Patrimonio final'), align: 'right', render: (c) => money(c.snapshot.patrimony.final) },
           { key: 'var', label: tr('Variación'), align: 'right', render: (c) => <Money value={c.snapshot.patrimony.variation} signed /> },
-          { key: 'roi', label: tr('ROI cartera'), align: 'right', render: (c) => <Roi value={c.snapshot.portfolio.global.roi} /> },
+          { key: 'roi', label: tr('ROI portafolio'), align: 'right', render: (c) => <Roi value={c.snapshot.portfolio.global.roi} /> },
           { key: 'st', label: tr('Estado'), render: (c) => (c.supersededAt ? <Pill variant="warn">{tr('Corregido')}</Pill> : <Pill>{tr('Vigente')}</Pill>) },
           { key: 'at', label: tr('Cerrado'), render: (c) => dateTime(c.closedAt) },
           { key: 'pdf', label: 'Reporte', render: (c) => <button className="btn-secondary" onClick={() => download(c)}>{tr('Descargar PDF')}</button> },
@@ -116,7 +116,7 @@ export default function Closes() {
     <>
       <PageHeader title={tr('Cortes mensuales')} subtitle={tr('Tu historial de evolución patrimonial')} />
       <Notice>
-        {tr('Al cierre de cada periodo el sistema calcula primero cada producto, después cada categoría y finalmente la cartera global. Cada periodo queda archivado y puede descargarse en PDF. El siguiente periodo toma como referencia el patrimonio final del anterior.')}
+        {tr('Al cierre de cada periodo el sistema calcula primero cada producto, después cada categoría y finalmente el portafolio global. Cada periodo queda archivado y puede descargarse en PDF. El siguiente periodo toma como referencia el patrimonio final del anterior.')}
       </Notice>
       <RequirePeriod>
         <CurrentPeriodClose onClosed={closes.reload} />
