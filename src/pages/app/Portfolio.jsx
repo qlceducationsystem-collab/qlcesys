@@ -43,9 +43,9 @@ function productFields(categories) {
       },
     },
     {
-      name: 'incomeType', label: tr('Rentabilidad automática (opcional)'), type: 'select', required: false,
-      options: Object.entries(INCOME_MODES).map(([value, label]) => ({ value, label: tr(label) })), display: (v) => (v ? tr(INCOME_MODES[v]) : tr('Sin automatizar')),
-      hint: tr('El sistema la suma sola a tu capital final cada mes, en el día indicado. Déjalo vacío si prefieres registrarla cada mes desde el producto.'),
+      name: 'incomeType', label: tr('Rentabilidad mensual'), type: 'select', default: 'MANUAL',
+      options: Object.entries(INCOME_MODES).map(([value, label]) => ({ value, label: tr(label) })), display: (v) => tr(INCOME_MODES[v] || INCOME_MODES.MANUAL),
+      hint: tr('Manual: tú escribes el capital final y registras la rentabilidad cuando la recibes. Automática: el sistema la suma cada mes a tu capital final en el día indicado.'),
     },
     { name: 'incomeValue', label: tr('Monto o % mensual'), type: 'number', step: 'any', min: 0, when: auto, hint: tr('Ej. 12000 de renta, o 0.85 si es % mensual.') },
     { name: 'incomeDay', label: tr('Día del mes en que la recibes'), type: 'number', step: 1, min: 1, max: 31, when: auto, hint: tr('Del 1 al 31. Ese día el sistema hace la suma. Si el mes es más corto se usa su último día.') },
@@ -58,7 +58,7 @@ function productFields(categories) {
   ];
 }
 
-const INCOME_MODES = { AMOUNT: 'Monto fijo mensual', PERCENT: '% mensual sobre el capital inicial' };
+const INCOME_MODES = { MANUAL: 'Manual (la registro yo)', AMOUNT: 'Automática · monto fijo mensual', PERCENT: 'Automática · % mensual sobre el capital inicial' };
 const INCOME_TERMS = [3, 6, 12];
 const termLabel = (m) => (m === 12 ? tr('1 año') : tr('{n} meses', { n: m }));
 const auto = (v) => v.incomeType === 'AMOUNT' || v.incomeType === 'PERCENT';
@@ -207,7 +207,7 @@ function PortfolioBody({ summary, categories, reload }) {
   const toForm = (p) => ({
     categoryCode: p.categoryCode, name: p.name, institution: p.institution || '', notes: p.notes || '',
     initialCapital: p.initial, finalCapital: p.final,
-    incomeType: p.incomeType || '', incomeValue: p.incomeValue ?? '', incomeDay: p.incomeDay ?? '', incomeTerm: p.incomeTerm ? String(p.incomeTerm) : '',
+    incomeType: p.incomeType || 'MANUAL', incomeValue: p.incomeValue ?? '', incomeDay: p.incomeDay ?? '', incomeTerm: p.incomeTerm ? String(p.incomeTerm) : '',
     incomeApplied: p.incomeDate ? p.incomeAmount : 0,
   });
 
@@ -283,7 +283,7 @@ function PortfolioBody({ summary, categories, reload }) {
         <Modal open title={form.product ? tr('Editar producto') : tr('Agregar producto')} onClose={() => setForm(null)}>
           <RecordForm
             fields={fields}
-            initial={form.product ? toForm(form.product) : { categoryCode: form.categoryCode || '', name: '', institution: '', notes: '', initialCapital: '', finalCapital: '', incomeType: '', incomeValue: '', incomeDay: '', incomeTerm: '' }}
+            initial={form.product ? toForm(form.product) : { categoryCode: form.categoryCode || '', name: '', institution: '', notes: '', initialCapital: '', finalCapital: '', incomeType: 'MANUAL', incomeValue: '', incomeDay: '', incomeTerm: '' }}
             onSubmit={save}
             onCancel={() => setForm(null)}
           />
