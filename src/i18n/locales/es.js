@@ -83,6 +83,7 @@ export const es = {
     logout: 'Cerrar sesión',
     changePassword: 'Cambiar contraseña',
     myAccess: 'Mi acceso',
+    deleteAccount: 'Eliminar mi cuenta',
     adminPanel: 'Panel administrativo',
     requiresAccess: 'Requiere acceso',
     admin: 'Administrador',

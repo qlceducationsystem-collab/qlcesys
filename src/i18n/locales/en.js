@@ -83,6 +83,7 @@ export const en = {
     logout: 'Sign out',
     changePassword: 'Change password',
     myAccess: 'My access',
+    deleteAccount: 'Delete my account',
     adminPanel: 'Admin panel',
     requiresAccess: 'Requires access',
     admin: 'Administrator',

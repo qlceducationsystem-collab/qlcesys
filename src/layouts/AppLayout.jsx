@@ -78,6 +78,9 @@ export function AppLayout() {
           )}
           {isAdminView && <Link to="/admin"><span className="ico">←</span>{t('app.adminPanel')}</Link>}
           {!isAdminView && <SecurityNavButton />}
+          {!isAdminView && user?.role === 'CLIENT' && (
+            <Link to={`${basePath}/acceso#eliminar-cuenta`} className="nav-danger"><span className="ico">✕</span>{t('app.deleteAccount')}</Link>
+          )}
           <button type="button" className="nav-logout" onClick={logout}><span className="ico">⎋</span>{t('app.logout')}</button>
         </nav>
         <div className="sidebar-lang"><LanguageSwitcher /></div>

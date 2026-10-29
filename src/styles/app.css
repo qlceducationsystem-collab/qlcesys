@@ -222,3 +222,5 @@ h1 { font-size: clamp(28px, 4vw, 44px); line-height: 1.12; letter-spacing: -.04e
 .protection-bar .bar-track { height: 6px; border-radius: 999px; background: rgba(199, 204, 210, 0.12); overflow: hidden; }
 .protection-bar .bar-fill { height: 100%; background: linear-gradient(90deg, var(--blue3), var(--blue2)); }
 .protection-bar b { text-align: right; font-variant-numeric: tabular-nums; }
+.nav .nav-danger { color: var(--red); }
+.nav .nav-danger:hover { background: rgba(255, 123, 134, 0.08); }

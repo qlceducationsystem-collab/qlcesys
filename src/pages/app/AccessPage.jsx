@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useWorkspace } from '../../context/WorkspaceContext.jsx';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useAsync } from '../../hooks/useAsync.js';
@@ -72,6 +73,7 @@ function DeleteAccount() {
     }
   };
   return (
+    <div id="eliminar-cuenta">
     <Card title={tr('Eliminar mi cuenta')}>
       <p className="small muted">{tr('Borra definitivamente tu cuenta y toda tu información: diagnóstico, portafolio, ingresos y gastos, deudas, seguros, cortes, avance de la academia, pagos registrados, acceso y citas. No se puede deshacer y perderás el acceso que hayas comprado.')}</p>
       <Button variant="secondary" className="danger" onClick={() => setOpen(true)}>{tr('Eliminar mi cuenta')}</Button>
@@ -89,11 +91,17 @@ function DeleteAccount() {
         </div>
       </Modal>
     </Card>
+    </div>
   );
 }
 
 export default function AccessPage() {
   const { access, accessInfo, user } = useAuth();
+  const { isAdminView } = useWorkspace();
+  const isClient = user?.role === 'CLIENT' && !isAdminView;
+  useEffect(() => {
+    if (window.location.hash === '#eliminar-cuenta') setTimeout(() => document.getElementById('eliminar-cuenta')?.scrollIntoView({ behavior: 'smooth' }), 300);
+  }, []);
   const attempts = useAsync(() => api.get('/payments/attempts'), [accessInfo]);
   return (
     <>
@@ -112,8 +120,8 @@ export default function AccessPage() {
           ]}
         />
       </Card>
-      {user?.role === 'CLIENT' && <ResetProfile />}
-      {user?.role === 'CLIENT' && <DeleteAccount />}
+      {isClient && <ResetProfile />}
+      {isClient && <DeleteAccount />}
     </>
   );
 }
