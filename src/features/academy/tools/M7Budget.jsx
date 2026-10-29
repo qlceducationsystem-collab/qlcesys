@@ -309,6 +309,9 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
             />
             <FormError error={realAction.error} />
             <SaveStatus action={realAction} savedText={tr('Importe real actualizado.')} />
+            {view.investmentActual > 0 && (
+              <p className="small warn-text">{tr('Registraste {amount} de inversión real.', { amount: money(view.investmentActual) })}{' '}<Link to={`${basePath}/cartera`}>{tr('Dirígete a Mi cartera')}</Link>{' '}{tr('para registrar en qué producto la invertiste. Mientras no la asignes, Inicio te mostrará el aviso.')}</p>
+            )}
             {Math.abs(view.debtRecorded - view.debtPayments) > 0.005 && view.debtPayments > 0 && (
               <p className="small warn-text">{tr('El renglón de deudas usa el pago mensual planeado del Módulo 9 ({plan}). En Ingresos y gastos hay {recorded} registrados este mes en la categoría Deudas (pagos confirmados y, si existe, el pago declarado en el diagnóstico). Revisa esa lista por si hay pagos duplicados.', { plan: money(view.debtPayments), recorded: money(view.debtRecorded) })}</p>
             )}

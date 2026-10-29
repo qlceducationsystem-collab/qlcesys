@@ -64,7 +64,13 @@ function Body() {
       )}
       <RecordManager endpoint="/debts" title={tr('Obligaciones')} addLabel={tr('+ Registrar deuda')} fields={fields} columns={columns}
         select={(d) => d.items} rowId={(r) => r.balanceId} onChanged={changed}
-        rowActions={(d, refresh) => (d.status === 'ACTIVE' ? <button className="btn-link" onClick={() => setPaying({ debt: d, refresh })}>{tr('Registrar pago')}</button> : null)}
+        rowActions={(d, refresh) => {
+          if (d.status !== 'ACTIVE') return null;
+          if (d.paidAt) {
+            return <><span className="small up">{tr('Pago confirmado')}</span><button className="btn-link" onClick={async () => { await api.del(`/debts/${d.balanceId}/payments`); await refresh(); changed(); }}>{tr('Deshacer pago')}</button></>;
+          }
+          return <button className="btn-link" onClick={() => setPaying({ debt: d, refresh })}>{tr('Registrar pago')}</button>;
+        }}
         toForm={(d) => ({ name: d.name, type: d.type, lender: d.lender || '', balance: d.balance, payment: d.payment, fees: d.fees, annualRate: d.annualRate ?? '', status: d.status })}
         emptyText={tr('Sin deudas registradas en este periodo.')} />
       {paying && (

@@ -32,30 +32,78 @@ function productFields(categories) {
     { name: 'initialCapital', label: tr('Capital inicial'), type: 'money', display: money, hint: tr('Incluye aportaciones y retiros del periodo en este producto.') },
     { name: 'finalCapital', label: tr('Capital final'), type: 'money', display: money },
     {
-      name: 'incomeType', label: tr('Rentabilidad mensual'), type: 'select', default: 'MANUAL',
-      options: Object.entries(INCOME_MODES).map(([value, label]) => ({ value, label: tr(label) })), display: (v) => tr(INCOME_MODES[v] || INCOME_MODES.MANUAL),
-      hint: tr('Automática: el sistema la suma cada mes a tu capital final en el día indicado. Manual: la registras tú cuando la recibes.'),
+      name: 'incomeType', label: tr('Rentabilidad automática (opcional)'), type: 'select', required: false,
+      options: Object.entries(INCOME_MODES).map(([value, label]) => ({ value, label: tr(label) })), display: (v) => (v ? tr(INCOME_MODES[v]) : tr('Sin automatizar')),
+      hint: tr('El sistema la suma sola a tu capital final cada mes, en el día indicado. Déjalo vacío si prefieres registrarla cada mes desde el producto.'),
     },
-    { name: 'incomeValue', label: tr('Monto o % mensual'), type: 'number', step: 'any', min: 0, required: false, hint: tr('Ej. 12000 de renta, o 0.85 si es % mensual. Déjalo vacío si es manual.') },
-    { name: 'incomeDay', label: tr('Día del mes en que la recibes'), type: 'number', step: 1, min: 1, max: 31, required: false, hint: tr('Del 1 al 31. Si el mes es más corto se usa su último día.') },
+    { name: 'incomeValue', label: tr('Monto o % mensual'), type: 'number', step: 'any', min: 0, required: false, hint: tr('Ej. 12000 de renta, o 0.85 si es % mensual.') },
+    { name: 'incomeDay', label: tr('Día del mes en que la recibes'), type: 'number', step: 1, min: 1, max: 31, required: false, hint: tr('Del 1 al 31. Ese día el sistema hace la suma. Si el mes es más corto se usa su último día.') },
+    {
+      name: 'incomeTerm', label: tr('Plazo'), type: 'select', required: false,
+      options: INCOME_TERMS.map((m) => ({ value: String(m), label: termLabel(m) })), display: (v) => (v ? termLabel(Number(v)) : tr('Sin plazo')),
+      hint: tr('Durante cuántos meses se suma, contando desde el mes actual. Déjalo vacío si no tiene fecha de término.'),
+    },
     { name: 'notes', label: tr('Notas'), type: 'textarea', required: false },
   ];
 }
 
-const INCOME_MODES = { MANUAL: 'Manual (la registro yo)', AMOUNT: 'Automática · monto fijo mensual', PERCENT: 'Automática · % mensual sobre el capital inicial' };
+const INCOME_MODES = { AMOUNT: 'Monto fijo mensual', PERCENT: '% mensual sobre el capital inicial' };
+const INCOME_TERMS = [3, 6, 12];
+const termLabel = (m) => (m === 12 ? tr('1 año') : tr('{n} meses', { n: m }));
+const auto = (v) => v.incomeType === 'AMOUNT' || v.incomeType === 'PERCENT';
 const incomeBody = (v) => ({
   ...v,
-  incomeType: v.incomeType && v.incomeType !== 'MANUAL' ? v.incomeType : null,
-  incomeValue: v.incomeType && v.incomeType !== 'MANUAL' && v.incomeValue !== '' ? Number(v.incomeValue) : null,
-  incomeDay: v.incomeType && v.incomeType !== 'MANUAL' && v.incomeDay !== '' ? Number(v.incomeDay) : null,
+  incomeType: auto(v) ? v.incomeType : null,
+  incomeValue: auto(v) && v.incomeValue !== '' ? Number(v.incomeValue) : null,
+  incomeDay: auto(v) && v.incomeDay !== '' ? Number(v.incomeDay) : null,
+  incomeTerm: auto(v) && v.incomeTerm ? Number(v.incomeTerm) : null,
 });
+const termEnd = (p) => {
+  if (!p.incomeTerm || !p.incomeStart) return '';
+  const start = new Date(p.incomeStart);
+  const end = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + p.incomeTerm - 1, 1, 12));
+  return tr(' · durante {term}, hasta {month}', { term: termLabel(p.incomeTerm), month: end.toLocaleDateString('es-MX', { month: 'long', year: 'numeric', timeZone: 'UTC' }) });
+};
 const lastDay = (year, month) => new Date(Date.UTC(year, month, 0)).getUTCDate();
 const dueDate = (period, day) => `${period.year}-${String(period.month).padStart(2, '0')}-${String(Math.min(day || 1, lastDay(period.year, period.month))).padStart(2, '0')}`;
 
 function incomeText(p) {
-  if (p.incomeType === 'AMOUNT') return tr('{amount} cada mes, el día {day}', { amount: money(p.incomeValue), day: p.incomeDay });
-  if (p.incomeType === 'PERCENT') return tr('{pct} mensual sobre el capital inicial, el día {day}', { pct: pct(p.incomeValue), day: p.incomeDay });
-  return tr('Manual');
+  if (p.incomeType === 'AMOUNT') return `${tr('{amount} cada mes, el día {day}', { amount: money(p.incomeValue), day: p.incomeDay })}${termEnd(p)}`;
+  if (p.incomeType === 'PERCENT') return `${tr('{pct} mensual sobre el capital inicial, el día {day}', { pct: pct(p.incomeValue), day: p.incomeDay })}${termEnd(p)}`;
+  return null;
+}
+
+function UnassignedContributions({ movements, products, onAssigned }) {
+  const { api } = useWorkspace();
+  const [target, setTarget] = useState({});
+  const [state, setState] = useState({ busy: null, error: null });
+  if (!movements.length) return null;
+  const assign = async (m) => {
+    setState({ busy: m.id, error: null });
+    try {
+      await api.post(`/portfolio/positions/${target[m.id]}/assign`, { movementId: m.id });
+      setState({ busy: null, error: null });
+      onAssigned();
+    } catch (error) {
+      setState({ busy: null, error });
+    }
+  };
+  return (
+    <Card title={tr('Inversión sin asignar')}>
+      <p className="small muted">{tr('Registraste estas aportaciones (por ejemplo, la inversión real del presupuesto) pero aún no indicas en qué producto invertiste. Elige el producto para sumarla a su capital.')}</p>
+      {movements.map((m) => (
+        <div key={m.id} className="inline-form">
+          <span><b>{money(m.amount)}</b> · {tr(m.description)}</span>
+          <select className="input" value={target[m.id] || ''} onChange={(e) => setTarget({ ...target, [m.id]: e.target.value })} aria-label={tr('Producto de destino')}>
+            <option value="">{tr('Selecciona el producto')}</option>
+            {products.map((p) => <option key={p.positionId} value={p.positionId}>{p.name}</option>)}
+          </select>
+          <Button variant="secondary" disabled={!target[m.id]} loading={state.busy === m.id} onClick={() => assign(m)}>{tr('Asignar')}</Button>
+        </div>
+      ))}
+      <FormError error={state.error} />
+    </Card>
+  );
 }
 
 function IncomeModal({ product, period, onClose, onSaved }) {
@@ -119,7 +167,7 @@ function ProductCard({ p, writable, onEdit, onDelete, onIncome, basePath }) {
         <div className="total"><span>{tr('ROI del producto')}</span><strong><Roi value={p.roi} /></strong></div>
       </div>
       <div className="asset-income">
-        <span>{tr('Rentabilidad')}: <b>{incomeText(p)}</b></span>
+        {incomeText(p) && <span>{tr('Rentabilidad automática')}: <b>{incomeText(p)}</b></span>}
         <span>
           {p.incomeDate && p.incomeAmount === 0
             ? tr('Este mes no se recibió rentabilidad')
@@ -147,7 +195,7 @@ function PortfolioBody({ summary, categories, reload }) {
   const toForm = (p) => ({
     categoryCode: p.categoryCode, name: p.name, institution: p.institution || '', notes: p.notes || '',
     initialCapital: p.initial, finalCapital: p.final,
-    incomeType: p.incomeType || 'MANUAL', incomeValue: p.incomeValue ?? '', incomeDay: p.incomeDay ?? '',
+    incomeType: p.incomeType || '', incomeValue: p.incomeValue ?? '', incomeDay: p.incomeDay ?? '', incomeTerm: p.incomeTerm ? String(p.incomeTerm) : '',
   });
 
   const save = async (values) => {
@@ -188,6 +236,7 @@ function PortfolioBody({ summary, categories, reload }) {
       />
       <ClosedNotice />
       <ReconciliationBanner reconciliation={summary.reconciliation} compact={summary.reconciliation.reconciled} />
+      {writable && <UnassignedContributions movements={summary.patrimony.unassignedMovements || []} products={portfolio.products} onAssigned={reload} />}
 
       {portfolio.products.length === 0 && (
         <Empty title={tr('Tu cartera está vacía')} text={tr('Agrega tus productos (CETES, acciones, Casa A, Negocio A…) con su capital inicial y final del periodo.')}
@@ -221,7 +270,7 @@ function PortfolioBody({ summary, categories, reload }) {
         <Modal open title={form.product ? tr('Editar producto') : tr('Agregar producto')} onClose={() => setForm(null)}>
           <RecordForm
             fields={fields}
-            initial={form.product ? toForm(form.product) : { categoryCode: form.categoryCode || '', name: '', institution: '', notes: '', initialCapital: '', finalCapital: '', incomeType: 'MANUAL', incomeValue: '', incomeDay: '' }}
+            initial={form.product ? toForm(form.product) : { categoryCode: form.categoryCode || '', name: '', institution: '', notes: '', initialCapital: '', finalCapital: '', incomeType: '', incomeValue: '', incomeDay: '', incomeTerm: '' }}
             onSubmit={save}
             onCancel={() => setForm(null)}
           />

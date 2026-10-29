@@ -74,7 +74,7 @@ function DiagnosisCard({ diagnosis, liquidity, expenses }) {
 }
 
 function DashboardBody({ d }) {
-  const { period } = useWorkspace();
+  const { period, basePath } = useWorkspace();
   const s = d.summary;
   const prev = d.history.length > 1 ? d.history[d.history.length - 2] : null;
   const debtExpenses = s.cashflow.expenseByCategory?.find((c) => c.key === 'DEUDAS')?.amount || 0;
@@ -88,7 +88,13 @@ function DashboardBody({ d }) {
       <StatGrid>
         <StatCard label={tr('Ingresos mensuales')} value={money(s.cashflow.income)} delta={prev ? tr('{amount} vs. mes anterior', { amount: signedMoney(s.cashflow.income - prev.income) }) : null} deltaTone={prev ? tone(s.cashflow.income - prev.income) : ''} />
         <StatCard label={tr('Gastos mensuales')} value={money(s.cashflow.expenses)} delta={tr('Incluye {debts} de pago de deudas · Capacidad de ahorro: {amount}', { debts: money(debtExpenses), amount: money(s.cashflow.savings) })} />
-        <StatCard label={tr('Inversiones y activos')} value={money(s.portfolio.global.final)} delta={tr('{n} productos en Mi cartera', { n: s.portfolio.products.length })} />
+        <StatCard
+          label={tr('Inversiones y activos')}
+          value={money(s.portfolio.global.final + (s.patrimony.unassignedContributions || 0))}
+          delta={s.patrimony.unassignedContributions > 0
+            ? <Link to={`${basePath}/cartera`} className="down">{tr('{amount} sin registro de asignación en inversión en Mi cartera', { amount: money(s.patrimony.unassignedContributions) })}</Link>
+            : tr('{n} productos en Mi cartera', { n: s.portfolio.products.length })}
+        />
         <StatCard label={tr('Patrimonio neto')} value={money(s.balanceSheet.netWorth)} accent delta={prev ? tr('{amount} este mes', { amount: signedMoney(s.balanceSheet.netWorth - prev.netWorth) }) : tr('Activos − pasivos')} deltaTone={prev ? tone(s.balanceSheet.netWorth - prev.netWorth) : ''} />
       </StatGrid>
       <StatGrid>

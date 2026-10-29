@@ -124,6 +124,9 @@ export function M9Obligations({ onSaved }) {
       await refresh();
     }
   };
+  const undo = async (d) => {
+    if (await action.run(() => api.del(`/academy/obligations/${d.balanceId}/payments`))) await refresh();
+  };
   const remove = async () => {
     if (await action.run(() => api.del(`/academy/obligations/${removing.balanceId}`))) {
       setRemoving(null);
@@ -168,7 +171,9 @@ export function M9Obligations({ onSaved }) {
             ...(editable ? [{
               key: 'x', label: tr('Acciones'), align: 'right', render: (d) => (
                 <div className="row-actions">
-                  <button type="button" className="btn-link" onClick={() => setPaying(d)}>{tr('Confirmar pago')}</button>
+                  {d.paidAt
+                    ? <><span className="small up">{tr('Pago confirmado')}</span><button type="button" className="btn-link" onClick={() => undo(d)}>{tr('Deshacer pago')}</button></>
+                    : <button type="button" className="btn-link" onClick={() => setPaying(d)}>{tr('Confirmar pago')}</button>}
                   <button type="button" className="btn-link" onClick={() => setEditing(d)}>{tr('Editar')}</button>
                   <button type="button" className="btn-link danger" onClick={() => setRemoving(d)}>{tr('Eliminar')}</button>
                 </div>
