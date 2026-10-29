@@ -7,7 +7,7 @@ import { ACCESS_MODES, PAYMENT_STATUS } from '../../utils/labels.js';
 import { Card, PageHeader, Pill } from '../../components/ui/Card.jsx';
 import { DataTable } from '../../components/ui/DataTable.jsx';
 import { Button } from '../../components/ui/Button.jsx';
-import { Field, FormError, Input } from '../../components/ui/Form.jsx';
+import { CodeInput, Field, FormError, Input } from '../../components/ui/Form.jsx';
 import { Modal } from '../../components/ui/Modal.jsx';
 import { AccessOffers } from '../../features/access/AccessOffers.jsx';
 import { tr } from '../../i18n/tr.js';
@@ -54,6 +54,44 @@ function ResetProfile() {
   );
 }
 
+function DeleteAccount() {
+  const { logout } = useAuth();
+  const [open, setOpen] = useState(false);
+  const [f, setF] = useState({ word: '', code: '' });
+  const [state, setState] = useState({ busy: false, error: null });
+  const ready = f.word.trim().toUpperCase() === 'ELIMINAR' && /^\d{6}$/.test(f.code);
+  const remove = async () => {
+    setState({ busy: true, error: null });
+    try {
+      await api.post('/auth/delete-account', { confirm: 'ELIMINAR', code: f.code });
+      clearPeriodSelection();
+      await logout();
+      window.location.assign('/');
+    } catch (error) {
+      setState({ busy: false, error });
+    }
+  };
+  return (
+    <Card title={tr('Eliminar mi cuenta')}>
+      <p className="small muted">{tr('Borra definitivamente tu cuenta y toda tu información: diagnóstico, portafolio, ingresos y gastos, deudas, seguros, cortes, avance de la academia, pagos registrados, acceso y citas. No se puede deshacer y perderás el acceso que hayas comprado.')}</p>
+      <Button variant="secondary" className="danger" onClick={() => setOpen(true)}>{tr('Eliminar mi cuenta')}</Button>
+      <Modal
+        open={open}
+        title={tr('¿Eliminar tu cuenta definitivamente?')}
+        onClose={() => setOpen(false)}
+        footer={<><Button variant="secondary" onClick={() => setOpen(false)}>{tr('Cancelar')}</Button><Button loading={state.busy} disabled={!ready} onClick={remove}>{tr('Eliminar definitivamente')}</Button></>}
+      >
+        <div className="stack">
+          <p>{tr('Esta acción borra tu cuenta y toda tu información. No se puede deshacer.')}</p>
+          <Field label={tr('Escribe ELIMINAR para confirmar')}><Input value={f.word} onChange={(e) => setF({ ...f, word: e.target.value })} autoComplete="off" /></Field>
+          <Field label={tr('Código de Google Authenticator')}><CodeInput value={f.code} onChange={(e) => setF({ ...f, code: e.target.value })} /></Field>
+          <FormError error={state.error} />
+        </div>
+      </Modal>
+    </Card>
+  );
+}
+
 export default function AccessPage() {
   const { access, accessInfo, user } = useAuth();
   const attempts = useAsync(() => api.get('/payments/attempts'), [accessInfo]);
@@ -75,6 +113,7 @@ export default function AccessPage() {
         />
       </Card>
       {user?.role === 'CLIENT' && <ResetProfile />}
+      {user?.role === 'CLIENT' && <DeleteAccount />}
     </>
   );
 }
