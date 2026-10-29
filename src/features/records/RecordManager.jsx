@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useWorkspace } from '../../context/WorkspaceContext.jsx';
 import { useAsync } from '../../hooks/useAsync.js';
 import { Button } from '../../components/ui/Button.jsx';
@@ -15,6 +15,7 @@ function FieldInput({ field, value, onChange }) {
   if (field.type === 'select') return <Select {...common} options={field.options} placeholder={tr('Selecciona…')} />;
   if (field.type === 'money') return <MoneyInput {...common} />;
   if (field.type === 'textarea') return <Textarea {...common} required={false} />;
+  if (field.type === 'file') return <input className="input" type="file" accept={field.accept} name={field.name} onChange={(e) => onChange(e.target.files?.[0] || null)} />;
   return <Input type={field.type || 'text'} maxLength={field.maxLength || 200} step={field.step} min={field.min} max={field.max} {...common} />;
 }
 
@@ -65,7 +66,7 @@ export function RecordForm({ fields, initial, onSubmit, onCancel, submitLabel = 
   );
 }
 
-export function RecordManager({ endpoint, title, addLabel = "+ Agregar", fields, columns, toForm = (r) => r, onChanged, emptyText, select = (d) => d, rowId = (r) => r.id, rowActions }) {
+export function RecordManager({ endpoint, title, addLabel = "+ Agregar", fields, columns, toForm = (r) => r, onChanged, emptyText, select = (d) => d, rowId = (r) => r.id, rowActions, afterSave, openNew }) {
   const { api, period, canEdit } = useWorkspace();
   const list = useAsync(async () => select(await api.get(`${endpoint}?periodId=${period.id}`)), [api, endpoint, period?.id]);
   const [editing, setEditing] = useState(null);
@@ -73,6 +74,9 @@ export function RecordManager({ endpoint, title, addLabel = "+ Agregar", fields,
   const [confirming, setConfirming] = useState(false);
   const [actionError, setActionError] = useState(null);
   const writable = canEdit && period.status === 'OPEN';
+  useEffect(() => {
+    if (openNew && writable) setEditing({ row: null });
+  }, [openNew, writable]);
 
   const refresh = async () => {
     await list.reload();
@@ -81,23 +85,35 @@ export function RecordManager({ endpoint, title, addLabel = "+ Agregar", fields,
 
   const save = async (values) => {
 
-    const clean = Object.fromEntries(Object.entries(values).map(([k, v]) => [k, v === '' ? null : v]));
+    const fileFields = fields.filter((f) => f.type === 'file').map((f) => f.name);
+    const clean = Object.fromEntries(Object.entries(values).filter(([k]) => !fileFields.includes(k)).map(([k, v]) => [k, v === '' ? null : v]));
     const body = { ...clean, periodId: period.id };
     if (!editing.row) {
-      await api.post(endpoint, body);
+      const created = await api.post(endpoint, body);
+      if (afterSave) await afterSave(created, values);
       setEditing(null);
       return refresh();
     }
-    const changes = describeChanges(fields, toForm(editing.row), values);
-    if (!changes.length) return setEditing(null);
-    setPending({ kind: 'update', row: editing.row, body, changes });
+    const changes = describeChanges(fields.filter((f) => f.type !== 'file'), toForm(editing.row), values);
+    if (!changes.length) {
+      if (afterSave && fileFields.some((k) => values[k])) {
+        await afterSave(editing.row, values);
+        setEditing(null);
+        return refresh();
+      }
+      return setEditing(null);
+    }
+    setPending({ kind: 'update', row: editing.row, body, changes, values });
   };
 
   const confirm = async () => {
     setConfirming(true);
     setActionError(null);
     try {
-      if (pending.kind === 'update') await api.put(`${endpoint}/${rowId(pending.row)}`, pending.body);
+      if (pending.kind === 'update') {
+        const updated = await api.put(`${endpoint}/${rowId(pending.row)}`, pending.body);
+        if (afterSave) await afterSave(updated, pending.values);
+      }
       else await api.del(`${endpoint}/${rowId(pending.row)}`);
       setPending(null);
       setEditing(null);

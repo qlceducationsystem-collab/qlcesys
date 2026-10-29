@@ -12,9 +12,9 @@ export const EXPENSE_CATEGORIES = {
 export const PROTECTION_TYPES = {
   LIQUIDEZ: 'Liquidez', FONDO_EMERGENCIA: 'Fondo de emergencia', RESERVA: 'Reserva',
   SEGURO_GASTOS_MEDICOS: 'Seguro de gastos médicos mayores', SEGURO_VIDA: 'Seguro de vida', SEGURO_AUTO: 'Seguro de auto',
-  SEGURO_DESEMPLEO: 'Seguro de desempleo', SEGURO_EDUCACION: 'Seguro educativo', OTRO_SEGURO: 'Otro seguro',
+  SEGURO_DESEMPLEO: 'Seguro de desempleo', SEGURO_EDUCACION: 'Seguro educativo', SEGURO_RETIRO: 'Seguro de retiro o renta vitalicia', OTRO_SEGURO: 'Otro seguro',
 };
-export const INSURANCE_TYPES = ['SEGURO_GASTOS_MEDICOS', 'SEGURO_VIDA', 'SEGURO_AUTO', 'SEGURO_DESEMPLEO', 'SEGURO_EDUCACION', 'OTRO_SEGURO'];
+export const INSURANCE_TYPES = ['SEGURO_GASTOS_MEDICOS', 'SEGURO_VIDA', 'SEGURO_AUTO', 'SEGURO_DESEMPLEO', 'SEGURO_EDUCACION', 'SEGURO_RETIRO', 'OTRO_SEGURO'];
 
 export const MOVEMENT_TYPES = { APORTACION: 'Aportación', DEDUCCION: 'Deducción' };
 
@@ -107,7 +107,7 @@ const EN = {
   PROTECTION_TYPES: {
     LIQUIDEZ: 'Liquidity', FONDO_EMERGENCIA: 'Emergency fund', RESERVA: 'Reserve',
     SEGURO_GASTOS_MEDICOS: 'Major medical insurance', SEGURO_VIDA: 'Life insurance', SEGURO_AUTO: 'Car insurance',
-    SEGURO_DESEMPLEO: 'Unemployment insurance', SEGURO_EDUCACION: 'Education insurance', OTRO_SEGURO: 'Other insurance',
+    SEGURO_DESEMPLEO: 'Unemployment insurance', SEGURO_EDUCACION: 'Education insurance', SEGURO_RETIRO: 'Retirement or life annuity insurance', OTRO_SEGURO: 'Other insurance',
   },
   MOVEMENT_TYPES: { APORTACION: 'Contribution', DEDUCCION: 'Withdrawal' },
   APPOINTMENT_STATUS: { PENDING: 'Pending', CONFIRMED: 'Confirmed', COMPLETED: 'Completed', CANCELLED: 'Cancelled' },

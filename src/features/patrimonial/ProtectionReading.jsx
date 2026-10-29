@@ -4,16 +4,17 @@ import { Card } from '../../components/ui/Card.jsx';
 import { tr } from '../../i18n/tr.js';
 
 const PARTS = [
-  ['SEGURO_GASTOS_MEDICOS', 'Gastos médicos mayores', 25],
+  ['SEGURO_GASTOS_MEDICOS', 'Gastos médicos mayores', 20],
   ['SEGURO_VIDA', 'Seguro de vida', 20],
+  ['SEGURO_RETIRO', 'Seguro de retiro o renta vitalicia', 10],
   ['SEGURO_AUTO', 'Seguro de auto', 10],
   ['SEGURO_DESEMPLEO', 'Seguro de desempleo', 10],
-  ['SEGURO_EDUCACION', 'Seguro educativo', 10],
+  ['SEGURO_EDUCACION', 'Seguro educativo', 5],
 ];
 const LEVELS = [
-  [80, 'Bien protegido', 'good'],
-  [60, 'Protección moderada', 'good'],
-  [40, 'Protección básica', 'warn'],
+  [75, 'Protección excelente', 'good'],
+  [50, 'Protección buena', 'good'],
+  [25, 'Protección básica', 'warn'],
   [0, 'Protección insuficiente', 'bad'],
 ];
 
@@ -31,11 +32,16 @@ export function protectionReading(protection, monthsCovered) {
   return { score, label, tone, parts, missing, hasInsurance: types.length > 0 };
 }
 
-export function ProtectionReadingCard({ protection, monthsCovered }) {
+export function ProtectionReadingCard({ protection, monthsCovered, onRegister }) {
   const { basePath } = useWorkspace();
   const r = protectionReading(protection, monthsCovered);
   return (
-    <Card title={tr('Lectura educativa de protección')} actions={<Link className="btn-secondary" to={`${basePath}/proteccion`}>{tr('Registrar seguros')}</Link>}>
+    <Card
+      title={tr('Lectura educativa de protección')}
+      actions={onRegister
+        ? <button type="button" className="btn-secondary" onClick={onRegister}>{tr('Registrar seguros')}</button>
+        : <Link className="btn-secondary" to={`${basePath}/proteccion`}>{tr('Registrar seguros')}</Link>}
+    >
       <div className="protection-reading">
         <div>
           <strong className={`reading-score tone-${r.tone}`}>{tr(r.label)}</strong>
@@ -56,6 +62,7 @@ export function ProtectionReadingCard({ protection, monthsCovered }) {
           </div>
         ))}
       </div>
+      <p className="small muted">{tr('Escala: 0–24 insuficiente · 25–49 básica · 50–74 buena · 75–100 excelente.')}</p>
       <p className="small muted">{tr('Lectura educativa con parámetros de QLC: no es una recomendación de seguros. Se calcula con las pólizas que registras en Protección patrimonial y con tus meses de liquidez.')}</p>
     </Card>
   );

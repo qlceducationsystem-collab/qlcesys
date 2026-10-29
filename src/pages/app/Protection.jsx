@@ -23,6 +23,7 @@ const fields = [
   { name: 'claimsNumber', label: 'Número para reportar siniestros (opcional)', when: isInsurance, required: false, maxLength: 80, hint: tr('El teléfono o número que te da la aseguradora para reportar un siniestro.') },
   { name: 'amount', label: 'Importe o suma asegurada', type: 'money', display: money, hint: 'En seguros registra la suma asegurada: no se suma como activo.' },
   { name: 'notes', label: 'Notas', type: 'textarea', required: false },
+  { name: 'policyFile', label: 'Póliza en PDF o imagen (opcional)', type: 'file', accept: 'application/pdf,image/jpeg,image/png,image/webp', when: isInsurance, required: false, hint: tr('Máximo 10 MB. Se guarda de forma privada.') },
 ];
 
 const columns = [
@@ -79,6 +80,17 @@ function Body() {
   const { summary: s, reload, period } = usePeriodSummary();
   const hist = useAsync(() => api.get('/periods/history'), [api, period?.id]);
   const patrimonial = usePatrimonial();
+  const [openNew, setOpenNew] = useState(0);
+  const register = () => {
+    document.getElementById('protection-records')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setOpenNew((n) => n + 1);
+  };
+  const uploadPolicy = async (record, values) => {
+    if (!values.policyFile || !record?.id) return;
+    const form = new FormData();
+    form.append('file', values.policyFile);
+    await api.upload(`/protection/${record.id}/policy`, form);
+  };
   const i = s?.indicators;
   return (
     <>
@@ -95,14 +107,15 @@ function Body() {
           <StatCard label={tr('Seguro de vida')} value={i.hasLifeInsurance ? tr('Registrado') : tr('Sin registro')} />
         </StatGrid>
       )}
-      {s && <ProtectionReadingCard protection={s.protection} monthsCovered={i.monthsCovered} />}
+      {s && <ProtectionReadingCard protection={s.protection} monthsCovered={i.monthsCovered} onRegister={register} />}
       {patrimonial.data && (
         <div className="layout even">
           <EmergencyFundCard emergency={patrimonial.data.emergency} />
           <DebtCostCard debts={patrimonial.data.debts} />
         </div>
       )}
-      <RecordManager endpoint="/protection" title={tr('Liquidez, fondo de emergencia, reservas y coberturas')} addLabel="+ Registrar"
+      <div id="protection-records" />
+      <RecordManager endpoint="/protection" openNew={openNew} afterSave={uploadPolicy} title={tr('Liquidez, fondo de emergencia, reservas y coberturas')} addLabel="+ Registrar"
         fields={fields} columns={columns} onChanged={() => { reload(); hist.reload(); patrimonial.reload(); }}
         toForm={(r) => ({ type: r.type, name: r.name, insurer: r.insurer || '', policyNumber: r.policyNumber || '', claimsNumber: r.claimsNumber || '', amount: Number(r.amount), notes: r.notes || '' })}
         rowActions={(r, refresh) => <PolicyActions record={r} refresh={refresh} />}

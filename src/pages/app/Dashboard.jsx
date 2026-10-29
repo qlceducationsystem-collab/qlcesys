@@ -89,7 +89,7 @@ function DashboardBody({ d }) {
       {!s.protection.insuranceTypes?.length && (
         <div className="notice notice-warn protection-alert">
           <b>{tr('Presta atención a tu protección patrimonial.')}</b>{' '}
-          {tr('Aún no registras ningún seguro (vida, gastos médicos mayores, auto, desempleo o educativo).')}{' '}
+          {tr('Aún no registras ningún seguro (vida, gastos médicos mayores, retiro, auto, desempleo o educativo).')}{' '}
           <Link to={`${basePath}/proteccion`}>{tr('Registrar mis seguros')}</Link>
         </div>
       )}
