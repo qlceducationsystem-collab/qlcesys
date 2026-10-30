@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useWorkspace } from '../../../context/WorkspaceContext.jsx';
 import { useAsync } from '../../../hooks/useAsync.js';
+import { usePeriodSummary } from '../../../hooks/usePeriodSummary.js';
 import { money, pct } from '../../../utils/format.js';
 import { options } from '../../../utils/labels.js';
 import { Button } from '../../../components/ui/Button.jsx';
@@ -25,6 +26,9 @@ const levelTone = { GOOD: 'good', MODERATE: 'warn', REVIEW: 'bad' };
 const monthsTone = (m) => (m === null ? '' : m >= 6 ? 'good' : m >= 3 ? 'warn' : 'bad');
 
 function Results({ result }) {
+  const { summary } = usePeriodSummary();
+  const income = summary ? summary.cashflow.income : Number(result.income || 0);
+  const returns = summary ? summary.portfolio.products.reduce((acc, p) => acc + (p.incomeAmount || 0), 0) : 0;
   return (
     <ToolCard step="4" title={tr('Resultado del diagnóstico')} description={tr('Tu línea base. Así estás hoy.')} aside={<RealBadge />}>
       <MetricGrid>
@@ -40,7 +44,7 @@ function Results({ result }) {
         <MetricCard label={tr('Inversión / patrimonio')} value={pct(result.investmentToNetWorth)} hint={tr('Peso actual de inversiones')} explanation="Qué parte de tu patrimonio neto está invertida. Lo profundizarás en Allocation (Módulo 3)." />
         <MetricCard label={tr('Bienes y otros activos / patrimonio')} value={pct(result.otherAssetsToNetWorth)} hint={tr('Peso de bienes y otros activos')} explanation="Qué parte de tu patrimonio neto está en bienes como inmuebles, vehículos o negocios. Lo profundizarás en Allocation (Módulo 3)." />
         <MetricCard label={tr('Deuda / patrimonio')} value={pct(result.debtToNetWorth)} hint={tr('Nivel relativo de deuda')} explanation="Indicador educativo, no una calificación. El análisis completo de deudas requiere tasa, plazo y tipo de deuda." />
-        <MetricCard label={tr('Flujo disponible')} value={money(result.freeCashFlow)} tone={result.freeCashFlow >= 0 ? 'good' : 'bad'} hint={tr('Después de gastos, deuda e inversión')} explanation="Lo que queda después de cumplir tu plan financiero del mes." />
+        <MetricCard label={tr('Flujo total de ingresos')} value={money(income + returns)} tone="good" hint={tr('{income} de ingresos + {returns} de rentabilidad de inversiones', { income: money(income), returns: money(returns) })} explanation="Todo el dinero que entró este mes: tus ingresos mensuales más la rentabilidad que generaron tus inversiones." />
       </MetricGrid>
     </ToolCard>
   );

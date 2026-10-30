@@ -50,7 +50,7 @@ function AcademyCard({ academy }) {
   );
 }
 
-function DiagnosisCard({ diagnosis, liquidity, expenses }) {
+function DiagnosisCard({ diagnosis, liquidity, expenses, income, returns }) {
   const { basePath } = useWorkspace();
   if (!diagnosis) {
     return (
@@ -69,7 +69,7 @@ function DiagnosisCard({ diagnosis, liquidity, expenses }) {
       <Row label={tr('Inversión / patrimonio')} value={pct(r.investmentToNetWorth)} />
       {r.otherAssetsToNetWorth !== undefined && <Row label={tr('Bienes y otros activos / patrimonio')} value={pct(r.otherAssetsToNetWorth)} />}
       <Row label={tr('Deuda / patrimonio')} value={pct(r.debtToNetWorth)} />
-      <Row label={tr('Flujo disponible')} value={money(r.freeCashFlow)} valueTone="auto" toneValue={r.freeCashFlow} />
+      <Row label={tr('Flujo total de ingresos')} value={money(income + returns)} sub={tr('{income} de ingresos + {returns} de rentabilidad de inversiones', { income: money(income), returns: money(returns) })} />
     </Card>
   );
 }
@@ -113,7 +113,7 @@ function DashboardBody({ d }) {
       </StatGrid>
       <div className="layout">
         <AcademyCard academy={d.academy} />
-        <DiagnosisCard diagnosis={d.diagnosis} liquidity={liquidity} expenses={s.cashflow.expenses} />
+        <DiagnosisCard diagnosis={d.diagnosis} liquidity={liquidity} expenses={s.cashflow.expenses} income={s.cashflow.income} returns={s.portfolio.products.reduce((acc, p) => acc + (p.incomeAmount || 0), 0)} />
       </div>
       <div className="layout">
         <Block2Summary patrimonial={d.patrimonial} academy={d.academy} />
