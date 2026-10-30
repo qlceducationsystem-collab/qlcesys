@@ -4,7 +4,7 @@ import { useAsync } from '../../../hooks/useAsync.js';
 import { date, dateTime, money, pct, signedMoney } from '../../../utils/format.js';
 import { Button } from '../../../components/ui/Button.jsx';
 import { DataTable } from '../../../components/ui/DataTable.jsx';
-import { Field, FormError, MoneyInput, Textarea } from '../../../components/ui/Form.jsx';
+import { Field, FormError, Input, MoneyInput, Select, Textarea } from '../../../components/ui/Form.jsx';
 import { Pill, ProgressBar } from '../../../components/ui/Card.jsx';
 import { DistributionBars } from '../../../components/charts/Charts.jsx';
 import { ErrorState } from '../../../components/ui/States.jsx';
@@ -19,21 +19,29 @@ const longDate = (ymd) => {
 };
 const toneOf = (v, inverse = false) => (v === 0 ? '' : (v > 0) !== inverse ? 'good' : 'bad');
 
+const GOAL_CONCEPTS = ['Ahorro', 'Vacaciones', 'Inversión', 'Comprar casa', 'Comprar auto', 'Educación', 'Retiro', 'Fondo de emergencia'];
+const OTHER = '__OTHER__';
+
 function GoalCard({ report, reload }) {
   const { api, canEdit } = useWorkspace();
   const action = useAction();
   const [amount, setAmount] = useState(String(report.goal?.targetAmount ?? ''));
+  const saved = report.goal?.name && report.goal.name !== 'Meta patrimonial' ? report.goal.name : '';
+  const [concept, setConcept] = useState(saved ? (GOAL_CONCEPTS.includes(saved) ? saved : OTHER) : '');
+  const [custom, setCustom] = useState(saved && !GOAL_CONCEPTS.includes(saved) ? saved : '');
+  const name = concept === OTHER ? custom.trim() : concept;
   const g = report.goalProgress;
   const save = async () => {
-    if (await action.run(() => api.put('/academy/annual-review/goal', { targetAmount: Number(amount) }))) await reload();
+    if (await action.run(() => api.put('/academy/annual-review/goal', { targetAmount: Number(amount), name: name || null }))) await reload();
   };
   return (
-    <ToolCard title={tr('Meta patrimonial')} description={tr('Tu meta patrimonial se registra aquí mismo, en el M12: escribe el monto y pulsa «Guardar meta». Es el único lugar donde se guarda; el M11 (Inflación) también puede usarla para proyectarla.')} aside={<KindBadge kind="PLAN" />}>
+    <ToolCard title={tr('Meta patrimonial')} description={tr('Tu meta patrimonial se registra aquí mismo, en el M12: elige el concepto (o escribe el tuyo), escribe el monto y pulsa «Guardar meta». Es el único lugar donde se guarda; el M11 (Inflación) también puede usarla para proyectarla.')} aside={<KindBadge kind="PLAN" />}>
       {g ? (
         <>
           <ExplainRows
             title={tr('Avance')}
             rows={[
+              ...(saved ? [['Concepto de la meta', tr(saved)]] : []),
               ['Meta patrimonial', money(g.goal)],
               ['Patrimonio final', money(g.current)],
               [g.reached ? tr('Meta superada por') : tr('Distancia a la meta'), money(Math.abs(g.distance))],
@@ -45,12 +53,23 @@ function GoalCard({ report, reload }) {
       ) : (
         <p className="empty-inline">{report.goal ? tr('Sin patrimonio final disponible para medir el avance.') : tr('Aún no registras una meta patrimonial.')}</p>
       )}
+      {!g && saved && (
+        <p className="small muted">{tr('Concepto de la meta')}: <b>{tr(saved)}</b></p>
+      )}
       {canEdit && (
         <div className="inline-form">
+          <Field label={tr('Concepto de la meta')}>
+            <Select value={concept} onChange={(e) => setConcept(e.target.value)} placeholder={tr('Selecciona…')} options={[...GOAL_CONCEPTS.map((c) => ({ value: c, label: c })), { value: OTHER, label: tr('Otro (escríbelo)') }]} />
+          </Field>
+          {concept === OTHER && (
+            <Field label={tr('Escribe tu meta')}>
+              <Input value={custom} maxLength={120} onChange={(e) => setCustom(e.target.value)} placeholder={tr('Ej. Boda, negocio propio')} />
+            </Field>
+          )}
           <Field label={report.goal ? tr('Actualizar meta patrimonial') : tr('Meta patrimonial al cierre')}>
             <MoneyInput min="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0" />
           </Field>
-          <Button variant="secondary" loading={action.busy} disabled={!Number(amount)} onClick={save}>{tr('Guardar meta')}</Button>
+          <Button variant="secondary" loading={action.busy} disabled={!Number(amount) || (concept === OTHER && !custom.trim())} onClick={save}>{tr('Guardar meta')}</Button>
         </div>
       )}
       <FormError error={action.error} />

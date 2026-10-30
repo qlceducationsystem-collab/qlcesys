@@ -376,15 +376,23 @@ function PortfolioBody({ summary, categories, decisions, customCategories, reloa
               <ProductCard key={p.positionId} p={p} basePath={basePath} writable={writable}
                 onEdit={() => setForm({ product: p })} onDelete={() => setPending({ kind: 'delete', product: p })} />
             ))}
-            {c.code === 'LIQUIDEZ' && liquidProtection > 0 && (
-              <Notice>
-                {tr('Liquidez total: {total} = {portfolio} de esta categoría + {protection} de reservas y fondo de emergencia registrados en', { total: money(liquidPortfolio + liquidProtection), portfolio: money(liquidPortfolio), protection: money(liquidProtection) })}{' '}
-                <Link to={`${basePath}/proteccion`}>{tr('Protección patrimonial')}</Link>
-                {tr('. Es la cifra de Liquidez que ves en Inicio; esos fondos se editan en Protección patrimonial y no se suman al capital de tus productos.')}
-              </Notice>
-            )}
             {writable && <Button variant="add" onClick={() => setForm({ product: null, categoryCode: c.code })}>{tr('+ Agregar producto')}</Button>}
             <Totals {...cat} title={tr('Total de la categoría {name} · {n} {label}', { name: c.name, n: items.length, label: tr(items.length === 1 ? 'producto' : 'productos') })} labels={['Capital inicial de la categoría', 'Capital final de la categoría', 'Resultado de la categoría', 'ROI de la categoría']} />
+            {c.code === 'LIQUIDEZ' && liquidProtection > 0 && (
+              <>
+                <div className="totals">
+                  <div className="totals-title">{tr('Liquidez total · la misma cifra que ves en Inicio')}</div>
+                  <div className="total"><span>{tr('Productos de liquidez')}</span><strong>{money(liquidPortfolio)}</strong></div>
+                  <div className="total"><span>{tr('Reservas y fondo de emergencia')}</span><strong>{money(liquidProtection)}</strong></div>
+                  <div className="total"><span>{tr('Liquidez total')}</span><strong className="up">{money(liquidPortfolio + liquidProtection)}</strong></div>
+                </div>
+                <p className="small muted">
+                  {tr('Las reservas y el fondo de emergencia se registran y se editan en')}{' '}
+                  <Link to={`${basePath}/proteccion`}>{tr('Protección patrimonial')}</Link>
+                  {tr('. Se suman a tu liquidez total, pero no al capital de tus productos, para no contarlos dos veces en tu patrimonio.')}
+                </p>
+              </>
+            )}
           </Card>
         );
       })}
