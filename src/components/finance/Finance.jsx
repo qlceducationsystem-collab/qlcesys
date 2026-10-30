@@ -22,7 +22,7 @@ export function ReconciliationBanner({ reconciliation, compact }) {
       )}
       {!ok && !compact && (
         <p className="recon-help">
-          {tr('Revisa que el capital inicial de tus productos refleje el patrimonio inicial más las aportaciones y menos las deducciones registradas en el periodo.')}
+          {tr('La rentabilidad no genera diferencia porque ya se suma en los dos totales. La diferencia aparece cuando entra o sale dinero de tus productos sin registrarlo: revisa si tienes inversión sin asignar o si quitaste un producto este mes sin registrar el retiro.')}
         </p>
       )}
     </div>

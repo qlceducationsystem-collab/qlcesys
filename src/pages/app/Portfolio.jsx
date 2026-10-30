@@ -30,7 +30,13 @@ function productFields(categories, period) {
     { name: 'categoryCode', label: tr('Categoría'), type: 'select', options: categories.map((c) => ({ value: c.code, label: c.name })), display: (v) => categories.find((c) => c.code === v)?.name || v },
     { name: 'name', label: tr('Producto'), maxLength: 200 },
     { name: 'institution', label: 'Institución (opcional)', required: false, maxLength: 120 },
-    { name: 'initialCapital', label: tr('Capital inicial'), type: 'money', display: money, hint: tr('Incluye aportaciones y retiros del periodo en este producto.') },
+    {
+      name: 'initialCapital', label: tr('Capital inicial'), type: 'money', display: money,
+      compute: (v) => (v.carried ? Number(v.initialCapital || 0) : null),
+      hint: (v) => (v.carried
+        ? tr('Viene del capital final del mes anterior, más las aportaciones y menos los retiros de este mes. Para cambiarlo, edita el mes anterior.')
+        : tr('Incluye aportaciones y retiros del periodo en este producto.')),
+    },
     {
       name: 'finalCapital', label: tr('Capital final'), type: 'money', display: money,
       compute: (v) => {
@@ -82,7 +88,7 @@ const expectedIncome = (v) => (v.incomeType === 'PERCENT' ? (Number(v.initialCap
 const todayKey = () => new Date().toISOString().slice(0, 10);
 const isDue = (period, day) => !!day && dueDate(period, Number(day)) <= todayKey();
 const incomeBody = (v) => {
-  const { incomeApplied: _omit, ...rest } = v;
+  const { incomeApplied: _omit, carried: _carried, ...rest } = v;
   return {
     ...rest,
     incomeType: auto(v) ? v.incomeType : 'MANUAL',
@@ -212,10 +218,9 @@ function IncomeDecisions({ data, products, categories, customCategories, onChang
   const { api } = useWorkspace();
   const [modal, setModal] = useState(null);
   const [state, setState] = useState({ busy: null, error: null });
-  const carry = data.carry || [];
   const month = data.month || [];
   const uses = data.uses || [];
-  if (!carry.length && !month.length && !uses.length) return null;
+  if (!month.length && !uses.length) return null;
   const run = async (key, fn) => {
     setState({ busy: key, error: null });
     try {
@@ -228,9 +233,6 @@ function IncomeDecisions({ data, products, categories, customCategories, onChang
   };
   const actions = (item) => (
     <div className="row-actions">
-      {item.origin === 'CARRY' && (
-        <Button variant="secondary" loading={state.busy === `c${item.positionId}`} onClick={() => run(`c${item.positionId}`, () => api.post(`/portfolio/positions/${item.positionId}/carry`, {}))}>{tr('Sumar al capital inicial')}</Button>
-      )}
       {item.amount > 0 && <Button variant="secondary" onClick={() => setModal({ ...item, kind: 'INVEST' })}>{tr('Pasar a otra inversión')}</Button>}
       {item.amount > 0 && <Button variant="secondary" onClick={() => setModal({ ...item, kind: 'EXPENSE' })}>{tr('Usar en gastos')}</Button>}
     </div>
@@ -240,13 +242,7 @@ function IncomeDecisions({ data, products, categories, customCategories, onChang
     : tr('{amount} de {name} pasados a {target}', { amount: money(u.amount), name: tr(u.name), target: tr(u.targetName || '') }));
   return (
     <Card title={tr('Rentabilidad por decidir')}>
-      <p className="small muted">{tr('Aquí decides qué hacer con la rentabilidad de tus productos: dejarla en el mismo producto, pasarla a otra inversión o usarla en gastos.')}</p>
-      {carry.map((g) => (
-        <div key={`carry-${g.positionId}`} className="inline-form">
-          <span><b>{tr(g.name)}</b> · {tr('Del mes anterior')}: <b className={g.gap > 0 ? 'up' : 'down'}>{signedMoney(g.gap)}</b> · {tr('Final del mes anterior')} {money(g.previousFinal)} · {tr('Inicial de este mes')} {money(g.initial)}</span>
-          {actions({ origin: 'CARRY', positionId: g.positionId, name: g.name, amount: Math.max(0, g.gap) })}
-        </div>
-      ))}
+      <p className="small muted">{tr('Aquí decides qué hacer con la rentabilidad de este mes: dejarla en el mismo producto, pasarla a otra inversión o usarla en gastos. La rentabilidad de meses anteriores se decide en su propio mes y ya forma parte del capital inicial.')}</p>
       {month.map((m) => (
         <div key={`month-${m.positionId}`} className="inline-form">
           <span><b>{tr(m.name)}</b> · {tr('De este mes')}: <b className="up">{signedMoney(m.available)}</b> · {tr('Ya está sumada a su capital final; si no haces nada, se queda invertida en este producto.')}</span>
@@ -304,6 +300,7 @@ function ProductCard({ p, writable, onEdit, onDelete, basePath }) {
 }
 
 function PortfolioBody({ summary, categories, decisions, customCategories, reload }) {
+  const carried = new Set(decisions.carried || []);
   const { api, period, canEdit, basePath } = useWorkspace();
   const writable = canEdit && period.status === 'OPEN';
   const [form, setForm] = useState(null);
@@ -322,6 +319,7 @@ function PortfolioBody({ summary, categories, decisions, customCategories, reloa
     incomeValue: p.incomeType ? p.incomeValue ?? '' : p.incomeDate ? p.incomeAmount : '',
     incomeDay: p.incomeType ? p.incomeDay ?? '' : p.incomeDate ? new Date(p.incomeDate).getUTCDate() : '',
     incomeTerm: p.incomeTerm ? String(p.incomeTerm) : '',
+    carried: carried.has(p.positionId),
   });
 
   const save = async (values) => {
