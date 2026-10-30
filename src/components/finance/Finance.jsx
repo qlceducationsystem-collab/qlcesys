@@ -15,7 +15,7 @@ export function ReconciliationBanner({ reconciliation, compact }) {
       </div>
       {!compact && (
         <div className="recon-grid">
-          <div><span>{tr('Patrimonio final Mi portafolio de inversión')}</span><strong>{money(reconciliation.portfolioFinal)}</strong></div>
+          <div><span>{tr('Patrimonio final (portafolio de inversión + liquidez)')}</span><strong>{money(reconciliation.portfolioFinal)}</strong></div>
           <div><span>{tr('Patrimonio final Movimientos')}</span><strong>{money(reconciliation.movementsFinal)}</strong></div>
           <div><span>{tr('Diferencia')}</span><strong className={ok ? '' : 'down'}>{money(reconciliation.difference)}</strong></div>
         </div>

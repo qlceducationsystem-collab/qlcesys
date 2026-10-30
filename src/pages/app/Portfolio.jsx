@@ -310,6 +310,36 @@ function PortfolioBody({ summary, categories, decisions, customCategories, reloa
   const fields = productFields(categories, period);
   const liquidPortfolio = byCat.get('LIQUIDEZ')?.final || 0;
   const liquidProtection = summary.protection?.total || 0;
+  const liquidCat = byCat.get('LIQUIDEZ');
+  const investedInitial = portfolio.global.initial - (liquidCat?.initial || 0);
+  const investedFinal = portfolio.global.final - (liquidCat?.final || 0);
+  const invested = {
+    initial: investedInitial,
+    final: investedFinal,
+    result: investedFinal - investedInitial,
+    roi: investedInitial > 0 ? ((investedFinal - investedInitial) / investedInitial) * 100 : null,
+  };
+  const shareOf = (cat) => (investedFinal > 0 ? (cat.final / investedFinal) * 100 : 0);
+  const renderCategory = (c, inner = false) => {
+    const cat = byCat.get(c.code);
+    const items = portfolio.products.filter((p) => p.categoryCode === c.code);
+    const body = (
+      <>
+        {items.map((p) => (
+          <ProductCard key={p.positionId} p={p} basePath={basePath} writable={writable}
+            onEdit={() => setForm({ product: p })} onDelete={() => setPending({ kind: 'delete', product: p })} />
+        ))}
+        {writable && <Button variant="add" onClick={() => setForm({ product: null, categoryCode: c.code })}>{tr('+ Agregar producto')}</Button>}
+        <Totals {...cat} title={tr('Total de la categoría {name} · {n} {label}', { name: c.name, n: items.length, label: tr(items.length === 1 ? 'producto' : 'productos') })} labels={['Capital inicial de la categoría', 'Capital final de la categoría', 'Resultado de la categoría', 'ROI de la categoría']} />
+      </>
+    );
+    if (inner) return <div key={c.code}>{body}</div>;
+    return (
+      <Card key={c.code} title={c.name} actions={<span className="badge">{items.length} {tr(items.length === 1 ? 'producto' : 'productos')} · {pct(shareOf(cat))}{' '}{tr('del portafolio')}</span>}>
+        {body}
+      </Card>
+    );
+  };
 
   const toForm = (p) => ({
     categoryCode: p.categoryCode, name: p.name, institution: p.institution || '', notes: p.notes || '',
@@ -367,42 +397,34 @@ function PortfolioBody({ summary, categories, decisions, customCategories, reloa
           action={writable && <Button onClick={() => setForm({ product: null })}>{tr('Agregar primer producto')}</Button>} />
       )}
 
-      {categories.filter((c) => byCat.has(c.code)).map((c) => {
-        const cat = byCat.get(c.code);
-        const items = portfolio.products.filter((p) => p.categoryCode === c.code);
-        return (
-          <Card key={c.code} title={c.name} actions={<span className="badge">{items.length} {tr(items.length === 1 ? 'producto' : 'productos')} · {pct(cat.share)}{' '}{tr('del portafolio')}</span>}>
-            {items.map((p) => (
-              <ProductCard key={p.positionId} p={p} basePath={basePath} writable={writable}
-                onEdit={() => setForm({ product: p })} onDelete={() => setPending({ kind: 'delete', product: p })} />
-            ))}
-            {writable && <Button variant="add" onClick={() => setForm({ product: null, categoryCode: c.code })}>{tr('+ Agregar producto')}</Button>}
-            <Totals {...cat} title={tr('Total de la categoría {name} · {n} {label}', { name: c.name, n: items.length, label: tr(items.length === 1 ? 'producto' : 'productos') })} labels={['Capital inicial de la categoría', 'Capital final de la categoría', 'Resultado de la categoría', 'ROI de la categoría']} />
-            {c.code === 'LIQUIDEZ' && liquidProtection > 0 && (
-              <>
-                <div className="totals">
-                  <div className="totals-title">{tr('Liquidez total · la misma cifra que ves en Inicio')}</div>
-                  <div className="total"><span>{tr('Productos de liquidez')}</span><strong>{money(liquidPortfolio)}</strong></div>
-                  <div className="total"><span>{tr('Reservas y fondo de emergencia')}</span><strong>{money(liquidProtection)}</strong></div>
-                  <div className="total"><span>{tr('Liquidez total')}</span><strong className="up">{money(liquidPortfolio + liquidProtection)}</strong></div>
-                </div>
-                <p className="small muted">
-                  {tr('Las reservas y el fondo de emergencia se registran y se editan en')}{' '}
-                  <Link to={`${basePath}/proteccion`}>{tr('Protección patrimonial')}</Link>
-                  {tr('. Se suman a tu liquidez total, pero no al capital de tus productos, para no contarlos dos veces en tu patrimonio.')}
-                </p>
-              </>
-            )}
-          </Card>
-        );
-      })}
+      {categories.filter((c) => byCat.has(c.code) && c.code !== 'LIQUIDEZ').map((c) => renderCategory(c))}
 
-      <Card title={tr('Resumen del portafolio')} actions={<span className="badge">{tr('Actualización automática')}</span>}>
-        <Totals {...portfolio.global} labels={['Capital inicial', 'Capital final', 'Resultado global', 'ROI global']} />
+      <Card title={tr('Resumen del portafolio de inversión')} actions={<span className="badge">{tr('Actualización automática')}</span>}>
+        <Totals {...invested} labels={['Capital inicial', 'Capital final', 'Resultado global', 'ROI global']} />
         <Notice>
-          {tr('El sistema calcula primero cada producto, suma los capitales de cada categoría y después integra las categorías para obtener el resultado global. El ROI global se calcula sobre el capital inicial global, nunca promediando ROI individuales. Las aportaciones y deducciones se registran en Movimientos patrimoniales y no se cuentan como rendimiento.')}
+          {tr('El sistema calcula primero cada producto, suma los capitales de cada categoría y después integra las categorías para obtener el resultado global. La Liquidez no suma al portafolio de inversión: se muestra aparte, abajo. El ROI global se calcula sobre el capital inicial global, nunca promediando ROI individuales. Las aportaciones y deducciones se registran en Movimientos patrimoniales y no se cuentan como rendimiento.')}
         </Notice>
       </Card>
+
+      {(byCat.has('LIQUIDEZ') || liquidProtection > 0) && (
+        <Card title={tr('Liquidez')} actions={<span className="badge warn">{tr('NO SUMA AL PORTAFOLIO DE INVERSIÓN')}</span>}>
+          <p className="small muted">{tr('Tu liquidez (efectivo, cuentas disponibles, reservas y fondo de emergencia) se muestra aquí por separado. No suma al portafolio de inversión de arriba; sí forma parte de tu patrimonio total y de la Liquidez que ves en Inicio.')}</p>
+          {byCat.has('LIQUIDEZ') && renderCategory(categories.find((c) => c.code === 'LIQUIDEZ') || { code: 'LIQUIDEZ', name: tr('Liquidez') }, true)}
+          {!byCat.has('LIQUIDEZ') && writable && <Button variant="add" onClick={() => setForm({ product: null, categoryCode: 'LIQUIDEZ' })}>{tr('+ Agregar producto')}</Button>}
+          <div className="totals">
+            <div className="totals-title">{tr('Liquidez total · la misma cifra que ves en Inicio')}</div>
+            <div className="total"><span>{tr('Productos de liquidez')}</span><strong>{money(liquidPortfolio)}</strong></div>
+            <div className="total"><span>{tr('Reservas y fondo de emergencia')}</span><strong>{money(liquidProtection)}</strong></div>
+            <div className="total"><span>{tr('Liquidez total')}</span><strong className="up">{money(liquidPortfolio + liquidProtection)}</strong></div>
+          </div>
+          {liquidProtection > 0 && (
+            <p className="small muted">
+              {tr('Las reservas y el fondo de emergencia se registran y se editan en')}{' '}
+              <Link to={`${basePath}/proteccion`}>{tr('Protección patrimonial')}</Link>.
+            </p>
+          )}
+        </Card>
+      )}
 
       {form && !pending && (
         <Modal open title={form.product ? tr('Editar producto') : tr('Agregar producto')} onClose={() => setForm(null)}>

@@ -224,3 +224,4 @@ h1 { font-size: clamp(28px, 4vw, 44px); line-height: 1.12; letter-spacing: -.04e
 .protection-bar b { text-align: right; font-variant-numeric: tabular-nums; }
 .nav .nav-danger { color: var(--red); }
 .nav .nav-danger:hover { background: rgba(255, 123, 134, 0.08); }
+.badge.warn { color: var(--gold2); border-color: rgba(228, 185, 92, 0.45); font-weight: 700; }
