@@ -242,10 +242,10 @@ function IncomeDecisions({ data, products, categories, customCategories, onChang
     : tr('{amount} de {name} pasados a {target}', { amount: money(u.amount), name: tr(u.name), target: tr(u.targetName || '') }));
   return (
     <Card title={tr('Rentabilidad por decidir')}>
-      <p className="small muted">{tr('Aquí decides qué hacer con la rentabilidad de este mes: dejarla en el mismo producto, pasarla a otra inversión o usarla en gastos. La rentabilidad de meses anteriores se decide en su propio mes y ya forma parte del capital inicial.')}</p>
+      <p className="small muted">{tr('Aquí puedes elegir el destino de la rentabilidad de este mes. La rentabilidad de meses anteriores ya forma parte de tu capital inicial.')}</p>
       {month.map((m) => (
         <div key={`month-${m.positionId}`} className="inline-form">
-          <span><b>{tr(m.name)}</b> · {tr('De este mes')}: <b className="up">{signedMoney(m.available)}</b> · {tr('Ya está sumada a su capital final; si no haces nada, se queda invertida en este producto.')}</span>
+          <span><b>{tr(m.name)}</b> · {tr('De este mes')}: <b className="up">{signedMoney(m.available)}</b> · {tr('La rentabilidad ya está integrada en tu capital final. Puedes mantenerla en este producto, transferirla a otra inversión o destinarla a gastos. Si no realizas ningún movimiento, permanecerá invertida en este producto.')}</span>
           {actions({ origin: 'MONTH', positionId: m.positionId, name: m.name, amount: m.available })}
         </div>
       ))}
