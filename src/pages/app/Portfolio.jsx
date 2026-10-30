@@ -9,7 +9,8 @@ import { Button } from '../../components/ui/Button.jsx';
 import { ConfirmDialog, Modal } from '../../components/ui/Modal.jsx';
 import { AsyncView, Empty } from '../../components/ui/States.jsx';
 import { ClosedNotice, ReconciliationBanner, Roi } from '../../components/finance/Finance.jsx';
-import { FormError } from '../../components/ui/Form.jsx';
+import { Field, FormError, Input, MoneyInput, Select } from '../../components/ui/Form.jsx';
+import { EXPENSE_CATEGORIES, options } from '../../utils/labels.js';
 import { RecordForm } from '../../features/records/RecordManager.jsx';
 import { RequirePeriod } from '../../features/periods/PeriodControls.jsx';
 import { tr } from '../../i18n/tr.js';
@@ -166,7 +167,36 @@ function CarryForward({ gaps, onApplied }) {
   );
 }
 
-function ProductCard({ p, writable, onEdit, onDelete, basePath }) {
+function SpendModal({ product, spent, onClose, onSaved }) {
+  const { api } = useWorkspace();
+  const available = Math.max(0, Math.round((product.incomeAmount - spent) * 100) / 100);
+  const [f, setF] = useState({ amount: String(available), category: '', description: '' });
+  const [state, setState] = useState({ busy: false, error: null });
+  const save = async () => {
+    setState({ busy: true, error: null });
+    try {
+      await api.post(`/portfolio/positions/${product.positionId}/spend`, { amount: Number(f.amount || 0), category: f.category, description: f.description || null });
+      onSaved();
+    } catch (error) {
+      setState({ busy: false, error });
+    }
+  };
+  return (
+    <Modal open title={tr('Usar rentabilidad en gastos · {name}', { name: product.name })} onClose={onClose}
+      footer={<Button onClick={save} loading={state.busy} disabled={!f.category || !(Number(f.amount) > 0)}>{tr('Mover a gastos')}</Button>}>
+      <div className="stack">
+        <p className="small muted">{tr('Si no vas a reinvertir esta rentabilidad, muévela a Ingresos y gastos. Se registra como gasto en la categoría que elijas y como retiro de este producto, así tu portafolio y tu patrimonio quedan conciliados.')}</p>
+        <Field label={tr('Monto a usar')} hint={tr('Disponible este mes: {amount}', { amount: money(available) })}><MoneyInput value={f.amount} onChange={(e) => setF({ ...f, amount: e.target.value })} /></Field>
+        <Field label={tr('Categoría de gasto')}><Select value={f.category} onChange={(e) => setF({ ...f, category: e.target.value })} placeholder={tr('Selecciona…')} options={options.expense.filter((o) => o.value !== 'DEUDAS')} /></Field>
+        <Field label={tr('Descripción (opcional)')}><Input value={f.description} maxLength={200} onChange={(e) => setF({ ...f, description: e.target.value })} /></Field>
+        <FormError error={state.error} />
+      </div>
+    </Modal>
+  );
+}
+
+function ProductCard({ p, writable, onEdit, onDelete, basePath, uses = [], onSpend, onUndo }) {
+  const spent = uses.reduce((acc, u) => acc + u.amount, 0);
   return (
     <div className="asset">
       <div className="asset-head">
@@ -197,17 +227,29 @@ function ProductCard({ p, writable, onEdit, onDelete, basePath }) {
             : p.incomeType ? tr('Se sumará automáticamente el día {day}', { day: p.incomeDay }) : tr('Sin rentabilidad registrada este mes')}
         </span>
         {writable && <button className="btn-link" onClick={onEdit}>{tr('Cambiar en Editar')}</button>}
+        {writable && p.incomeAmount - spent > 0.004 && <button className="btn-link" onClick={() => onSpend(p, spent)}>{tr('Usar en gastos')}</button>}
       </div>
+      {uses.map((u) => (
+        <div key={u.id} className="asset-income">
+          <span>{tr('Usado en gastos')}: <b>{money(u.amount)}</b> · {tr(EXPENSE_CATEGORIES[u.category] || u.category)} · {tr(u.description)}</span>
+          {writable && <button className="btn-link" onClick={() => onUndo(u)}>{tr('Deshacer')}</button>}
+        </div>
+      ))}
     </div>
   );
 }
 
-function PortfolioBody({ summary, categories, gaps, reload }) {
+function PortfolioBody({ summary, categories, gaps, uses, reload }) {
   const { api, period, canEdit, basePath } = useWorkspace();
   const writable = canEdit && period.status === 'OPEN';
   const [form, setForm] = useState(null);
   const [pending, setPending] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [spend, setSpend] = useState(null);
+  const undo = async (u) => {
+    await api.del(`/portfolio/spend/${u.id}`);
+    await reload();
+  };
   const { portfolio } = summary;
   const byCat = new Map(portfolio.categories.map((c) => [c.code, c]));
   const fields = productFields(categories, period);
@@ -276,7 +318,8 @@ function PortfolioBody({ summary, categories, gaps, reload }) {
           <Card key={c.code} title={c.name} actions={<span className="badge">{items.length} {tr(items.length === 1 ? 'producto' : 'productos')} · {pct(cat.share)}{' '}{tr('del portafolio')}</span>}>
             {items.map((p) => (
               <ProductCard key={p.positionId} p={p} basePath={basePath} writable={writable}
-                onEdit={() => setForm({ product: p })} onDelete={() => setPending({ kind: 'delete', product: p })} />
+                onEdit={() => setForm({ product: p })} onDelete={() => setPending({ kind: 'delete', product: p })}
+                uses={uses.filter((u) => u.positionId === p.positionId)} onSpend={(prod, spent) => setSpend({ product: prod, spent })} onUndo={undo} />
             ))}
             {c.code === 'LIQUIDEZ' && liquidProtection > 0 && (
               <Notice>
@@ -298,6 +341,7 @@ function PortfolioBody({ summary, categories, gaps, reload }) {
         </Notice>
       </Card>
 
+      {spend && <SpendModal product={spend.product} spent={spend.spent} onClose={() => setSpend(null)} onSaved={async () => { setSpend(null); await reload(); }} />}
       {form && !pending && (
         <Modal open title={form.product ? tr('Editar producto') : tr('Agregar producto')} onClose={() => setForm(null)}>
           <RecordForm
@@ -327,14 +371,16 @@ export default function Portfolio() {
   const res = usePeriodSummary();
   const cats = useAsync(() => api.get('/portfolio/categories'), [api]);
   const carry = useAsync(() => api.get(`/portfolio/carry?periodId=${period.id}`), [api, period?.id], { enabled: !!period });
+  const uses = useAsync(() => api.get(`/portfolio/spend?periodId=${period.id}`), [api, period?.id], { enabled: !!period });
   const reload = async () => {
     await res.reload();
     await carry.reload();
+    await uses.reload();
   };
   return (
     <RequirePeriod>
       <AsyncView loading={res.loading || cats.loading} error={res.error || cats.error} data={res.summary && cats.data ? res : null} onRetry={res.reload}>
-        {() => <PortfolioBody summary={res.summary} categories={cats.data} gaps={carry.data || []} reload={reload} />}
+        {() => <PortfolioBody summary={res.summary} categories={cats.data} gaps={carry.data || []} uses={uses.data || []} reload={reload} />}
       </AsyncView>
     </RequirePeriod>
   );
