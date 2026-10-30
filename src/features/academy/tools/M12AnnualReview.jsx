@@ -28,7 +28,7 @@ function GoalCard({ report, reload }) {
     if (await action.run(() => api.put('/academy/annual-review/goal', { targetAmount: Number(amount) }))) await reload();
   };
   return (
-    <ToolCard title={tr('Meta patrimonial')} description={tr('Proviene de tus metas financieras. Si no existe, regístrala aquí una sola vez.')} aside={<KindBadge kind="PLAN" />}>
+    <ToolCard title={tr('Meta patrimonial')} description={tr('Tu meta patrimonial se registra aquí mismo, en el M12: escribe el monto y pulsa «Guardar meta». Es el único lugar donde se guarda; el M11 (Inflación) también puede usarla para proyectarla.')} aside={<KindBadge kind="PLAN" />}>
       {g ? (
         <>
           <ExplainRows

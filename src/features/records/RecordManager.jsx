@@ -50,7 +50,7 @@ export function RecordForm({ fields, initial, onSubmit, onCancel, submitLabel = 
     <form onSubmit={submit} className="stack">
       <FormGrid>
         {fields.filter((f) => !f.when || f.when(values)).map((f) => (
-          <Field key={f.name} label={f.label} hint={typeof f.hint === 'function' ? f.hint(values) : f.hint} full={f.full || f.type === 'textarea'}>
+          <Field key={f.name} label={typeof f.label === 'function' ? f.label(values) : f.label} hint={typeof f.hint === 'function' ? f.hint(values) : f.hint} full={f.full || f.type === 'textarea'}>
             {f.compute && f.compute(values) !== null
               ? <Input value={f.display ? f.display(f.compute(values)) : f.compute(values)} readOnly />
               : <FieldInput field={f} value={values[f.name]} onChange={(v) => setValues((s) => ({ ...s, [f.name]: v }))} />}

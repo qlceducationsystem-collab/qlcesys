@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 import { useWorkspace } from '../../context/WorkspaceContext.jsx';
 import { useAsync } from '../../hooks/useAsync.js';
 import { usePeriodSummary } from '../../hooks/usePeriodSummary.js';
-import { date, money, pct, signedMoney, toDateInput } from '../../utils/format.js';
+import { date, money, pct, signedMoney } from '../../utils/format.js';
 import { Card, Notice, PageHeader } from '../../components/ui/Card.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { ConfirmDialog, Modal } from '../../components/ui/Modal.jsx';
 import { AsyncView, Empty } from '../../components/ui/States.jsx';
 import { ClosedNotice, ReconciliationBanner, Roi } from '../../components/finance/Finance.jsx';
-import { Field, FormError, Input, MoneyInput } from '../../components/ui/Form.jsx';
+import { FormError } from '../../components/ui/Form.jsx';
 import { RecordForm } from '../../features/records/RecordManager.jsx';
 import { RequirePeriod } from '../../features/periods/PeriodControls.jsx';
 import { tr } from '../../i18n/tr.js';
@@ -24,7 +24,7 @@ const Totals = ({ initial, final, result, roi, title, labels = ['Capital inicial
   </div>
 );
 
-function productFields(categories) {
+function productFields(categories, period) {
   return [
     { name: 'categoryCode', label: tr('Categoría'), type: 'select', options: categories.map((c) => ({ value: c.code, label: c.name })), display: (v) => categories.find((c) => c.code === v)?.name || v },
     { name: 'name', label: tr('Producto'), maxLength: 200 },
@@ -32,11 +32,16 @@ function productFields(categories) {
     { name: 'initialCapital', label: tr('Capital inicial'), type: 'money', display: money, hint: tr('Incluye aportaciones y retiros del periodo en este producto.') },
     {
       name: 'finalCapital', label: tr('Capital final'), type: 'money', display: money,
-      compute: (v) => (auto(v) ? Number(v.initialCapital || 0) + appliedIncome(v) : null),
-      hint: (v) => {
+      compute: (v) => {
+        if (manualIncome(v)) return Number(v.initialCapital || 0) + Number(v.incomeValue || 0);
         if (!auto(v)) return null;
-        if (Number(v.incomeApplied || 0) > 0) return tr('Se calcula solo: ya incluye la rentabilidad de este mes.');
-        const income = v.incomeType === 'PERCENT' ? (Number(v.initialCapital || 0) * Number(v.incomeValue || 0)) / 100 : Number(v.incomeValue || 0);
+        return Number(v.initialCapital || 0) + (isDue(period, v.incomeDay) ? expectedIncome(v) : 0);
+      },
+      hint: (v) => {
+        if (manualIncome(v)) return tr('Se calcula solo: capital inicial + la rentabilidad que recibiste este mes.');
+        if (!auto(v)) return tr('Escribe el capital final, o registra abajo la rentabilidad del mes para que se calcule solo.');
+        const income = expectedIncome(v);
+        if (income > 0 && v.incomeDay && isDue(period, v.incomeDay)) return tr('Se calcula solo: ya incluye {income} de rentabilidad de este mes.', { income: money(income) });
         return income > 0 && v.incomeDay
           ? tr('Se calcula solo: el día {day} el sistema suma {income} y quedará en {total}.', { day: v.incomeDay, income: money(income), total: money(Number(v.initialCapital || 0) + income) })
           : tr('Se calcula solo: capital inicial + la rentabilidad del mes, que el sistema suma el día que indicaste.');
@@ -45,10 +50,18 @@ function productFields(categories) {
     {
       name: 'incomeType', label: tr('Rentabilidad mensual'), type: 'select', default: 'MANUAL',
       options: Object.entries(INCOME_MODES).map(([value, label]) => ({ value, label: tr(label) })), display: (v) => tr(INCOME_MODES[v] || INCOME_MODES.MANUAL),
-      hint: tr('Manual: tú escribes el capital final y registras la rentabilidad cuando la recibes. Automática: el sistema la suma cada mes a tu capital final en el día indicado.'),
+      hint: tr('Manual: registras aquí la rentabilidad de este mes cada vez que la recibes. Automática: el sistema la suma sola cada mes en el día indicado, durante el plazo que elijas.'),
     },
-    { name: 'incomeValue', label: tr('Monto o % mensual'), type: 'number', step: 'any', min: 0, when: auto, hint: tr('Ej. 12000 de renta, o 0.85 si es % mensual.') },
-    { name: 'incomeDay', label: tr('Día del mes en que la recibes'), type: 'number', step: 1, min: 1, max: 31, when: auto, hint: tr('Del 1 al 31. Ese día el sistema hace la suma. Si el mes es más corto se usa su último día.') },
+    {
+      name: 'incomeValue', type: 'number', step: 'any', min: 0, required: false,
+      label: (v) => (auto(v) ? tr('Monto o % mensual') : tr('Rentabilidad recibida este mes (opcional)')),
+      hint: (v) => (auto(v) ? tr('Ej. 12000 de renta, o 0.85 si es % mensual.') : tr('Monto en pesos. Déjalo vacío si este mes no recibiste rentabilidad.')),
+    },
+    {
+      name: 'incomeDay', type: 'number', step: 1, min: 1, max: 31, required: false,
+      label: (v) => (auto(v) ? tr('Día del mes en que la recibes') : tr('Día en que la recibiste')),
+      hint: (v) => (auto(v) ? tr('Del 1 al 31. Ese día el sistema hace la suma. Si el mes es más corto se usa su último día.') : tr('Del 1 al 31, dentro del mes del periodo.')),
+    },
     {
       name: 'incomeTerm', label: tr('Plazo'), type: 'select', required: false, when: auto,
       options: INCOME_TERMS.map((m) => ({ value: String(m), label: termLabel(m) })), display: (v) => (v ? termLabel(Number(v)) : tr('Sin plazo')),
@@ -62,14 +75,21 @@ const INCOME_MODES = { MANUAL: 'Manual (la registro yo)', AMOUNT: 'Automática �
 const INCOME_TERMS = [3, 6, 12];
 const termLabel = (m) => (m === 12 ? tr('1 año') : tr('{n} meses', { n: m }));
 const auto = (v) => v.incomeType === 'AMOUNT' || v.incomeType === 'PERCENT';
-const appliedIncome = (v) => Number(v.incomeApplied || 0);
-const incomeBody = (v) => ({
-  ...v,
-  incomeType: auto(v) ? v.incomeType : null,
-  incomeValue: auto(v) && v.incomeValue !== '' ? Number(v.incomeValue) : null,
-  incomeDay: auto(v) && v.incomeDay !== '' ? Number(v.incomeDay) : null,
-  incomeTerm: auto(v) && v.incomeTerm ? Number(v.incomeTerm) : null,
-});
+const filled = (x) => x !== '' && x !== null && x !== undefined;
+const manualIncome = (v) => !auto(v) && filled(v.incomeValue);
+const expectedIncome = (v) => (v.incomeType === 'PERCENT' ? (Number(v.initialCapital || 0) * Number(v.incomeValue || 0)) / 100 : Number(v.incomeValue || 0));
+const todayKey = () => new Date().toISOString().slice(0, 10);
+const isDue = (period, day) => !!day && dueDate(period, Number(day)) <= todayKey();
+const incomeBody = (v) => {
+  const { incomeApplied: _omit, ...rest } = v;
+  return {
+    ...rest,
+    incomeType: auto(v) ? v.incomeType : 'MANUAL',
+    incomeValue: filled(v.incomeValue) ? Number(v.incomeValue) : null,
+    incomeDay: filled(v.incomeDay) ? Number(v.incomeDay) : null,
+    incomeTerm: auto(v) && v.incomeTerm ? Number(v.incomeTerm) : null,
+  };
+};
 const termEnd = (p) => {
   if (!p.incomeTerm || !p.incomeStart) return '';
   const start = new Date(p.incomeStart);
@@ -118,46 +138,35 @@ function UnassignedContributions({ movements, products, onAssigned }) {
   );
 }
 
-function IncomeModal({ product, period, onClose, onSaved }) {
+function CarryForward({ gaps, onApplied }) {
   const { api } = useWorkspace();
-  const expected = product.incomeType === 'PERCENT' ? (product.initial * product.incomeValue) / 100 : product.incomeValue || '';
-  const [f, setF] = useState({
-    amount: String(product.incomeDate ? product.incomeAmount : expected ?? ''),
-    date: product.incomeDate ? toDateInput(product.incomeDate) : dueDate(period, product.incomeDay || new Date().getDate()),
-  });
-  const [state, setState] = useState({ busy: false, error: null });
-  const save = async (amount) => {
-    setState({ busy: true, error: null });
+  const [state, setState] = useState({ busy: null, error: null });
+  if (!gaps.length) return null;
+  const apply = async (g) => {
+    setState({ busy: g.positionId, error: null });
     try {
-      await api.put(`/portfolio/positions/${product.positionId}/income`, { amount: Number(amount || 0), date: `${f.date}T12:00:00Z` });
-      onSaved();
+      await api.post(`/portfolio/positions/${g.positionId}/carry`, {});
+      setState({ busy: null, error: null });
+      onApplied();
     } catch (error) {
-      setState({ busy: false, error });
+      setState({ busy: null, error });
     }
   };
   return (
-    <Modal
-      open
-      title={tr('Rentabilidad del mes · {name}', { name: product.name })}
-      onClose={onClose}
-      footer={(
-        <>
-          {product.incomeAmount > 0 && <Button variant="secondary" onClick={() => save(0)} loading={state.busy}>{tr('Este mes no la recibí')}</Button>}
-          <Button onClick={() => save(f.amount)} loading={state.busy}>{tr('Guardar')}</Button>
-        </>
-      )}
-    >
-      <div className="stack">
-        <p className="small muted">{tr('Se suma a tu capital final de este periodo y actualiza el resultado, el ROI, tu portafolio total y el patrimonio en Inicio. Puedes corregirla o dejarla en 0 si este mes no la recibiste.')}</p>
-        <Field label={tr('Monto recibido este mes')}><MoneyInput value={f.amount} onChange={(e) => setF({ ...f, amount: e.target.value })} /></Field>
-        <Field label={tr('Fecha en que la recibiste')}><Input type="date" required value={f.date} onChange={(e) => setF({ ...f, date: e.target.value })} min={dueDate(period, 1)} max={dueDate(period, 31)} /></Field>
-        <FormError error={state.error} />
-      </div>
-    </Modal>
+    <Card title={tr('Rentabilidad del mes anterior por sumar')}>
+      <p className="small muted">{tr('El capital final de estos productos en el mes anterior es distinto a su capital inicial de este mes (por ejemplo, por la rentabilidad que se sumó el mes pasado). Súmalo para que el portafolio quede conciliado.')}</p>
+      {gaps.map((g) => (
+        <div key={g.positionId} className="inline-form">
+          <span><b>{tr(g.name)}</b> · {tr('Final del mes anterior')} {money(g.previousFinal)} · {tr('Inicial de este mes')} {money(g.initial)} · <b className={g.gap > 0 ? 'up' : 'down'}>{signedMoney(g.gap)}</b></span>
+          <Button variant="secondary" loading={state.busy === g.positionId} onClick={() => apply(g)}>{tr('Sumar al capital inicial')}</Button>
+        </div>
+      ))}
+      <FormError error={state.error} />
+    </Card>
   );
 }
 
-function ProductCard({ p, writable, onEdit, onDelete, onIncome, basePath }) {
+function ProductCard({ p, writable, onEdit, onDelete, basePath }) {
   return (
     <div className="asset">
       <div className="asset-head">
@@ -187,28 +196,31 @@ function ProductCard({ p, writable, onEdit, onDelete, onIncome, basePath }) {
             ? tr('Este mes: +{amount} el {date}', { amount: money(p.incomeAmount), date: date(p.incomeDate) })
             : p.incomeType ? tr('Se sumará automáticamente el día {day}', { day: p.incomeDay }) : tr('Sin rentabilidad registrada este mes')}
         </span>
-        {writable && <button className="btn-link" onClick={onIncome}>{p.incomeDate ? tr('Editar rentabilidad del mes') : tr('Registrar rentabilidad del mes')}</button>}
+        {writable && <button className="btn-link" onClick={onEdit}>{tr('Cambiar en Editar')}</button>}
       </div>
     </div>
   );
 }
 
-function PortfolioBody({ summary, categories, reload }) {
+function PortfolioBody({ summary, categories, gaps, reload }) {
   const { api, period, canEdit, basePath } = useWorkspace();
   const writable = canEdit && period.status === 'OPEN';
   const [form, setForm] = useState(null);
   const [pending, setPending] = useState(null);
   const [busy, setBusy] = useState(false);
-  const [income, setIncome] = useState(null);
   const { portfolio } = summary;
   const byCat = new Map(portfolio.categories.map((c) => [c.code, c]));
-  const fields = productFields(categories);
+  const fields = productFields(categories, period);
+  const liquidPortfolio = byCat.get('LIQUIDEZ')?.final || 0;
+  const liquidProtection = summary.protection?.total || 0;
 
   const toForm = (p) => ({
     categoryCode: p.categoryCode, name: p.name, institution: p.institution || '', notes: p.notes || '',
     initialCapital: p.initial, finalCapital: p.final,
-    incomeType: p.incomeType || 'MANUAL', incomeValue: p.incomeValue ?? '', incomeDay: p.incomeDay ?? '', incomeTerm: p.incomeTerm ? String(p.incomeTerm) : '',
-    incomeApplied: p.incomeDate ? p.incomeAmount : 0,
+    incomeType: p.incomeType || 'MANUAL',
+    incomeValue: p.incomeType ? p.incomeValue ?? '' : p.incomeDate ? p.incomeAmount : '',
+    incomeDay: p.incomeType ? p.incomeDay ?? '' : p.incomeDate ? new Date(p.incomeDate).getUTCDate() : '',
+    incomeTerm: p.incomeTerm ? String(p.incomeTerm) : '',
   });
 
   const save = async (values) => {
@@ -221,7 +233,7 @@ function PortfolioBody({ summary, categories, reload }) {
     const before = toForm(form.product);
     const changes = fields
       .filter((f) => String(before[f.name] ?? '') !== String(values[f.name] ?? ''))
-      .map((f) => ({ field: f.label, from: f.display ? f.display(before[f.name]) : before[f.name] || '—', to: f.display ? f.display(values[f.name]) : values[f.name] || '—' }));
+      .map((f) => ({ field: typeof f.label === 'function' ? f.label(values) : f.label, from: f.display ? f.display(before[f.name]) : before[f.name] || '—', to: f.display ? f.display(values[f.name]) : values[f.name] || '—' }));
     if (!changes.length) return setForm(null);
     setPending({ kind: 'update', product: form.product, body, changes });
   };
@@ -249,6 +261,7 @@ function PortfolioBody({ summary, categories, reload }) {
       />
       <ClosedNotice />
       <ReconciliationBanner reconciliation={summary.reconciliation} compact={summary.reconciliation.reconciled} />
+      {writable && <CarryForward gaps={gaps} onApplied={reload} />}
       {writable && <UnassignedContributions movements={summary.patrimony.unassignedMovements || []} products={portfolio.products} onAssigned={reload} />}
 
       {portfolio.products.length === 0 && (
@@ -263,8 +276,15 @@ function PortfolioBody({ summary, categories, reload }) {
           <Card key={c.code} title={c.name} actions={<span className="badge">{items.length} {tr(items.length === 1 ? 'producto' : 'productos')} · {pct(cat.share)}{' '}{tr('del portafolio')}</span>}>
             {items.map((p) => (
               <ProductCard key={p.positionId} p={p} basePath={basePath} writable={writable}
-                onEdit={() => setForm({ product: p })} onDelete={() => setPending({ kind: 'delete', product: p })} onIncome={() => setIncome(p)} />
+                onEdit={() => setForm({ product: p })} onDelete={() => setPending({ kind: 'delete', product: p })} />
             ))}
+            {c.code === 'LIQUIDEZ' && liquidProtection > 0 && (
+              <Notice>
+                {tr('Liquidez total: {total} = {portfolio} de esta categoría + {protection} de reservas y fondo de emergencia registrados en', { total: money(liquidPortfolio + liquidProtection), portfolio: money(liquidPortfolio), protection: money(liquidProtection) })}{' '}
+                <Link to={`${basePath}/proteccion`}>{tr('Protección patrimonial')}</Link>
+                {tr('. Es la cifra de Liquidez que ves en Inicio; esos fondos se editan en Protección patrimonial y no se suman al capital de tus productos.')}
+              </Notice>
+            )}
             {writable && <Button variant="add" onClick={() => setForm({ product: null, categoryCode: c.code })}>{tr('+ Agregar producto')}</Button>}
             <Totals {...cat} title={tr('Total de la categoría {name} · {n} {label}', { name: c.name, n: items.length, label: tr(items.length === 1 ? 'producto' : 'productos') })} labels={['Capital inicial de la categoría', 'Capital final de la categoría', 'Resultado de la categoría', 'ROI de la categoría']} />
           </Card>
@@ -278,7 +298,6 @@ function PortfolioBody({ summary, categories, reload }) {
         </Notice>
       </Card>
 
-      {income && <IncomeModal product={income} period={period} onClose={() => setIncome(null)} onSaved={async () => { setIncome(null); await reload(); }} />}
       {form && !pending && (
         <Modal open title={form.product ? tr('Editar producto') : tr('Agregar producto')} onClose={() => setForm(null)}>
           <RecordForm
@@ -304,13 +323,18 @@ function PortfolioBody({ summary, categories, reload }) {
 }
 
 export default function Portfolio() {
-  const { api } = useWorkspace();
+  const { api, period } = useWorkspace();
   const res = usePeriodSummary();
   const cats = useAsync(() => api.get('/portfolio/categories'), [api]);
+  const carry = useAsync(() => api.get(`/portfolio/carry?periodId=${period.id}`), [api, period?.id], { enabled: !!period });
+  const reload = async () => {
+    await res.reload();
+    await carry.reload();
+  };
   return (
     <RequirePeriod>
       <AsyncView loading={res.loading || cats.loading} error={res.error || cats.error} data={res.summary && cats.data ? res : null} onRetry={res.reload}>
-        {() => <PortfolioBody summary={res.summary} categories={cats.data} reload={res.reload} />}
+        {() => <PortfolioBody summary={res.summary} categories={cats.data} gaps={carry.data || []} reload={reload} />}
       </AsyncView>
     </RequirePeriod>
   );

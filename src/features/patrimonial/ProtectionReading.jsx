@@ -37,7 +37,7 @@ export function ProtectionReadingCard({ protection, monthsCovered, onRegister })
   const r = protectionReading(protection, monthsCovered);
   return (
     <Card
-      title={tr('Lectura educativa de protección')}
+      title={tr('Lectura educativa de protección patrimonial')}
       actions={onRegister
         ? <button type="button" className="btn-secondary" onClick={onRegister}>{tr('Registrar seguros')}</button>
         : <Link className="btn-secondary" to={`${basePath}/proteccion`}>{tr('Registrar seguros')}</Link>}
