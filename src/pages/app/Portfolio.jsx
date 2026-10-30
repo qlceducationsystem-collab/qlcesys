@@ -32,9 +32,8 @@ function productFields(categories, period) {
     { name: 'institution', label: 'Institución (opcional)', required: false, maxLength: 120 },
     {
       name: 'initialCapital', label: tr('Capital inicial'), type: 'money', display: money,
-      compute: (v) => (v.carried ? Number(v.initialCapital || 0) : null),
       hint: (v) => (v.carried
-        ? tr('Viene del capital final del mes anterior, más las aportaciones y menos los retiros de este mes. Para cambiarlo, edita el mes anterior.')
+        ? tr('Viene del capital final del mes anterior. Si este mes sacaste o agregaste dinero a este producto, cambia el monto: la diferencia se registra sola como retiro o aportación en Movimientos patrimoniales.')
         : tr('Incluye aportaciones y retiros del periodo en este producto.')),
     },
     {
