@@ -149,7 +149,7 @@ function UseModal({ item, products, categories, customCategories, onClose, onSav
   const expense = item.kind === 'EXPENSE';
   const ready = Number(f.amount) > 0 && (expense
     ? (f.category && (f.category !== NEW || f.newCategory.trim()))
-    : (f.target && (f.target !== NEW || (f.categoryCode && f.name.trim()))));
+    : (f.categoryCode && f.target && (f.target !== NEW || f.name.trim())));
   const save = async () => {
     setState({ busy: true, error: null });
     try {
@@ -172,9 +172,15 @@ function UseModal({ item, products, categories, customCategories, onClose, onSav
     { value: NEW, label: tr('+ Crear una categoría nueva') },
   ];
   const targetOptions = [
-    ...products.filter((p) => p.positionId !== item.positionId).map((p) => ({ value: p.positionId, label: `${tr(p.name)} · ${tr(p.categoryName)}` })),
-    { value: NEW, label: tr('+ Crear una inversión nueva') },
+    ...products.filter((p) => p.positionId !== item.positionId && p.categoryCode === f.categoryCode).map((p) => ({ value: p.positionId, label: tr(p.name) })),
+    { value: NEW, label: tr('+ Crear una inversión nueva en esta categoría') },
   ];
+  const pickCategory = (e) => {
+    const code = e.target.value;
+    const has = products.some((p) => p.positionId !== item.positionId && p.categoryCode === code);
+    const cat = categories.find((c) => c.code === code);
+    setF({ ...f, categoryCode: code, target: code && !has ? NEW : '', name: cat ? `${cat.name} · ${item.name}` : '' });
+  };
   return (
     <Modal open title={expense ? tr('Usar en gastos · {name}', { name: item.name }) : tr('Pasar a otra inversión · {name}', { name: item.name })} onClose={onClose}
       footer={<Button onClick={save} loading={state.busy} disabled={!ready}>{expense ? tr('Mover a gastos') : tr('Pasar a la inversión')}</Button>}>
@@ -191,13 +197,9 @@ function UseModal({ item, products, categories, customCategories, onClose, onSav
           </>
         ) : (
           <>
-            <Field label={tr('Inversión de destino')}><Select value={f.target} onChange={set('target')} placeholder={tr('Selecciona…')} options={targetOptions} /></Field>
-            {f.target === NEW && (
-              <>
-                <Field label={tr('Categoría')}><Select value={f.categoryCode} onChange={set('categoryCode')} placeholder={tr('Selecciona…')} options={categories.map((c) => ({ value: c.code, label: c.name }))} /></Field>
-                <Field label={tr('Nombre de la inversión')}><Input value={f.name} maxLength={200} onChange={set('name')} /></Field>
-              </>
-            )}
+            <Field label={tr('Categoría del portafolio')}><Select value={f.categoryCode} onChange={pickCategory} placeholder={tr('Selecciona…')} options={categories.map((c) => ({ value: c.code, label: c.name }))} /></Field>
+            {f.categoryCode && <Field label={tr('Inversión de destino')}><Select value={f.target} onChange={set('target')} placeholder={tr('Selecciona…')} options={targetOptions} /></Field>}
+            {f.categoryCode && f.target === NEW && <Field label={tr('Nombre de la nueva inversión')}><Input value={f.name} maxLength={200} onChange={set('name')} /></Field>}
           </>
         )}
         <FormError error={state.error} />
