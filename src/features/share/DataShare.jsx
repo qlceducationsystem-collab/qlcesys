@@ -7,6 +7,7 @@ import { Button } from '../../components/ui/Button.jsx';
 import { ConfirmDialog } from '../../components/ui/Modal.jsx';
 import { FormError } from '../../components/ui/Form.jsx';
 import { tr } from '../../i18n/tr.js';
+import { ShareChat } from './ShareChat.jsx';
 
 const EVENT = 'qlc-data-share';
 
@@ -79,6 +80,7 @@ export function DataShareBanner() {
     <div className="admin-banner share-banner">
       <span>{tr('Estás compartiendo tus datos con tu asesor QLC desde el {date}', { date: dateTime(share.active.grantedAt) })}</span>
       <Button variant="secondary" loading={share.busy} onClick={share.stop}>{tr('Dejar de compartir mis datos')}</Button>
+      <ShareChat key={share.active.id} />
     </div>
   );
 }
