@@ -34,6 +34,7 @@ export default function AdminClients() {
             <DataTable rows={list} empty={tr('Sin clientes registrados.')} columns={[
               { key: 'name', label: tr('Cliente'), render: (c) => <>{tr(c.name)}<span className="small block">{c.email}</span></> },
               { key: 'access', label: tr('Acceso'), render: (c) => accessPill(c.access) },
+              { key: 'dataShare', label: tr('Datos'), render: (c) => (c.dataShare ? <Pill>{tr('Compartidos')}</Pill> : <Pill variant="muted">{tr('Privados')}</Pill>) },
               { key: 'modules', label: tr('Módulos completados'), render: (c) => `${c.completedModules} / 6` },
               { key: 'periods', label: tr('Periodos / cortes'), render: (c) => `${c.counts.periods} / ${c.counts.monthlyCloses}` },
               { key: 'lastLoginAt', label: tr('Último acceso'), render: (c) => dateTime(c.lastLoginAt) },

@@ -12,6 +12,7 @@ import { CodeInput, Field, FormError, Input } from '../../components/ui/Form.jsx
 import { Modal } from '../../components/ui/Modal.jsx';
 import { AccessOffers } from '../../features/access/AccessOffers.jsx';
 import { tr } from '../../i18n/tr.js';
+import { DataShareCard } from '../../features/share/DataShare.jsx';
 
 function clearPeriodSelection() {
   try {
@@ -120,6 +121,7 @@ export default function AccessPage() {
           ]}
         />
       </Card>
+      {isClient && <DataShareCard />}
       {isClient && <ResetProfile />}
       {isClient && <DeleteAccount />}
     </>

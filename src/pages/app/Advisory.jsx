@@ -10,6 +10,8 @@ import { Field, FormError, FormGrid, Input, Select, Textarea } from '../../compo
 import { AsyncView } from '../../components/ui/States.jsx';
 import { DataTable } from '../../components/ui/DataTable.jsx';
 import { tr } from '../../i18n/tr.js';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { DataShareCard } from '../../features/share/DataShare.jsx';
 
 const STATUS_VARIANT = { PENDING: 'warn', CONFIRMED: '', COMPLETED: '', CANCELLED: 'bad' };
 
@@ -51,7 +53,8 @@ function RequestForm({ onDone, onCancel }) {
 }
 
 export default function Advisory() {
-  const { api, canEdit } = useWorkspace();
+  const { api, canEdit, isAdminView } = useWorkspace();
+  const { user } = useAuth();
   const res = useAsync(() => api.get('/appointments'), [api]);
   const [open, setOpen] = useState(false);
   const cancel = async (a) => {
@@ -69,6 +72,7 @@ export default function Advisory() {
         <div className="module-card"><h3>{tr('Mi portafolio de inversión')}</h3><p>{tr('Revisar conceptos de diversificación, distribución y lectura de resultados.')}</p></div>
         <div className="module-card"><h3>{tr('Educación financiera')}</h3><p>{tr('Profundizar en los conceptos estudiados dentro de la academia.')}</p></div>
       </div>
+      {!isAdminView && user?.role === 'CLIENT' && <DataShareCard />}
       <AsyncView {...res} onRetry={res.reload}>
         {(list) => (
           <Card title={tr('Mis citas')}>

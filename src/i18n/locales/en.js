@@ -92,6 +92,7 @@ export const en = {
     managingAs: 'Managing as client:',
     viewOnly: 'View only',
     exitClient: 'Exit client view',
+    endShare: 'End data sharing',
     close: 'Close',
     noRecords: 'No records',
     notFoundTitle: 'Page not found',

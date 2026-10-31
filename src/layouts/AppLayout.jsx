@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { api as rootApi } from '../api/client.js';
+import { DataShareBanner } from '../features/share/DataShare.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useWorkspace } from '../context/WorkspaceContext.jsx';
 import { Brand, Disclaimer } from '../components/layout/Brand.jsx';
@@ -41,7 +43,18 @@ function AccessGate() {
 
 export function AppLayout() {
   const { user, logout, hasAccess, access } = useAuth();
-  const { basePath, isAdminView, client, canEdit } = useWorkspace();
+  const { basePath, isAdminView, client, canEdit, clientId } = useWorkspace();
+  const navigate = useNavigate();
+  const [ending, setEnding] = useState(false);
+  const endShare = async () => {
+    setEnding(true);
+    try {
+      await rootApi.post(`/admin/clients/${clientId}/data-share/stop`, {});
+    } finally {
+      setEnding(false);
+      navigate(`/admin/clientes/${clientId}`);
+    }
+  };
   const { t, lang } = useI18n();
   const { currency } = useCurrency();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -98,9 +111,13 @@ export function AppLayout() {
               {t('app.managingAs')} <b>{client?.name || '…'}</b> {client?.email && <span className="muted">· {client.email}</span>}
               {!canEdit && <span className="pill warn">{t('app.viewOnly')}</span>}
             </span>
-            <Link to="/admin/clientes" className="btn-secondary">{t('app.exitClient')}</Link>
+            <span className="row-actions">
+              <Link to={`/admin/clientes/${clientId}`} className="btn-secondary">{t('app.exitClient')}</Link>
+              <button type="button" className="btn-danger" disabled={ending} onClick={endShare}>{t('app.endShare')}</button>
+            </span>
           </div>
         )}
+        {!isAdminView && user?.role === 'CLIENT' && <DataShareBanner />}
         {(hasAccess || isAdminView) && !relative.startsWith('/academia') && !relative.startsWith('/acceso') && (
           <div className="topbar"><PeriodSelector /></div>
         )}

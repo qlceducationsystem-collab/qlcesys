@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { NavLink, Outlet, useLocation, useParams } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation, useParams } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { WorkspaceProvider } from '../context/WorkspaceContext.jsx';
 import { Brand, Disclaimer } from '../components/layout/Brand.jsx';
 import { SessionClock } from '../components/layout/SessionClock.jsx';
 import { ErrorState, Loading } from '../components/ui/States.jsx';
+import { Card } from '../components/ui/Card.jsx';
+import { tr } from '../i18n/tr.js';
 import { SecurityNavButton } from '../features/security/AccountSecurity.jsx';
 import { ADMIN_LEVELS } from '../utils/labels.js';
 import { AppLayout } from './AppLayout.jsx';
@@ -79,6 +81,16 @@ export function AdminClientWorkspace() {
   }, [clientId]);
   if (state.error) return <div className="main"><ErrorState error={state.error} /></div>;
   if (!state.client) return <Loading />;
+  if (!state.client.dataShare) {
+    return (
+      <div className="main">
+        <Link className="btn-secondary back" to={`/admin/clientes/${clientId}`}>{tr('← Volver al cliente')}</Link>
+        <Card title={tr('Datos no compartidos')}>
+          <p>{tr('{name} no ha autorizado compartir sus datos, o ya dejó de compartirlos. Para ver su panel, pídele que active «Compartir mis datos» desde Mi acceso o Asesoría personalizada.', { name: state.client.name })}</p>
+        </Card>
+      </div>
+    );
+  }
   return (
     <WorkspaceProvider key={clientId} clientId={clientId} client={state.client}>
       <AppLayout />
