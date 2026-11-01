@@ -237,3 +237,35 @@ h1 { font-size: clamp(28px, 4vw, 44px); line-height: 1.12; letter-spacing: -.04e
 .share-chat-form { display: flex; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--line); }
 .share-chat-form .input { flex: 1; }
 .share-chat-closed { padding: 10px 14px; margin: 0; border-top: 1px solid var(--line); }
+.mono { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: 1px; }
+.gift-card { position: relative; overflow: hidden; padding: 26px; border-radius: 18px; border: 1px solid rgba(228, 185, 92, 0.45); background: radial-gradient(circle at 85% 10%, rgba(228, 185, 92, 0.22), transparent 45%), linear-gradient(135deg, #0d1b2a, #05070a 70%); color: var(--text); }
+.gift-card-top { display: flex; justify-content: space-between; align-items: center; }
+.gift-card-brand { font-size: 11px; letter-spacing: 3px; font-weight: 700; color: var(--blue2); text-transform: uppercase; }
+.gift-card-badge { font-size: 28px; }
+.gift-card h3 { margin: 18px 0 6px; font-size: 24px; }
+.gift-card-to, .gift-card-product { margin: 4px 0; color: var(--muted); }
+.gift-card-product { color: var(--text); font-weight: 600; }
+.gift-card-message { margin: 14px 0; padding: 10px 14px; border-left: 3px solid var(--gold2); font-style: italic; color: var(--text); }
+.gift-card-code { margin: 18px 0 10px; padding: 14px; border-radius: 12px; border: 1px dashed rgba(228, 185, 92, 0.6); text-align: center; }
+.gift-card-code span { display: block; font-size: 11px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+.gift-card-code strong { display: block; margin-top: 6px; font-size: 26px; letter-spacing: 4px; color: var(--gold2); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+.gift-card-foot { margin: 0; font-size: 12px; color: var(--muted); }
+.gift-codes { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+.gift-code-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; }
+.gift-code-row strong { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: 2px; color: var(--gold2); }
+.gift-shop { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 12px; }
+.gift-offer { display: flex; flex-direction: column; gap: 6px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel2); }
+.gift-offer-price { font-weight: 700; color: var(--blue2); }
+.checkout-gift { display: flex; flex-direction: column; gap: 10px; }
+.checkout-strike { text-decoration: line-through; opacity: 0.7; }
+.redeem-box { display: flex; flex-direction: column; gap: 14px; }
+.redeem-preview { display: flex; flex-direction: column; gap: 8px; padding: 16px; border: 1px solid rgba(228, 185, 92, 0.45); border-radius: 12px; }
+.auth-card.redeem-page { width: min(560px, 100%); }
+.redeem-page h1 { margin: 6px 0 8px; }
+.gift-done { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+@media print {
+  body * { visibility: hidden !important; }
+  .gift-print, .gift-print * { visibility: visible !important; }
+  .gift-print { position: fixed; inset: 24px; }
+  .gift-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

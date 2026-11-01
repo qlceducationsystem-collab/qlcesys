@@ -46,6 +46,9 @@ const ADMIN_PAGES = [
   ['integraciones', page(() => import('../pages/admin/AdminIntegrations.jsx'))],
   ['citas', page(() => import('../pages/admin/AdminAppointments.jsx'))],
   ['equipo', page(() => import('../pages/admin/AdminTeam.jsx'))],
+  ['suscriptores', page(() => import('../pages/admin/AdminSubscribers.jsx'))],
+  ['control-accesos', page(() => import('../pages/admin/AdminAccessControl.jsx'))],
+  ['regalos', page(() => import('../pages/admin/AdminGifts.jsx'))],
 ];
 
 const routesFor = (pages) =>
@@ -54,6 +57,7 @@ const routesFor = (pages) =>
 const LegalPage = page(() => import('../pages/public/legal/LegalPage.jsx'));
 const TradingAcademy = page(() => import('../pages/public/marketing/TradingAcademy.jsx'));
 const QlcHome = page(() => import('../pages/public/marketing/QlcHome.jsx'));
+const RedeemPage = page(() => import('../pages/public/RedeemPage.jsx'));
 
 function NotFound() {
   const { t } = useI18n();
@@ -72,6 +76,7 @@ export default function AppRoutes() {
           <Route path="/registro" element={<Register />} />
           <Route path="/recuperar" element={<ForgotPassword />} />
           <Route path="/seguridad/2fa" element={<TwoFactorSetup />} />
+          <Route path="/regalo" element={<RedeemPage />} />
           <Route path="/privacidad" element={<LegalPage doc="privacidad" />} />
           <Route path="/terminos" element={<LegalPage doc="terminos" />} />
         </Route>

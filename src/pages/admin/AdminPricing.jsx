@@ -13,7 +13,7 @@ import { tr } from '../../i18n/tr.js';
 const priceText = (o) => (o.price === null ? tr('Precio por definir') : `${priceMoney(o.price)} ${o.currency}`);
 
 function OfferEditor({ offer, onSaved, canEdit }) {
-  const [f, setF] = useState({ name: offer.name, description: offer.description || '', price: offer.price ?? '', currency: offer.currency, accessDays: offer.accessDays ?? '', active: offer.active });
+  const [f, setF] = useState({ name: offer.name, description: offer.description || '', price: offer.price ?? '', currency: offer.currency, accessDays: offer.accessDays ?? '', active: offer.active, giftable: offer.giftable !== false });
   const [confirm, setConfirm] = useState(false);
   const [state, setState] = useState({ busy: false, error: null });
   const set = (k) => (e) => setF({ ...f, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
@@ -47,6 +47,7 @@ function OfferEditor({ offer, onSaved, canEdit }) {
         <Field label={tr('Moneda')}><Input maxLength={3} value={f.currency} onChange={set('currency')} disabled={!canEdit} /></Field>
         <Field label={offer.type === 'FULL_ANNUAL' ? tr('Días de acceso') : tr('Días por mensualidad')}><Input type="number" min="1" value={f.accessDays} onChange={set('accessDays')} disabled={!canEdit} /></Field>
         <label className="check"><input type="checkbox" checked={f.active} onChange={set('active')} disabled={!canEdit} />{' '}{tr('Disponible para compra')}</label>
+        <label className="check"><input type="checkbox" checked={f.giftable} onChange={set('giftable')} disabled={!canEdit} />{' '}{tr('Se puede regalar (QLC Gift Access)')}</label>
       </div>
       <FormError error={state.error} />
       {canEdit && <Button onClick={() => setConfirm(true)}>{tr('Guardar')}</Button>}
@@ -57,6 +58,7 @@ function OfferEditor({ offer, onSaved, canEdit }) {
         details={[
           { field: tr('Precio'), from: priceText(offer), to: f.price === '' ? tr('Precio por definir') : `${priceMoney(f.price)} ${f.currency}` },
           { field: tr('Estado'), from: offer.active ? tr('Activo') : tr('Inactivo'), to: f.active ? tr('Activo') : tr('Inactivo') },
+          { field: tr('Regalable'), from: offer.giftable !== false ? tr('Sí') : tr('No'), to: f.giftable ? tr('Sí') : tr('No') },
         ]}
         loading={state.busy}
         onConfirm={save}

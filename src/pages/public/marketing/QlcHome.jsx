@@ -7,13 +7,14 @@ import { useI18n } from '../../../i18n/I18nContext.jsx';
 import { CopytradingFilter } from '../experience/CopytradingFilter.jsx';
 import { LegalNotice } from '../experience/LegalNotice.jsx';
 import { HeroSection } from '../sections/HeroSection.jsx';
-import { ClosingSection, RoutesSection } from '../sections/InfoSections.jsx';
+import { ClosingSection, LayersSection, RoutesSection } from '../sections/InfoSections.jsx';
 import { HOME_CONTENT } from './homeContent.js';
 
 const RENDERERS = {
   inicio: HeroSection,
   productos: RoutesSection,
   enfoque: RoutesSection,
+  regalo: LayersSection,
   qlc: ClosingSection,
 };
 

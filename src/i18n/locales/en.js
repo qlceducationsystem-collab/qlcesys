@@ -106,6 +106,7 @@ export const en = {
       general: 'General', dashboard: 'Dashboard', clients: 'Clients', leads: 'Information requests', loginNotice: 'Copytrading notice', exercises: 'Exercises and questions', appointments: 'Advisory appointments',
       content: 'Content', files: 'Academy / files', commercial: 'Commercial', pricing: 'Prices and access', payments: 'Test payments',
       system: 'System', integrations: 'Integrations', team: 'Administrators',
+      subscribers: 'Subscribers', gifts: 'Gifts', generalAdmin: 'General administration', accessControl: 'Access control',
     },
     security: {
       title: 'Account security',

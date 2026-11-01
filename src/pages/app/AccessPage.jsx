@@ -13,6 +13,7 @@ import { Modal } from '../../components/ui/Modal.jsx';
 import { AccessOffers } from '../../features/access/AccessOffers.jsx';
 import { tr } from '../../i18n/tr.js';
 import { DataShareCard } from '../../features/share/DataShare.jsx';
+import { GiftShop, MyGifts, PromoCodeCard, RedeemCard, SubscriptionCard } from '../../features/gifts/ClientCommerce.jsx';
 
 function clearPeriodSelection() {
   try {
@@ -101,13 +102,19 @@ export default function AccessPage() {
   const { isAdminView } = useWorkspace();
   const isClient = user?.role === 'CLIENT' && !isAdminView;
   useEffect(() => {
-    if (window.location.hash === '#eliminar-cuenta') setTimeout(() => document.getElementById('eliminar-cuenta')?.scrollIntoView({ behavior: 'smooth' }), 300);
+    const target = new URLSearchParams(window.location.search).get('promo') ? 'promocion' : window.location.hash.slice(1);
+    if (target) setTimeout(() => document.getElementById(target)?.scrollIntoView({ behavior: 'smooth' }), 400);
   }, []);
   const attempts = useAsync(() => api.get('/payments/attempts'), [accessInfo]);
   return (
     <>
       <PageHeader kicker={tr('Mi acceso')} title={tr('Acceso a QLC Financial Education')} subtitle={`Modalidad actual: ${ACCESS_MODES[access.mode]}`} />
+      {isClient && <SubscriptionCard />}
       <AccessOffers title={tr('Formas de adquirir')} />
+      {isClient && <PromoCodeCard />}
+      {isClient && <GiftShop />}
+      {isClient && <MyGifts />}
+      {isClient && <RedeemCard />}
       <Card title={tr('Historial de pagos')}>
         <DataTable
           rows={attempts.data || []}

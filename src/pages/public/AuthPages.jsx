@@ -84,6 +84,7 @@ export function Register() {
   const { register } = useAuth();
   const { t } = useI18n();
   const nav = useNavigate();
+  const loc = useLocation();
   const f = useForm({ name: '', email: '', password: '', confirm: '', code: '' });
   const [local, setLocal] = useState(null);
   const [accepted, setAccepted] = useState(false);
@@ -92,7 +93,7 @@ export function Register() {
 
   const create = async ({ confirm: _c, code, ...v }, emailToken) => {
     await register({ ...v, acceptLegal: true, legalVersion: LEGAL_VERSION, ...(emailToken ? { emailToken, emailCode: code } : {}) });
-    nav(SETUP_PATH, { replace: true, state: { from: '/app/acceso' } });
+    nav(SETUP_PATH, { replace: true, state: { from: loc.state?.from || '/app/acceso' } });
   };
 
   const requestCode = (values) => api.post('/auth/register/email-code', { email: values.email });
