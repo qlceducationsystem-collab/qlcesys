@@ -24,7 +24,7 @@ const ROUTES = [
     badge: 'Ruta patrimonial',
     title: 'Quiero continuar con mi educación financiera',
     text: 'No me interesa estudiar trading ni estrategias de mayor riesgo por ahora. Quiero continuar con la organización y crecimiento de mi patrimonio.',
-    modules: [['7', 'Presupuesto y control financiero', 'Ingresos, gastos y capacidad de ahorro.'], ['8', 'Fondo de emergencia y liquidez', 'Reserva y capacidad de respuesta.'], ['9–12', 'Organización y crecimiento patrimonial', 'Deudas, impuestos, inflación y plan patrimonial.']],
+    modules: [['7', 'Presupuesto y control financiero', 'Ingresos, gastos y capacidad de ahorro.'], ['8', 'Fondo de emergencia, Meta patrimonial y Liquidez', 'Reserva, metas y capacidad de respuesta.'], ['9–12', 'Organización y crecimiento patrimonial', 'Deudas, impuestos, inflación y plan patrimonial.']],
     cta: 'Continuar con educación patrimonial',
     note: 'Continúas directamente con el Módulo 7. No se registrará ninguna exposición ni actividad relacionada con trading.',
   },

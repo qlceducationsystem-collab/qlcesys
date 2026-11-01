@@ -12,7 +12,7 @@ export const EXPENSE_CATEGORIES = {
 export const PROTECTION_TYPES = {
   LIQUIDEZ: 'Liquidez', FONDO_EMERGENCIA: 'Fondo de emergencia', RESERVA: 'Reserva',
   SEGURO_GASTOS_MEDICOS: 'Seguro de gastos médicos mayores', SEGURO_VIDA: 'Seguro de vida', SEGURO_AUTO: 'Seguro de auto',
-  SEGURO_DESEMPLEO: 'Seguro de desempleo', SEGURO_EDUCACION: 'Seguro educativo', SEGURO_RETIRO: 'Seguro de retiro o renta vitalicia', OTRO_SEGURO: 'Otro seguro',
+  SEGURO_DESEMPLEO: 'Seguro de desempleo', SEGURO_EDUCACION: 'Seguro educativo', SEGURO_RETIRO: 'Seguro de retiro o renta vitalicia', OTRO_SEGURO: 'Otro seguro', META_PATRIMONIAL: 'Meta patrimonial',
 };
 export const INSURANCE_TYPES = ['SEGURO_GASTOS_MEDICOS', 'SEGURO_VIDA', 'SEGURO_AUTO', 'SEGURO_DESEMPLEO', 'SEGURO_EDUCACION', 'SEGURO_RETIRO', 'OTRO_SEGURO'];
 

@@ -7,7 +7,7 @@ import { date, money, pct } from '../../../utils/format.js';
 import { BUDGET_LABELS, ESSENTIAL_SOURCES, PROTECTION_TYPES } from '../../../utils/labels.js';
 import { Button } from '../../../components/ui/Button.jsx';
 import { DataTable } from '../../../components/ui/DataTable.jsx';
-import { Field, FormError, Input, MoneyInput } from '../../../components/ui/Form.jsx';
+import { Field, FormError, Input, MoneyInput, Select } from '../../../components/ui/Form.jsx';
 import { ProgressBar } from '../../../components/ui/Card.jsx';
 import { ErrorState } from '../../../components/ui/States.jsx';
 import { KindBadge, MetricCard, MetricGrid, RiskNote, SaveStatus, ToolCard, ToolSkeleton } from '../ResultParts.jsx';
@@ -128,13 +128,70 @@ function PlanEditor({ data, reload, onSaved }) {
   );
 }
 
+const GOAL_CONCEPTS = ['Ahorro', 'Vacaciones', 'Inversión', 'Comprar casa', 'Comprar auto', 'Educación', 'Retiro'];
+const OTHER = '__OTHER__';
+const DESTINATIONS = { FONDO_EMERGENCIA: 'Fondo de emergencia', META_PATRIMONIAL: 'Meta patrimonial', AHORRO: 'Ahorro' };
+const DEFAULT_TEXT = { FONDO_EMERGENCIA: 'Aportación al fondo de emergencia', META_PATRIMONIAL: 'Aportación a mi meta patrimonial' };
+
+function GoalEditor({ data, reload }) {
+  const { api, canEdit } = useWorkspace();
+  const action = useAction();
+  const current = data.goal?.goal;
+  const savedName = current?.name && current.name !== 'Meta patrimonial' ? current.name : '';
+  const [f, setF] = useState({
+    concept: savedName ? (GOAL_CONCEPTS.includes(savedName) ? savedName : OTHER) : '',
+    custom: savedName && !GOAL_CONCEPTS.includes(savedName) ? savedName : '',
+    target: String(current?.targetAmount ?? ''),
+    monthly: String(current?.monthlyContribution ?? ''),
+  });
+  const name = f.concept === OTHER ? f.custom.trim() : f.concept;
+  const save = async () => {
+    if (await action.run(() => api.put('/academy/emergency/goal', { name: name || null, targetAmount: Number(f.target), monthlyContribution: f.monthly === '' ? null : Number(f.monthly) }))) await reload();
+  };
+  const p = data.goal?.progress;
+  return (
+    <ToolCard step="4" title={tr('Tu meta patrimonial')} description={tr('Define para qué ahorras, cuánto quieres juntar y cuánto aportarás al mes. Las aportaciones a tu meta se registran aparte y se suman a tu patrimonio.')} aside={<KindBadge kind="PLAN" />}>
+      <div className="inline-form">
+        <Field label={tr('Concepto de la meta')}>
+          <Select value={f.concept} disabled={!canEdit} onChange={(e) => setF({ ...f, concept: e.target.value })} placeholder={tr('Selecciona…')} options={[...GOAL_CONCEPTS.map((c) => ({ value: c, label: c })), { value: OTHER, label: tr('Otro (escríbelo)') }]} />
+        </Field>
+        {f.concept === OTHER && (
+          <Field label={tr('Escribe tu meta')}><Input value={f.custom} maxLength={120} disabled={!canEdit} onChange={(e) => setF({ ...f, custom: e.target.value })} placeholder={tr('Ej. Boda, negocio propio')} /></Field>
+        )}
+        <Field label={tr('Monto de la meta')}><MoneyInput min="0.01" value={f.target} disabled={!canEdit} onChange={(e) => setF({ ...f, target: e.target.value })} placeholder="0" /></Field>
+        <Field label={tr('Aportación mensual planeada')} hint={tr('Es un objetivo: solo cuenta lo que confirmes abajo.')}><MoneyInput value={f.monthly} disabled={!canEdit} onChange={(e) => setF({ ...f, monthly: e.target.value })} placeholder="0" /></Field>
+      </div>
+      <FormError error={action.error} />
+      {canEdit && (
+        <div className="form-actions">
+          <SaveStatus action={action} savedText={tr('Meta guardada.')} />
+          <Button onClick={save} loading={action.busy} disabled={!Number(f.target) || (f.concept === OTHER && !f.custom.trim())}>{current ? tr('Actualizar meta') : tr('Guardar meta')}</Button>
+        </div>
+      )}
+      {p && (
+        <>
+          <MetricGrid>
+            <MetricCard label={tr('Meta')} value={money(p.goal)} hint={savedName ? tr(savedName) : tr('Meta patrimonial')} />
+            <MetricCard label={tr('Aportado a la meta')} value={money(p.current)} hint={tr('Aportaciones confirmadas')} />
+            <MetricCard label={tr('Falta')} value={money(p.remaining)} tone={p.remaining === 0 ? 'good' : 'warn'} />
+            <MetricCard label={tr('Avance')} value={pct(p.progress)} tone={p.reached ? 'good' : ''} />
+            <MetricCard label={tr('Tiempo estimado')} value={p.reached ? tr('Meta alcanzada') : p.monthsToGoal === null ? tr('Define una aportación mensual') : months(p.monthsToGoal)} hint={tr('Con la aportación planeada')} />
+          </MetricGrid>
+          <ProgressBar value={Math.min(100, p.progress || 0)} label={tr('Avance de la meta patrimonial')} />
+        </>
+      )}
+    </ToolCard>
+  );
+}
+
 function Contributions({ data, reload }) {
   const { api, canEdit } = useWorkspace();
   const action = useAction();
-  const [f, setF] = useState({ amount: '', description: 'Aportación al fondo de emergencia' });
+  const [f, setF] = useState({ destination: 'FONDO_EMERGENCIA', amount: '', description: DEFAULT_TEXT.FONDO_EMERGENCIA });
+  const setDestination = (destination) => setF({ ...f, destination, description: Object.values(DEFAULT_TEXT).includes(f.description) ? DEFAULT_TEXT[destination] : f.description });
   const add = async (e) => {
     e.preventDefault();
-    if (await action.run(() => api.post('/academy/emergency/contributions', { destination: 'FONDO_EMERGENCIA', amount: Number(f.amount), description: f.description }))) {
+    if (await action.run(() => api.post('/academy/emergency/contributions', { destination: f.destination, amount: Number(f.amount), description: f.description }))) {
       setF({ ...f, amount: '' });
       await reload();
     }
@@ -143,9 +200,12 @@ function Contributions({ data, reload }) {
     if (await action.run(() => api.del(`/academy/emergency/contributions/${id}`))) await reload();
   };
   return (
-    <ToolCard step="4" title={tr('Aportación realizada')} description={tr('Confirma un depósito real a tu fondo: actualiza tu liquidez en Protección una sola vez.')} aside={<KindBadge kind="REAL" />}>
+    <ToolCard step="5" title={tr('Aportación realizada')} description={tr('Confirma un depósito real a tu fondo de emergencia o a tu meta patrimonial. Cada uno lleva su propio registro y se suma a tu patrimonio una sola vez.')} aside={<KindBadge kind="REAL" />}>
       {canEdit && (
         <form className="inline-form" onSubmit={add}>
+          <Field label={tr('Destino')}>
+            <Select value={f.destination} onChange={(e) => setDestination(e.target.value)} options={[{ value: 'FONDO_EMERGENCIA', label: tr('Fondo de emergencia') }, ...(data.goal?.goal ? [{ value: 'META_PATRIMONIAL', label: tr('Meta patrimonial') }] : [])]} />
+          </Field>
           <Field label={tr('Importe aportado')}><MoneyInput required min="0.01" value={f.amount} onChange={(e) => setF({ ...f, amount: e.target.value })} /></Field>
           <Field label={tr('Concepto')}><Input required maxLength={200} value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} /></Field>
           <Button type="submit" loading={action.busy}>{tr('Confirmar aportación')}</Button>
@@ -157,6 +217,7 @@ function Contributions({ data, reload }) {
         empty={tr('Sin aportaciones confirmadas en el periodo actual.')}
         columns={[
           { key: 'date', label: tr('Fecha'), render: (c) => date(c.date) },
+          { key: 'destination', label: tr('Destino'), render: (c) => tr(DESTINATIONS[c.destination] || c.destination) },
           { key: 'description', label: tr('Concepto') },
           { key: 'amount', label: 'Importe', align: 'right', render: (c) => money(c.amount) },
           ...(canEdit ? [{ key: 'x', label: '', align: 'right', render: (c) => <button type="button" className="btn-link danger" onClick={() => remove(c.id)}>{tr('Eliminar')}</button> }] : []),
@@ -175,6 +236,7 @@ export function M8EmergencyFund({ onSaved }) {
   return (
     <div className="tool">
       <PlanEditor key={`${data.plan?.updatedAt || 'new'}-${data.liquid.amount}`} data={data} reload={res.reload} onSaved={onSaved} />
+      <GoalEditor key={`goal-${data.goal?.goal?.updatedAt || 'new'}`} data={data} reload={res.reload} />
       {data.period ? <Contributions data={data} reload={res.reload} /> : <p className="empty-inline">{tr('Completa tu diagnóstico (Módulo 1) para registrar tu liquidez real.')}</p>}
     </div>
   );
