@@ -50,7 +50,7 @@ export default function AdminLeads() {
 
   return (
     <>
-      <PageHeader kicker={tr('Panel administrativo')} title={tr('Solicitudes de información')} subtitle={tr('Prospectos de Educación financiera, Institutional Trading Academy y Copytrading Institucional.')} />
+      <PageHeader kicker={tr('Panel administrativo')} title={tr('Solicitudes de información')} subtitle={tr('Prospectos de Educación financiera, Institutional Trading Academy y QLC Quantitative Trading Bot.')} />
       <AsyncView {...res} onRetry={res.reload}>
         {(d) => (
           <>

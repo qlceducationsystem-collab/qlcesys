@@ -12,9 +12,9 @@ export const flagNotice = () => {
 
 export const NOTICE_TEXT = {
   es: {
-    title: 'QLC Copytrading | Una oportunidad para diversificar su portafolio',
-    intro: (m) => `Estimado inversor: nuestro producto principal, QLC Copytrading, registra actualmente un retorno sobre inversión (ROI) del ${fmt(m.returnPct)}% en ${fmt(m.days)} días, con ${fmt(m.wins)} operaciones ganadas, ${fmt(m.losses)} perdidas y una tasa de aciertos del ${fmt(m.hitRate)}%. El drawdown máximo registrado es del ${fmt(m.drawdown)}%.`,
-    evaluate: 'Evalúe nuestras métricas, analice el riesgo frente al resultado y descubra si QLC Copytrading es una opción para complementar su portafolio de inversión.',
+    title: 'QLC Quantitative Trading Bot | Una oportunidad para diversificar su portafolio',
+    intro: (m) => `Estimado inversor: nuestro producto principal, QLC Quantitative Trading Bot, registra actualmente un retorno sobre inversión (ROI) del ${fmt(m.returnPct)}% en ${fmt(m.days)} días, con ${fmt(m.wins)} operaciones ganadas, ${fmt(m.losses)} perdidas y una tasa de aciertos del ${fmt(m.hitRate)}%. El drawdown máximo registrado es del ${fmt(m.drawdown)}%.`,
+    evaluate: 'Evalúe nuestras métricas, analice el riesgo frente al resultado y descubra si QLC Quantitative Trading Bot es una opción para complementar su portafolio de inversión.',
     live: 'Consulte nuestras operaciones en vivo en nuestro perfil Trader Elite de Bitget o solicite información para acceder a nuestro producto.',
     disclaimer: 'Los resultados pasados no garantizan resultados futuros. Invertir implica riesgos, incluida la pérdida de capital.',
     metrics: (m) => [
@@ -28,9 +28,9 @@ export const NOTICE_TEXT = {
     close: 'Cerrar',
   },
   en: {
-    title: 'QLC Copytrading | An opportunity to diversify your portfolio',
-    intro: (m) => `Dear investor: our main product, QLC Copytrading, currently records a return on investment (ROI) of ${fmt(m.returnPct)}% over ${fmt(m.days)} days, with ${fmt(m.wins)} winning trades, ${fmt(m.losses)} losing trades and a ${fmt(m.hitRate)}% hit rate. The maximum recorded drawdown is ${fmt(m.drawdown)}%.`,
-    evaluate: 'Review our metrics, weigh the risk against the result and find out whether QLC Copytrading is an option to complement your investment portfolio.',
+    title: 'QLC Quantitative Trading Bot | An opportunity to diversify your portfolio',
+    intro: (m) => `Dear investor: our main product, QLC Quantitative Trading Bot, currently records a return on investment (ROI) of ${fmt(m.returnPct)}% over ${fmt(m.days)} days, with ${fmt(m.wins)} winning trades, ${fmt(m.losses)} losing trades and a ${fmt(m.hitRate)}% hit rate. The maximum recorded drawdown is ${fmt(m.drawdown)}%.`,
+    evaluate: 'Review our metrics, weigh the risk against the result and find out whether QLC Quantitative Trading Bot is an option to complement your investment portfolio.',
     live: 'See our live trades on our Bitget Elite Trader profile or request information to access our product.',
     disclaimer: 'Past results do not guarantee future results. Investing involves risk, including the loss of capital.',
     metrics: (m) => [

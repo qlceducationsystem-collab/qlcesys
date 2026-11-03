@@ -9,7 +9,7 @@ import { useI18n } from '../../i18n/I18nContext.jsx';
 export const LEAD_INTERESTS = {
   EDUCACION_FINANCIERA: 'Educación financiera',
   TRADING_ACADEMY: 'Institutional Trading Academy',
-  COPYTRADING: 'Copytrading Institucional',
+  COPYTRADING: 'QLC Quantitative Trading Bot',
   GENERAL: 'Información general de QLC',
 };
 

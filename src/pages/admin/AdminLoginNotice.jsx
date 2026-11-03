@@ -80,7 +80,7 @@ export default function AdminLoginNotice() {
   const res = useAsync(() => api.get('/admin/login-notice'), []);
   return (
     <>
-      <PageHeader title={tr('Aviso de QLC Copytrading')} subtitle={tr('Mensaje que ve cada cliente al iniciar sesión. Edita las métricas y los enlaces.')} />
+      <PageHeader title={tr('Aviso de QLC Quantitative Trading Bot')} subtitle={tr('Mensaje que ve cada cliente al iniciar sesión. Edita las métricas y los enlaces.')} />
       <AsyncView {...res} onRetry={res.reload}>
         {(notice) => <NoticeEditor notice={notice} onSaved={res.reload} />}
       </AsyncView>

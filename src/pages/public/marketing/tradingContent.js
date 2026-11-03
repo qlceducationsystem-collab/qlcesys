@@ -34,10 +34,10 @@ const ES = {
       description: 'La diferencia no es una etiqueta ni una garantía de resultados. Está en cómo se formula una decisión, cómo se prueba y cómo se administra el riesgo.',
     },
     copytrading: {
-      navLabel: 'Copytrading',
+      navLabel: 'Trading Bot',
       eyebrow: 'Alternativa de acceso',
       title: '¿No tienes el capital para cursar la academia?',
-      description: 'Puedes conocer nuestro Copytrading Institucional, el producto principal de QLC, pensado para quienes prefieren acceder a una estrategia gestionada en lugar de desarrollar primero su propio proceso operativo.',
+      description: 'Puedes conocer nuestro QLC Quantitative Trading Bot, el producto principal de QLC: un sistema de trading cuantitativo que conecta tu cuenta de exchange mediante tecnología propia y una conexión API autorizada para ejecutar operaciones automáticamente, sin que necesites desarrollar primero tu propio proceso operativo.',
     },
     contacto: {
       navLabel: 'Preguntas',
@@ -49,7 +49,7 @@ const ES = {
   hero: {
     note: 'De la intuición a un proceso medible: hipótesis, evidencia histórica, control de exposición y evaluación continua.',
     primary: 'Explorar el programa',
-    secondary: 'Conocer Copytrading Institucional',
+    secondary: 'Conocer QLC Quantitative Trading Bot',
   },
   visual: {
     head: 'QLC · Quantitative framework',
@@ -146,16 +146,16 @@ const ES = {
       ['Decisión informada:', 'evalúa si el producto es compatible con tus objetivos y tu tolerancia a pérdidas.'],
     ],
     panelEyebrow: 'QLC · Producto principal',
-    panelTitle: ['Copytrading ', 'Institucional'],
-    panelText: 'Una alternativa para quienes buscan seguir una operativa mediante las funciones de copytrading de la plataforma correspondiente, conociendo de antemano las reglas y los riesgos.',
-    cta: 'Conocer QLC Copytrading →',
-    disclaimer: 'El copytrading no elimina el riesgo de mercado ni garantiza beneficios. Pueden producirse pérdidas parciales o totales del capital asignado.',
+    panelTitle: ['QLC Quantitative ', 'Trading Bot'],
+    panelText: 'Trading cuantitativo automatizado, accesible desde 100 USDT: tus fondos permanecen en tu propia cuenta de exchange y QLC no necesita permisos de retiro. Conoce de antemano las reglas y los riesgos.',
+    cta: 'Conocer QLC Quantitative Trading Bot →',
+    disclaimer: 'El trading automatizado no elimina el riesgo de mercado ni garantiza beneficios. Pueden producirse pérdidas parciales o totales del capital asignado.',
   },
   faq: [
     ['¿El curso garantiza resultados?', 'No. La formación transmite conceptos y procesos de análisis, pero no garantiza rentabilidad ni sustituye la experiencia, la práctica y la gestión del riesgo.'],
     ['¿Necesito operar con mucho capital para estudiar?', 'No. La aplicación institucional a gran escala puede requerir recursos, controles e infraestructura acordes con el alcance de la operación.'],
     ['¿El enfoque cuantitativo elimina las pérdidas?', 'No. Los datos históricos no predicen con certeza el futuro y los sistemas también atraviesan periodos adversos.'],
-    ['¿Qué ofrece QLC si no deseo cursar la academia?', 'Puedes conocer el Copytrading Institucional y valorar si se ajusta a tu situación financiera y tolerancia al riesgo.'],
+    ['¿Qué ofrece QLC si no deseo cursar la academia?', 'Puedes conocer el QLC Quantitative Trading Bot y valorar si se ajusta a tu situación financiera y tolerancia al riesgo.'],
   ],
   contact: {
     title: 'Conoce el programa o solicita información de QLC.',
@@ -200,10 +200,10 @@ const EN = {
       description: 'The difference is not a label or a guarantee of results. It lies in how a decision is formulated, how it is tested and how risk is managed.',
     },
     copytrading: {
-      navLabel: 'Copytrading',
+      navLabel: 'Trading Bot',
       eyebrow: 'Alternative access',
       title: 'Don’t have the capital to take the academy?',
-      description: 'You can explore our Institutional Copytrading, QLC’s main product, designed for those who prefer to access a managed strategy instead of first developing their own operating process.',
+      description: 'You can explore our QLC Quantitative Trading Bot, QLC’s main product: a quantitative trading system that connects your exchange account through proprietary technology and an authorized API connection to execute trades automatically, without first developing your own operating process.',
     },
     contacto: {
       navLabel: 'FAQ',
@@ -215,7 +215,7 @@ const EN = {
   hero: {
     note: 'From intuition to a measurable process: hypotheses, historical evidence, exposure control and continuous evaluation.',
     primary: 'Explore the program',
-    secondary: 'Discover Institutional Copytrading',
+    secondary: 'Discover QLC Quantitative Trading Bot',
   },
   visual: {
     head: 'QLC · Quantitative framework',
@@ -312,16 +312,16 @@ const EN = {
       ['Informed decision:', 'assess whether the product fits your goals and your tolerance for losses.'],
     ],
     panelEyebrow: 'QLC · Main product',
-    panelTitle: ['Institutional ', 'Copytrading'],
-    panelText: 'An alternative for those who want to follow a trading operation through the copytrading features of the corresponding platform, knowing the rules and risks in advance.',
-    cta: 'Discover QLC Copytrading →',
-    disclaimer: 'Copytrading does not eliminate market risk or guarantee profits. Partial or total losses of the allocated capital may occur.',
+    panelTitle: ['QLC Quantitative ', 'Trading Bot'],
+    panelText: 'Automated quantitative trading, accessible from 100 USDT: your funds stay in your own exchange account and QLC does not need withdrawal permissions. Know the rules and risks in advance.',
+    cta: 'Discover QLC Quantitative Trading Bot →',
+    disclaimer: 'Automated trading does not eliminate market risk or guarantee profits. Partial or total losses of the allocated capital may occur.',
   },
   faq: [
     ['Does the course guarantee results?', 'No. The training conveys concepts and analysis processes, but it does not guarantee profitability or replace experience, practice and risk management.'],
     ['Do I need to trade a lot of capital to study?', 'No. Large-scale institutional application may require resources, controls and infrastructure in line with the scope of the operation.'],
     ['Does the quantitative approach eliminate losses?', 'No. Historical data does not predict the future with certainty, and systems also go through adverse periods.'],
-    ['What does QLC offer if I don’t want to take the academy?', 'You can explore Institutional Copytrading and assess whether it fits your financial situation and risk tolerance.'],
+    ['What does QLC offer if I don’t want to take the academy?', 'You can explore QLC Quantitative Trading Bot and assess whether it fits your financial situation and risk tolerance.'],
   ],
   contact: {
     title: 'Explore the program or request information from QLC.',

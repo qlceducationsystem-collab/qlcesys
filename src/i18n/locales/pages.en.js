@@ -873,7 +873,7 @@ export const PAGES_EN = {
   'Fallido': 'Failed',
   'Notas internas': 'Internal notes',
   'Solicitudes de información': 'Information requests',
-  'Prospectos de Educación financiera, Institutional Trading Academy y Copytrading Institucional.': 'Leads for Financial education, Institutional Trading Academy and Institutional Copytrading.',
+  'Prospectos de Educación financiera, Institutional Trading Academy y QLC Quantitative Trading Bot.': 'Leads for Financial education, Institutional Trading Academy and QLC Quantitative Trading Bot.',
   'Nuevas': 'New',
   'Contactadas': 'Contacted',
   'Cerradas': 'Closed',
