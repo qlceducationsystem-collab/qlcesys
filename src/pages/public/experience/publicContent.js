@@ -82,6 +82,8 @@ const ES = [
     description: 'Puedes tomar el programa completo o adquirir únicamente las herramientas.',
     primaryCtaLabel: 'Crear mi cuenta',
     primaryCtaTarget: '/registro',
+    secondaryCtaLabel: 'Canjear un código de regalo',
+    secondaryCtaTarget: '/regalo',
     items: [
       { title: 'Acceso completo anual', text: 'Academia + explicaciones + herramientas durante el periodo anual.', tag: 'Opción 1' },
       { title: 'Solo herramientas', text: 'Un solo pago mensual por las 12 herramientas, sin la academia.', tag: 'Opción 2' },
@@ -183,6 +185,8 @@ const EN = [
     description: 'You can take the full program or get only the tools.',
     primaryCtaLabel: 'Create my account',
     primaryCtaTarget: '/registro',
+    secondaryCtaLabel: 'Redeem a gift code',
+    secondaryCtaTarget: '/regalo',
     items: [
       { title: 'Full annual access', text: 'Academy + explanations + tools for the annual period.', tag: 'Option 1' },
       { title: 'Tools only', text: 'A single monthly payment for all 12 tools, without the academy.', tag: 'Option 2' },

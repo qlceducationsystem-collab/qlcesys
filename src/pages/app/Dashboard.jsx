@@ -87,7 +87,7 @@ function DashboardBody({ d }) {
       <PageHeader title={tr('Mi situación financiera')} subtitle={tr('Resumen de tu estructura financiera · {period}', { period: periodLabel(d.period) })} actions={<CurrencySelect />} />
       {!s.reconciliation.reconciled && <ReconciliationBanner reconciliation={s.reconciliation} />}
       {!s.protection.insuranceTypes?.length && (
-        <div className="notice notice-warn protection-alert">
+        <div className="notice notice-danger protection-alert">
           <b>{tr('Presta atención a tu protección patrimonial.')}</b>{' '}
           {tr('Aún no registras ningún seguro (vida, gastos médicos mayores, retiro, auto, desempleo o educativo).')}{' '}
           <Link to={`${basePath}/proteccion`}>{tr('Registrar mis seguros')}</Link>

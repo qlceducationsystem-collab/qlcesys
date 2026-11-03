@@ -14,7 +14,7 @@ import { MetricCard, MetricGrid, RealBadge, ToolCard } from '../ResultParts.jsx'
 import { tr } from '../../../i18n/tr.js';
 
 const EMPTY = { name: '', productType: 'RENTA_FIJA', capital: '', horizon: 'MEDIANO', liquidityLevel: 'MEDIA', perceivedRisk: 'MEDIO' };
-const RISK_TONE = { BAJO: '', MEDIO: '', ALTO: 'warn', MUY_ALTO: 'bad' };
+const RISK_TONE = { BAJO: '', MEDIO: 'warn', ALTO: 'bad', MUY_ALTO: 'purple' };
 
 function ProductForm({ initial, onSubmit, onCancel, busy, error }) {
   const [f, setF] = useState(initial);

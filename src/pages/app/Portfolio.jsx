@@ -158,7 +158,7 @@ function UnassignedContributions({ movements, products, onAssigned }) {
   return (
     <Card title={tr('Inversión sin asignar')}>
       <p className="small muted">{tr('Registraste estas aportaciones (por ejemplo, la inversión real del presupuesto) pero aún no indicas en qué producto invertiste. Puedes mandar todo a un solo producto o repartirlo entre varios con el monto que elijas para cada uno; lo que no asignes queda pendiente.')}</p>
-      {movements.map((m) => <SplitAssign key={`${m.id}-${m.amount}`} movement={m} products={products} onAssigned={onAssigned} />)}
+      {movements.map((m) => <SplitAssign key={`${m.id}-${m.amount}`} movement={m} products={products.filter((p) => !p.source)} onAssigned={onAssigned} />)}
     </Card>
   );
 }

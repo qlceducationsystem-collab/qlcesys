@@ -160,9 +160,19 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
     setLines([...lines.slice(0, tail), { category, percent }, ...lines.slice(tail)]);
   };
   const surplusAction = useAction();
-  const assignSurplus = async (category) => {
-    const current = category === 'AHORRO' ? view.savingsActual : view.investmentActual;
-    if (await surplusAction.run(() => api.put('/academy/budget/actuals', { ...month, category, amount: round(current + view.tableBalance, 2) }))) await reload();
+  const [split, setSplit] = useState(null);
+  const surplus = round(view.tableBalance, 2);
+  const parts = split || { AHORRO: String(surplus), INVERSION: '0' };
+  const partsTotal = round(Number(parts.AHORRO || 0) + Number(parts.INVERSION || 0), 2);
+  const assignSurplus = async () => {
+    const ok = await surplusAction.run(async () => {
+      if (Number(parts.AHORRO) > 0) await api.put('/academy/budget/actuals', { ...month, category: 'AHORRO', amount: round(view.savingsActual + Number(parts.AHORRO), 2) });
+      if (Number(parts.INVERSION) > 0) await api.put('/academy/budget/actuals', { ...month, category: 'INVERSION', amount: round(view.investmentActual + Number(parts.INVERSION), 2) });
+    });
+    if (ok) {
+      setSplit(null);
+      await reload();
+    }
   };
   const locked = !data.saved;
   const dirty = data.saved ? income !== data.netIncome || !sameLines(lines, data.lines) : true;
@@ -259,8 +269,8 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
           <span>{money(view.debtPlanned)}</span>
           <small className="muted">
             {view.debtPlanned > 0
-              ? tr('Se llena solo con el pago mensual de tus obligaciones del Módulo 9 y cuenta dentro del 100%.')
-              : tr('Sin deudas registradas: queda en $0. Si tienes obligaciones, regístralas en el Módulo 9 y este renglón se llenará solo.')}
+              ? tr('Se suma solo: toma el pago mensual de deudas que declaraste en el Módulo 1 y, cuando las desgloses una por una en el Módulo 9, se actualiza con el pago de cada obligación. Cuenta dentro del 100%.')
+              : tr('Sin deudas registradas: queda en $0. Se suma solo con el pago mensual de deudas que declares en el Módulo 1 y después con el desglose de cada obligación en el Módulo 9.')}
             {' '}<Link to={`${basePath}/academia/m/9`}>{tr('Ir al Módulo 9')}</Link>
           </small>
         </div>
@@ -328,13 +338,15 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
             {view.tableBalance > 0.004 && (
               <div className="surplus-alert">
                 <b>{tr('Te sobran {amount} este mes (saldo estimado).', { amount: money(view.tableBalance) })}</b>
-                <p className="small">{tr('Es la diferencia positiva entre tu ingreso y todo lo que registraste en tu tabla. Asígnala para que no quede sin destino: puedes sumarla a tu ahorro o a tu inversión real, o registrarla en la categoría que prefieras con «Agregar un movimiento con concepto».')}</p>
+                <p className="small">{tr('Es la diferencia positiva entre tu ingreso y todo lo que registraste en tu tabla. Decide cuánto mandas a ahorro y cuánto a inversión; puedes repartirlo o mandar todo a uno solo. Lo que mandes a ahorro se suma a tu liquidez; lo que mandes a inversión lo asignarás después a un producto en Mi portafolio de inversión.')}</p>
                 {editable && (
-                  <div className="row-actions">
-                    <Button type="button" variant="secondary" loading={surplusAction.busy} onClick={() => assignSurplus('AHORRO')}>{tr('Asignar a Ahorro')}</Button>
-                    <Button type="button" variant="secondary" loading={surplusAction.busy} onClick={() => assignSurplus('INVERSION')}>{tr('Asignar a Inversión')}</Button>
+                  <div className="inline-form">
+                    <Field label={tr('A Ahorro')}><MoneyInput value={parts.AHORRO} onChange={(e) => setSplit({ ...parts, AHORRO: e.target.value })} /></Field>
+                    <Field label={tr('A Inversión')}><MoneyInput value={parts.INVERSION} onChange={(e) => setSplit({ ...parts, INVERSION: e.target.value })} /></Field>
+                    <Button type="button" variant="secondary" loading={surplusAction.busy} disabled={partsTotal <= 0 || partsTotal > surplus + 0.004} onClick={assignSurplus}>{tr('Asignar')}</Button>
                   </div>
                 )}
+                {partsTotal > surplus + 0.004 && <span className="small down">{tr('Te pasaste por {amount}.', { amount: money(partsTotal - surplus) })}</span>}
                 <FormError error={surplusAction.error} />
               </div>
             )}

@@ -15,6 +15,7 @@ const TOOL_LABELS = [
 export function AccessOffers({ title = 'Dos formas de adquirir QLC Financial Education', compact }) {
   const { accessInfo, access } = useAuth();
   const [selected, setSelected] = useState(null);
+  const [gift, setGift] = useState(null);
   const offers = accessInfo?.offers || [];
   const full = offers.find((o) => o.type === 'FULL_ANNUAL');
   const tools = offers.find((o) => o.type === 'TOOL_ONLY');
@@ -45,6 +46,7 @@ export function AccessOffers({ title = 'Dos formas de adquirir QLC Financial Edu
             </ul>
             <div className="offer-price">{offerPrice(full)}</div>
             <Button onClick={() => setSelected(full)}>{access.full ? tr('Renovar acceso anual') : tr('Adquirir acceso completo')}</Button>
+            {full.giftable !== false && <Button variant="secondary" onClick={() => setGift(full)}>{tr('🎁 Regalar este programa')}</Button>}
           </article>
         )}
         {tools && (
@@ -65,10 +67,12 @@ export function AccessOffers({ title = 'Dos formas de adquirir QLC Financial Edu
             </ul>
             <div className="offer-price">{offerPrice(tools)}{' '}{tr('/ mes')}</div>
             {toolsOwned && !toolsUntil ? <Pill>{tr('Activa')}</Pill> : <Button variant="secondary" onClick={() => setSelected(tools)}>{toolsOwned ? tr('Renovar herramientas') : tr('Suscribirme a las herramientas')}</Button>}
+            {tools.giftable !== false && <Button variant="secondary" onClick={() => setGift(tools)}>{tr('🎁 Regalar las herramientas')}</Button>}
           </article>
         )}
       </div>
       {selected && <CheckoutModal offer={selected} onClose={() => setSelected(null)} />}
+      {gift && <CheckoutModal offer={gift} mode="gift" onClose={() => setGift(null)} />}
     </section>
   );
 }

@@ -90,6 +90,7 @@ export function AccessSection({ section, offers, go }) {
           <ul className="access-list">
             {t('public.fullIncludes').map((item) => <li key={item}>{item}</li>)}
           </ul>
+          <CtaButton label={lang === 'es' ? '🎁 Regalar este programa' : '🎁 Give this program'} target="/app/acceso#regalar" go={go} variant="ghost" />
         </article>
         <article className="access-card reveal-card" style={{ '--c': 1 }}>
           <span className="access-tag">{optionTools?.tag || t('public.option2')}</span>
@@ -99,6 +100,7 @@ export function AccessSection({ section, offers, go }) {
           <ul className="access-tools">
             {Array.from({ length: 12 }, (_, i) => <li key={i}><span>M{i + 1}</span></li>)}
           </ul>
+          <CtaButton label={lang === 'es' ? '🎁 Regalar las herramientas' : '🎁 Give the tools'} target="/app/acceso#regalar" go={go} variant="ghost" />
         </article>
       </div>
       <SectionCtas section={section} go={go} />

@@ -271,3 +271,6 @@ h1 { font-size: clamp(28px, 4vw, 44px); line-height: 1.12; letter-spacing: -.04e
 }
 .split-assign { display: flex; flex-direction: column; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--line); }
 .split-assign:last-of-type { border-bottom: 0; }
+.pill.purple { background: rgba(156, 106, 222, 0.14); color: #b896f0; border-color: rgba(156, 106, 222, 0.3); }
+.notice.notice-danger { background: rgba(196, 61, 75, 0.10); border-color: rgba(196, 61, 75, 0.45); color: var(--red); }
+.notice.notice-danger b, .notice.notice-danger a { color: var(--red); }
