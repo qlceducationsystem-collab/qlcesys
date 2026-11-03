@@ -111,35 +111,54 @@ function incomeText(p) {
   return null;
 }
 
-function UnassignedContributions({ movements, products, onAssigned }) {
+function SplitAssign({ movement, products, onAssigned }) {
   const { api } = useWorkspace();
-  const [target, setTarget] = useState({});
-  const [state, setState] = useState({ busy: null, error: null });
-  if (!movements.length) return null;
-  const assign = async (m) => {
-    setState({ busy: m.id, error: null });
+  const [rows, setRows] = useState([{ target: '', amount: String(movement.amount) }]);
+  const [state, setState] = useState({ busy: false, error: null });
+  const total = rows.reduce((acc, r) => acc + Number(r.amount || 0), 0);
+  const left = Math.round((movement.amount - total) * 100) / 100;
+  const valid = rows.every((r) => r.target && Number(r.amount) > 0) && left >= -0.004 && new Set(rows.map((r) => r.target)).size === rows.length;
+  const setRow = (i, patch) => setRows(rows.map((r, k) => (k === i ? { ...r, ...patch } : r)));
+  const assign = async () => {
+    setState({ busy: true, error: null });
     try {
-      await api.post(`/portfolio/positions/${target[m.id]}/assign`, { movementId: m.id });
-      setState({ busy: null, error: null });
+      for (const r of rows) await api.post(`/portfolio/positions/${r.target}/assign`, { movementId: movement.id, amount: Number(r.amount) });
+      setState({ busy: false, error: null });
       onAssigned();
     } catch (error) {
-      setState({ busy: null, error });
+      setState({ busy: false, error });
+      onAssigned();
     }
   };
   return (
-    <Card title={tr('Inversión sin asignar')}>
-      <p className="small muted">{tr('Registraste estas aportaciones (por ejemplo, la inversión real del presupuesto) pero aún no indicas en qué producto invertiste. Elige el producto para sumarla a su capital.')}</p>
-      {movements.map((m) => (
-        <div key={m.id} className="inline-form">
-          <span><b>{money(m.amount)}</b> · {tr(m.description)}</span>
-          <select className="input" value={target[m.id] || ''} onChange={(e) => setTarget({ ...target, [m.id]: e.target.value })} aria-label={tr('Producto de destino')}>
+    <div className="split-assign">
+      <span><b>{money(movement.amount)}</b> · {tr(movement.description)}</span>
+      {rows.map((r, i) => (
+        <div key={i} className="inline-form">
+          <select className="input" value={r.target} onChange={(e) => setRow(i, { target: e.target.value })} aria-label={tr('Producto de destino')}>
             <option value="">{tr('Selecciona el producto')}</option>
             {products.map((p) => <option key={p.positionId} value={p.positionId}>{p.name}</option>)}
           </select>
-          <Button variant="secondary" disabled={!target[m.id]} loading={state.busy === m.id} onClick={() => assign(m)}>{tr('Asignar')}</Button>
+          <input className="input amount-input" type="number" inputMode="decimal" min="0" step="0.01" value={r.amount} onChange={(e) => setRow(i, { amount: e.target.value })} aria-label={tr('Monto para este producto')} />
+          {rows.length > 1 && <button type="button" className="btn-link danger" onClick={() => setRows(rows.filter((_, k) => k !== i))}>{tr('Quitar')}</button>}
         </div>
       ))}
+      <div className="row-actions">
+        <button type="button" className="btn-link" onClick={() => setRows([...rows, { target: '', amount: left > 0 ? String(left) : '' }])}>{tr('+ Repartir en otra inversión')}</button>
+        <span className={`small ${left < -0.004 ? 'down' : 'muted'}`}>{left < -0.004 ? tr('Te pasaste por {amount}', { amount: money(Math.abs(left)) }) : tr('Quedan {amount} sin asignar', { amount: money(Math.max(0, left)) })}</span>
+        <Button variant="secondary" disabled={!valid} loading={state.busy} onClick={assign}>{tr('Asignar')}</Button>
+      </div>
       <FormError error={state.error} />
+    </div>
+  );
+}
+
+function UnassignedContributions({ movements, products, onAssigned }) {
+  if (!movements.length) return null;
+  return (
+    <Card title={tr('Inversión sin asignar')}>
+      <p className="small muted">{tr('Registraste estas aportaciones (por ejemplo, la inversión real del presupuesto) pero aún no indicas en qué producto invertiste. Puedes mandar todo a un solo producto o repartirlo entre varios con el monto que elijas para cada uno; lo que no asignes queda pendiente.')}</p>
+      {movements.map((m) => <SplitAssign key={`${m.id}-${m.amount}`} movement={m} products={products} onAssigned={onAssigned} />)}
     </Card>
   );
 }
