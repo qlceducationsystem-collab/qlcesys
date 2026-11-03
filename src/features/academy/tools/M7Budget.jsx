@@ -153,7 +153,18 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
     setDrafts({ ...drafts, [category]: amount });
     setPercent(category, amount === '' ? '' : String(round((Number(amount) / income) * 100, 4)));
   };
-  const addLine = (category, percent = '0') => setLines([...lines, { category, percent }]);
+  const addLine = (category, percent = '0') => {
+    const tail = lines.findIndex((l) => ['FLUJO_DISPONIBLE', 'AHORRO', 'INVERSION'].includes(l.category));
+    const isTarget = ['FLUJO_DISPONIBLE', 'AHORRO', 'INVERSION'].includes(category);
+    if (isTarget || tail < 0) return setLines([...lines, { category, percent }]);
+    setLines([...lines.slice(0, tail), { category, percent }, ...lines.slice(tail)]);
+  };
+  const surplusAction = useAction();
+  const assignSurplus = async (category) => {
+    const current = category === 'AHORRO' ? view.savingsActual : view.investmentActual;
+    if (await surplusAction.run(() => api.put('/academy/budget/actuals', { ...month, category, amount: round(current + view.tableBalance, 2) }))) await reload();
+  };
+  const locked = !data.saved;
   const dirty = data.saved ? income !== data.netIncome || !sameLines(lines, data.lines) : true;
   const templates = history.filter((h) => h.year !== data.year || h.month !== data.month);
   const applyTemplate = () => {
@@ -285,7 +296,12 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
       </ToolCard>
 
       <ToolCard step="3" title={tr('¿Qué ocurrió realmente?')} description={tr('El importe real se toma de Ingresos y gastos. Puedes corregirlo aquí: escribe el total real de la categoría y pulsa Guardar; el ajuste se registra una sola vez en tu información real.')} aside={<KindBadge kind="REAL" />}>
-        {!data.period ? (
+        {locked ? (
+          <div className="locked-step">
+            <b>{tr('Primero guarda tu presupuesto')}</b>
+            <p className="small">{tr('Completa el paso 2 hasta sumar 100% y pulsa «Guardar presupuesto». Después podrás registrar aquí lo que ocurrió realmente en el mes.')}</p>
+          </div>
+        ) : !data.period ? (
           <p className="empty-inline">{tr('Este mes aún no tiene periodo en')}{' '}<Link to={`${basePath}/ingresos-gastos`}>{tr('Ingresos y gastos')}</Link>{tr('. Crea el periodo para registrar movimientos reales.')}</p>
         ) : (
           <>
@@ -309,6 +325,19 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
             />
             <FormError error={realAction.error} />
             <SaveStatus action={realAction} savedText={tr('Importe real actualizado.')} />
+            {view.tableBalance > 0.004 && (
+              <div className="surplus-alert">
+                <b>{tr('Te sobran {amount} este mes (saldo estimado).', { amount: money(view.tableBalance) })}</b>
+                <p className="small">{tr('Es la diferencia positiva entre tu ingreso y todo lo que registraste en tu tabla. Asígnala para que no quede sin destino: puedes sumarla a tu ahorro o a tu inversión real, o registrarla en la categoría que prefieras con «Agregar un movimiento con concepto».')}</p>
+                {editable && (
+                  <div className="row-actions">
+                    <Button type="button" variant="secondary" loading={surplusAction.busy} onClick={() => assignSurplus('AHORRO')}>{tr('Asignar a Ahorro')}</Button>
+                    <Button type="button" variant="secondary" loading={surplusAction.busy} onClick={() => assignSurplus('INVERSION')}>{tr('Asignar a Inversión')}</Button>
+                  </div>
+                )}
+                <FormError error={surplusAction.error} />
+              </div>
+            )}
             {view.investmentActual > 0 && (
               <p className="small warn-text">{tr('Registraste {amount} de inversión real.', { amount: money(view.investmentActual) })}{' '}<Link to={`${basePath}/cartera`}>{tr('Dirígete a Mi portafolio de inversión')}</Link>{' '}{tr('para registrar en qué producto la invertiste. Mientras no la asignes, Inicio te mostrará el aviso.')}</p>
             )}
@@ -348,6 +377,8 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
       </ToolCard>
 
       <ToolCard step="4" title={tr('¿Cómo terminaste el mes?')} description={tr('Resumen del mes con todos los importes reales registrados, incluidos los que están fuera de tu presupuesto.')}>
+        {locked ? <p className="empty-inline">{tr('Disponible cuando guardes tu presupuesto.')}</p> : (
+        <>
         <MetricGrid>
           <MetricCard label={tr('Ingreso mensual neto')} value={money(view.netIncome)} />
           <MetricCard label={tr('Gastos planeados')} value={money(view.expensesPlanned)} hint={tr('Categorías de gasto de tu tabla')} />
@@ -374,6 +405,8 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
           )}
           <p className="small muted">{tr('Usa este resultado para ajustar el presupuesto del próximo mes.')}</p>
         </div>
+        </>
+        )}
       </ToolCard>
     </>
   );

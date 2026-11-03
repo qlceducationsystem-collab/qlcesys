@@ -23,7 +23,7 @@ function ProductForm({ initial, onSubmit, onCancel, busy, error }) {
     <form className="stack" onSubmit={(e) => { e.preventDefault(); onSubmit(f); }}>
       <div className="form-grid cols-3">
         <Field label={tr('Nombre del producto')}><Input required maxLength={120} placeholder={tr('Ej. CETES, BTC, casa, negocio')} value={f.name} onChange={set('name')} /></Field>
-        <Field label={tr('Tipo')}><Select value={f.productType} onChange={set('productType')} options={options.productTypes} /></Field>
+        <Field label={tr('Tipo')}><Select value={f.productType} onChange={set('productType')} options={options.productTypes.filter((o) => o.value !== 'LIQUIDEZ' || f.productType === 'LIQUIDEZ')} /></Field>
         <Field label={tr('Capital actual')}><MoneyInput required min="0.01" value={f.capital} onChange={set('capital')} placeholder="0" /></Field>
         <Field label={tr('Horizonte')}><Select value={f.horizon} onChange={set('horizon')} options={options.horizons} /></Field>
         <Field label={tr('Liquidez')}><Select value={f.liquidityLevel} onChange={set('liquidityLevel')} options={options.liquidity} /></Field>

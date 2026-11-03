@@ -483,3 +483,5 @@ a.module-tile:hover { transform: translateY(-2px); border-color: rgba(0, 168, 25
 .indicator-glossary dt { margin: 0 0 6px; color: var(--text); font-weight: 700; font-size: 14px; }
 .indicator-glossary dd { margin: 0; color: var(--silver); font-size: 13px; line-height: 1.6; }
 @media (max-width: 760px) { .indicator-glossary { grid-template-columns: minmax(0, 1fr); } }
+.locked-step { display: flex; flex-direction: column; gap: 6px; padding: 16px; border: 1px dashed var(--line2); border-radius: 12px; }
+.surplus-alert { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; padding: 14px 16px; border: 1px solid rgba(228, 185, 92, 0.45); border-radius: 12px; }

@@ -79,7 +79,7 @@ function DashboardBody({ d }) {
   const s = d.summary;
   const prev = d.history.length > 1 ? d.history[d.history.length - 2] : null;
   const debtExpenses = s.cashflow.expenseByCategory?.find((c) => c.key === 'DEUDAS')?.amount || 0;
-  const liquidity = (d.allocation?.shares.find((x) => x.key === 'LIQUIDEZ')?.amount || 0) + s.protection.total;
+  const liquidity = (s.portfolio.categories.find((c) => c.code === 'LIQUIDEZ')?.final || 0) + s.protection.total;
   const evolution = d.history.map((h) => ({ label: `${shortMonth(h.month)} ${String(h.year).slice(2)}`, value: h.netWorth }));
 
   return (

@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useWorkspace } from '../../../context/WorkspaceContext.jsx';
 import { useAsync } from '../../../hooks/useAsync.js';
-import { money } from '../../../utils/format.js';
+import { dateTime, money } from '../../../utils/format.js';
+import { DataTable } from '../../../components/ui/DataTable.jsx';
 import { Button } from '../../../components/ui/Button.jsx';
 import { Field, FormError, MoneyInput } from '../../../components/ui/Form.jsx';
 import { ErrorState, Loading } from '../../../components/ui/States.jsx';
@@ -48,9 +49,8 @@ function CurrentPortfolio() {
   );
 }
 
-function EducationalSimulation() {
+function EducationalSimulation({ sim }) {
   const { canEdit } = useWorkspace();
-  const sim = useSimulation(3, SIM_DEFAULT);
   return (
     <ToolCard step="1" title={tr('Simulación educativa')} description={tr('Experimenta con otra distribución. No modifica tu portafolio real.')} aside={<SimBadge />}>
       <form className="stack" onSubmit={(e) => { e.preventDefault(); sim.run(false); }}>
@@ -66,7 +66,7 @@ function EducationalSimulation() {
           <Button type="submit" loading={sim.busy}>{tr('Simular distribución')}</Button>
         </div>
       </form>
-      {sim.savedAt && <p className="small up">{tr('Simulación guardada en tu historial educativo.')}</p>}
+      {sim.savedAt && <p className="small up">{tr('Simulación guardada. La encuentras al final de esta página, en «Simulaciones guardadas».')}</p>}
       {sim.result && (
         <div className="split-panel">
           <div>
@@ -80,11 +80,36 @@ function EducationalSimulation() {
   );
 }
 
+function SavedSimulations({ sim }) {
+  if (!sim.history.length) return null;
+  const load = (s) => {
+    sim.setInput(s.input);
+    sim.run(false, s.input);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  return (
+    <ToolCard step="3" title={tr('Simulaciones guardadas')} description={tr('Tus simulaciones guardadas. Pertenecen a tu progreso educativo y no modifican tu portafolio real.')} aside={<SimBadge />}>
+      <DataTable
+        rows={sim.history.slice(0, 10)}
+        columns={[
+          { key: 'createdAt', label: tr('Fecha'), render: (s) => dateTime(s.createdAt) },
+          { key: 'total', label: tr('Portafolio simulado'), align: 'right', render: (s) => money(s.result?.total) },
+          { key: 'categories', label: tr('Categorías'), render: (s) => `${s.result?.categoriesUsed ?? '—'} / 6` },
+          { key: 'reading', label: tr('Lectura'), render: (s) => (s.result?.reading ? `${tr(s.result.reading.label)} · ${s.result.reading.score}/100` : '—') },
+          { key: 'x', label: '', align: 'right', render: (s) => <button type="button" className="btn-link" onClick={() => load(s)}>{tr('Ver de nuevo')}</button> },
+        ]}
+      />
+    </ToolCard>
+  );
+}
+
 export function M3PortfolioBuilder() {
+  const sim = useSimulation(3, SIM_DEFAULT);
   return (
     <div className="tool">
-      <EducationalSimulation />
+      <EducationalSimulation sim={sim} />
       <CurrentPortfolio />
+      <SavedSimulations sim={sim} />
     </div>
   );
 }

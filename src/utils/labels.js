@@ -40,7 +40,7 @@ export const PERCEIVED_RISK = { BAJO: 'Bajo', MEDIO: 'Medio', ALTO: 'Alto', MUY_
 export const RISK_TOLERANCE = { CONSERVADOR: 'Conservador', MODERADO: 'Moderado', ALTO: 'Alto' };
 export const FINANCIAL_GOALS = {
   CONSTRUIR_PATRIMONIO: 'Construir patrimonio', FONDO_EMERGENCIA: 'Crear fondo de emergencia',
-  INVERTIR_MEJOR: 'Invertir mejor', REDUCIR_DEUDAS: 'Reducir deudas',
+  INVERTIR_MEJOR: 'Invertir mejor', REDUCIR_DEUDAS: 'Reducir deudas', OTRO: 'Otro: escribir mi objetivo…',
 };
 export const AUTOMATION_LEVELS = { MANUAL: 'Manual', SEMI: 'Semiautomatizado', AUTO: 'Automatizado' };
 export const MONITORING_LEVELS = { BASIC: 'Básico', CONTINUOUS: 'Continuo', ALERTS: 'Continuo + alertas' };
@@ -124,7 +124,7 @@ const EN = {
   LIQUIDITY_LEVELS: { ALTA: 'High', MEDIA: 'Medium', BAJA: 'Low' },
   PERCEIVED_RISK: { BAJO: 'Low', MEDIO: 'Medium', ALTO: 'High', MUY_ALTO: 'Very high' },
   RISK_TOLERANCE: { CONSERVADOR: 'Conservative', MODERADO: 'Moderate', ALTO: 'High' },
-  FINANCIAL_GOALS: { CONSTRUIR_PATRIMONIO: 'Build wealth', FONDO_EMERGENCIA: 'Create an emergency fund', INVERTIR_MEJOR: 'Invest better', REDUCIR_DEUDAS: 'Reduce debt' },
+  FINANCIAL_GOALS: { CONSTRUIR_PATRIMONIO: 'Build wealth', FONDO_EMERGENCIA: 'Create an emergency fund', INVERTIR_MEJOR: 'Invest better', REDUCIR_DEUDAS: 'Reduce debt', OTRO: 'Other: write my goal…' },
   AUTOMATION_LEVELS: { MANUAL: 'Manual', SEMI: 'Semi-automated', AUTO: 'Automated' },
   MONITORING_LEVELS: { BASIC: 'Basic', CONTINUOUS: 'Continuous', ALERTS: 'Continuous + alerts' },
   MODULE_STATE: {

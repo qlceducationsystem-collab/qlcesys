@@ -6,7 +6,7 @@ import { usePeriodSummary } from '../../../hooks/usePeriodSummary.js';
 import { money, pct } from '../../../utils/format.js';
 import { options } from '../../../utils/labels.js';
 import { Button } from '../../../components/ui/Button.jsx';
-import { Field, FormError, MoneyInput, Select } from '../../../components/ui/Form.jsx';
+import { Field, FormError, Input, MoneyInput, Select } from '../../../components/ui/Form.jsx';
 import { Loading, ErrorState } from '../../../components/ui/States.jsx';
 import { MetricCard, MetricGrid, RealBadge, ToolCard } from '../ResultParts.jsx';
 import { tr } from '../../../i18n/tr.js';
@@ -14,7 +14,7 @@ import { tr } from '../../../i18n/tr.js';
 const EMPTY = {
   income: '', expenses: '', debtPayment: '', monthlyInvestment: '',
   cash: '', investments: '', otherAssets: '', totalDebt: '',
-  emergencyFund: '', riskTolerance: 'MODERADO', mainGoal: 'CONSTRUIR_PATRIMONIO',
+  emergencyFund: '', riskTolerance: 'MODERADO', mainGoal: 'CONSTRUIR_PATRIMONIO', mainGoalCustom: '',
 };
 
 const GROUPS = [
@@ -102,6 +102,11 @@ export function M1Diagnosis({ onSaved }) {
             <Field label={tr('Objetivo financiero principal')} full>
               <Select value={values.mainGoal} onChange={set('mainGoal')} options={options.goals} disabled={!canEdit} />
             </Field>
+            {values.mainGoal === 'OTRO' && (
+              <Field label={tr('Escribe tu objetivo financiero')} full>
+                <Input value={values.mainGoalCustom || ''} onChange={set('mainGoalCustom')} maxLength={120} placeholder={tr('Ej. Comprar mi casa, estudiar una maestría, retirarme a los 55')} disabled={!canEdit} />
+              </Field>
+            )}
           </div>
         </ToolCard>
         <ToolCard title={tr('¿A dónde va esta información?')} description={tr('No se crea una base separada: tus datos alimentan la plataforma.')}>
