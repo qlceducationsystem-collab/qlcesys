@@ -39,12 +39,12 @@ function productFields(categories, period) {
     {
       name: 'finalCapital', label: tr('Capital final'), type: 'money', display: money,
       compute: (v) => {
-        if (manualIncome(v)) return Number(v.initialCapital || 0) + Number(v.incomeValue || 0);
+        if (manualIncome(v)) return Number(v.initialCapital || 0) + netIncome(v);
         if (!auto(v)) return null;
         return Number(v.initialCapital || 0) + (isDue(period, v.incomeDay) ? expectedIncome(v) : 0);
       },
       hint: (v) => {
-        if (manualIncome(v)) return tr('Se calcula solo: capital inicial + la rentabilidad que recibiste este mes.');
+        if (manualIncome(v)) return tr('Se calcula solo: capital inicial + la ganancia − la pérdida de este mes.');
         if (!auto(v)) return tr('Escribe el capital final, o registra abajo la rentabilidad del mes para que se calcule solo.');
         const income = expectedIncome(v);
         if (income > 0 && v.incomeDay && isDue(period, v.incomeDay)) return tr('Se calcula solo: ya incluye {income} de rentabilidad de este mes.', { income: money(income) });
@@ -60,8 +60,13 @@ function productFields(categories, period) {
     },
     {
       name: 'incomeValue', type: 'number', step: 'any', min: 0, required: false,
-      label: (v) => (auto(v) ? tr('Monto o % mensual') : tr('Rentabilidad recibida este mes (opcional)')),
-      hint: (v) => (auto(v) ? tr('Ej. 12000 de renta, o 0.85 si es % mensual.') : tr('Monto en pesos. Déjalo vacío si este mes no recibiste rentabilidad.')),
+      label: (v) => (auto(v) ? tr('Monto o % mensual') : tr('Ganancia de este mes (opcional)')),
+      hint: (v) => (auto(v) ? tr('Ej. 12000 de renta, o 0.85 si es % mensual.') : tr('Monto en pesos que ganó el producto. Escribe 0 si no generó rentabilidad.')),
+    },
+    {
+      name: 'incomeLoss', type: 'number', step: 'any', min: 0, required: false, when: (v) => !auto(v),
+      label: tr('Pérdida de este mes (opcional)'),
+      hint: tr('Monto en pesos que perdió el producto este mes. Se resta de su capital final.'),
     },
     {
       name: 'incomeDay', type: 'number', step: 1, min: 1, max: 31, required: false,
@@ -82,16 +87,17 @@ const INCOME_TERMS = [3, 6, 12];
 const termLabel = (m) => (m === 12 ? tr('1 año') : tr('{n} meses', { n: m }));
 const auto = (v) => v.incomeType === 'AMOUNT' || v.incomeType === 'PERCENT';
 const filled = (x) => x !== '' && x !== null && x !== undefined;
-const manualIncome = (v) => !auto(v) && filled(v.incomeValue);
+const manualIncome = (v) => !auto(v) && (filled(v.incomeValue) || filled(v.incomeLoss));
+const netIncome = (v) => Number(v.incomeValue || 0) - Number(v.incomeLoss || 0);
 const expectedIncome = (v) => (v.incomeType === 'PERCENT' ? (Number(v.initialCapital || 0) * Number(v.incomeValue || 0)) / 100 : Number(v.incomeValue || 0));
 const todayKey = () => new Date().toISOString().slice(0, 10);
 const isDue = (period, day) => !!day && dueDate(period, Number(day)) <= todayKey();
 const incomeBody = (v) => {
-  const { incomeApplied: _omit, carried: _carried, ...rest } = v;
+  const { incomeApplied: _omit, carried: _carried, incomeLoss: _loss, ...rest } = v;
   return {
     ...rest,
     incomeType: auto(v) ? v.incomeType : 'MANUAL',
-    incomeValue: filled(v.incomeValue) ? Number(v.incomeValue) : null,
+    incomeValue: auto(v) ? (filled(v.incomeValue) ? Number(v.incomeValue) : null) : manualIncome(v) ? netIncome(v) : null,
     incomeDay: filled(v.incomeDay) ? Number(v.incomeDay) : null,
     incomeTerm: auto(v) && v.incomeTerm ? Number(v.incomeTerm) : null,
   };
@@ -362,7 +368,9 @@ function ProductCard({ p, writable, onEdit, onDelete, basePath }) {
           {p.incomeDate && p.incomeAmount === 0
             ? tr('Este mes no se recibió rentabilidad')
             : p.incomeDate
-            ? tr('Este mes: +{amount} el {date}', { amount: money(p.incomeAmount), date: date(p.incomeDate) })
+            ? (p.incomeAmount < 0
+              ? tr('Este mes: pérdida de {amount} el {date}', { amount: money(-p.incomeAmount), date: date(p.incomeDate) })
+              : tr('Este mes: +{amount} el {date}', { amount: money(p.incomeAmount), date: date(p.incomeDate) }))
             : p.incomeType ? tr('Se sumará automáticamente el día {day}', { day: p.incomeDay }) : tr('Sin rentabilidad registrada este mes')}
         </span>
         {writable && <button className="btn-link" onClick={onEdit}>{tr('Cambiar en Editar')}</button>}
@@ -418,7 +426,8 @@ function PortfolioBody({ summary, categories, decisions, customCategories, reloa
     categoryCode: p.categoryCode, name: p.name, institution: p.institution || '', notes: p.notes || '',
     initialCapital: p.initial, finalCapital: p.final,
     incomeType: p.incomeType || 'MANUAL',
-    incomeValue: p.incomeType ? p.incomeValue ?? '' : p.incomeDate ? p.incomeAmount : '',
+    incomeValue: p.incomeType ? p.incomeValue ?? '' : p.incomeDate && p.incomeAmount >= 0 ? p.incomeAmount : '',
+    incomeLoss: !p.incomeType && p.incomeDate && p.incomeAmount < 0 ? -p.incomeAmount : '',
     incomeDay: p.incomeType ? p.incomeDay ?? '' : p.incomeDate ? new Date(p.incomeDate).getUTCDate() : '',
     incomeTerm: p.incomeTerm ? String(p.incomeTerm) : '',
     carried: carried.has(p.positionId),
@@ -503,7 +512,7 @@ function PortfolioBody({ summary, categories, decisions, customCategories, reloa
         <Modal open title={form.product ? tr('Editar producto') : tr('Agregar producto')} onClose={() => setForm(null)}>
           <RecordForm
             fields={fields}
-            initial={form.product ? toForm(form.product) : { categoryCode: form.categoryCode || '', name: '', institution: '', notes: '', initialCapital: '', finalCapital: '', incomeType: 'MANUAL', incomeValue: '', incomeDay: '', incomeTerm: '' }}
+            initial={form.product ? toForm(form.product) : { categoryCode: form.categoryCode || '', name: '', institution: '', notes: '', initialCapital: '', finalCapital: '', incomeType: 'MANUAL', incomeValue: '', incomeLoss: '', incomeDay: '', incomeTerm: '' }}
             onSubmit={save}
             onCancel={() => setForm(null)}
           />
