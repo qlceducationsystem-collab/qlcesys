@@ -42,6 +42,11 @@ export function AllocationBars({ allocation, format = money }) {
           <div className="alloc-row-head"><span>{tr(s.label)}</span><b>{pct(s.share)}</b></div>
           <div className="alloc-track"><span style={{ width: `${s.share}%` }} /></div>
           <small>{format(s.amount)}</small>
+          {s.items?.length > 0 && (
+            <ul className="alloc-items">
+              {s.items.map((item, i) => <li key={`${item.name}-${i}`}><span>{tr(item.name)}</span><span>{format(item.amount)}</span></li>)}
+            </ul>
+          )}
         </div>
       ))}
     </div>

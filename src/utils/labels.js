@@ -5,7 +5,7 @@ export const INCOME_CATEGORIES = {
 };
 
 export const EXPENSE_CATEGORIES = {
-  VIVIENDA: 'Vivienda', ALIMENTACION: 'Alimentación', SERVICIOS: 'Servicios', TRANSPORTE: 'Transporte', SEGUROS: 'Seguros',
+  VIVIENDA: 'Renta de vivienda', ALIMENTACION: 'Alimentación', SERVICIOS: 'Servicios', TRANSPORTE: 'Transporte', SEGUROS: 'Seguros',
   EDUCACION: 'Educación', ENTRETENIMIENTO: 'Entretenimiento', VIAJES: 'Viajes', DEUDAS: 'Deudas', OTROS: 'Otros',
 };
 

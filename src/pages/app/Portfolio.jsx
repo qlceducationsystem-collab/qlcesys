@@ -412,7 +412,7 @@ function PortfolioBody({ summary, categories, decisions, customCategories, reloa
       {writable && <UnassignedContributions movements={summary.patrimony.unassignedMovements || []} products={portfolio.products} onAssigned={reload} />}
 
       {portfolio.products.length === 0 && (
-        <Empty title={tr('Tu portafolio está vacía')} text={tr('Agrega tus productos (CETES, acciones, Casa A, Negocio A…) con su capital inicial y final del periodo.')}
+        <Empty title={tr('Tu portafolio está vacía')} text={tr('Agrega tus productos (bonos, acciones, Casa A, Negocio A…) con su capital inicial y final del periodo.')}
           action={writable && <Button onClick={() => setForm({ product: null })}>{tr('Agregar primer producto')}</Button>} />
       )}
 

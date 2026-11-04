@@ -227,7 +227,7 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
         )}
       </ToolCard>
 
-      <ToolCard step="2" title={tr('¿Cómo quieres distribuirlo?')} description={tr('Asigna un porcentaje o escribe directamente el importe planeado; el otro valor se calcula solo. Distribuir el 100% no significa que el dinero ya se gastó: solo le das un destino.')} aside={<KindBadge kind="PLAN" />}>
+      <ToolCard step="2" title={tr('¿Cómo quieres distribuirlo?')} description={tr('Asigna un porcentaje o escribe directamente el importe planeado; el otro valor se calcula solo. Las categorías que ves son un ejemplo: puedes llenarlas, quitar las que no uses con «Quitar» y agregar las tuyas propias con «Agregar categoría». Distribuir el 100% no significa que el dinero ya se gastó: solo le das un destino.')} aside={<KindBadge kind="PLAN" />}>
         <DataTable
           rowKey="category"
           rows={view.rows}
