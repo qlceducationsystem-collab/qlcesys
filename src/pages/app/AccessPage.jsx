@@ -57,6 +57,58 @@ function ResetProfile() {
   );
 }
 
+const MONTH_NAMES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+const periodName = (p) => `${MONTH_NAMES[p.month - 1]} ${p.year}`;
+
+function ResetPeriod() {
+  const { periods, period, reloadPeriods } = useWorkspace();
+  const open = (periods || []).filter((p) => p.status === 'OPEN');
+  const [selected, setSelected] = useState('');
+  const [show, setShow] = useState(false);
+  const [word, setWord] = useState('');
+  const [state, setState] = useState({ busy: false, error: null, done: null });
+  const target = open.find((p) => p.id === (selected || period?.id)) || open[0];
+  if (!target) return null;
+  const reset = async () => {
+    setState({ busy: true, error: null, done: null });
+    try {
+      const fresh = await api.post(`/periods/${target.id}/reset`, { confirm: word.trim().toUpperCase() });
+      await reloadPeriods(fresh.id);
+      setShow(false);
+      setWord('');
+      setState({ busy: false, error: null, done: periodName(fresh) });
+    } catch (error) {
+      setState({ busy: false, error, done: null });
+    }
+  };
+  return (
+    <Card title={tr('Reiniciar solo un periodo mensual')}>
+      <p className="small muted">{tr('Borra únicamente la información del mes que elijas: ingresos y gastos, movimientos, protección, deudas del mes, presupuesto, aportaciones y cambios de tu portafolio en ese mes. Los demás meses, tu diagnóstico y tu avance de la academia no se tocan. No se puede deshacer.')}</p>
+      <div className="inline-form">
+        <Field label={tr('Periodo a reiniciar')}>
+          <select className="input" value={target.id} onChange={(e) => setSelected(e.target.value)}>
+            {open.map((p) => <option key={p.id} value={p.id}>{periodName(p)}</option>)}
+          </select>
+        </Field>
+        <Button variant="secondary" onClick={() => setShow(true)}>{tr('Reiniciar este periodo')}</Button>
+      </div>
+      {state.done && <p className="small up">{tr('El periodo {name} quedó reiniciado.', { name: state.done })}</p>}
+      <Modal
+        open={show}
+        title={tr('¿Reiniciar {name}?', { name: periodName(target) })}
+        onClose={() => setShow(false)}
+        footer={<><Button variant="secondary" onClick={() => setShow(false)}>{tr('Cancelar')}</Button><Button loading={state.busy} disabled={word.trim().toUpperCase() !== 'REINICIAR'} onClick={reset}>{tr('Reiniciar el periodo')}</Button></>}
+      >
+        <div className="stack">
+          <p>{tr('Se borrará solo la información de {name}. Esta acción no se puede deshacer.', { name: periodName(target) })}</p>
+          <Field label={tr('Escribe REINICIAR para confirmar')}><Input value={word} onChange={(e) => setWord(e.target.value)} autoComplete="off" /></Field>
+          <FormError error={state.error} />
+        </div>
+      </Modal>
+    </Card>
+  );
+}
+
 function DeleteAccount() {
   const { logout } = useAuth();
   const [open, setOpen] = useState(false);
@@ -129,6 +181,7 @@ export default function AccessPage() {
         />
       </Card>
       {isClient && <DataShareCard />}
+      {isClient && <ResetPeriod />}
       {isClient && <ResetProfile />}
       {isClient && <DeleteAccount />}
     </>

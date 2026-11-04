@@ -108,7 +108,7 @@ export function Block2Summary({ patrimonial, academy }) {
         ))}
       </div>
       <ProgressBar value={academy.block2ProgressPct} label={tr('Progreso del bloque 2')} />
-      <Row label={tr('Presupuesto del mes')} value={p.budget ? signedMoney(p.budget.view.expenseDifference) : tr('Sin presupuesto')} sub={p.budget ? tr('Gasto planeado − real') : tr('Módulo 7')} valueTone={p.budget ? (p.budget.view.expenseDifference < 0 ? 'down' : 'up') : ''} />
+      <Row label={tr('Presupuesto del mes')} value={p.budget ? signedMoney(p.budget.view.expenseDifference) : tr('Sin presupuesto')} sub={p.budget ? tr('Gasto planeado ± real') : tr('Módulo 7')} valueTone={p.budget ? (p.budget.view.expenseDifference < 0 ? 'down' : 'up') : ''} />
       <Row label={tr('Fondo de emergencia')} value={e?.valid ? tr('{n} meses', { n: e.monthsCovered.toFixed(1) }) : tr('Sin datos')} sub={e?.valid ? tr('{pct} de la meta', { pct: pct(e.progressVisual) }) : tr('Módulo 8')} />
       <Row label={tr('Deuda total')} value={money(p.debts?.balance ?? 0)} sub={`Pagos planeados ${money(p.debts?.payments ?? 0)}`} />
       <Row label={tr('Ganancia neta estimada')} value={p.estimates ? money(p.estimates.net) : tr('Sin análisis')} sub={p.estimates ? tr('Estimación · no es ingreso real') : tr('Módulo 10')} />

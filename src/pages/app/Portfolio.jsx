@@ -111,9 +111,48 @@ function incomeText(p) {
   return null;
 }
 
+const CUSTOM_TARGET = '__custom__';
+const PRODUCT_KINDS = [['RENTA_FIJA', 'Renta fija'], ['RENTA_VARIABLE', 'Renta variable'], ['BIENES_RAICES', 'Bienes raíces'], ['NEGOCIO', 'Negocio'], ['ACTIVO_DIGITAL', 'Activo digital'], ['ALTO_RIESGO', 'Alto riesgo']];
+
+function CustomInvestmentModal({ onClose, onCreated }) {
+  const { api, period } = useWorkspace();
+  const [f, setF] = useState({ name: '', productType: 'RENTA_FIJA', horizon: 'MEDIANO', liquidityLevel: 'MEDIA', perceivedRisk: 'MEDIO' });
+  const [state, setState] = useState({ busy: false, error: null });
+  const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
+  const save = async () => {
+    setState({ busy: true, error: null });
+    try {
+      const asset = await api.post('/portfolio/custom-investment', { ...f, name: f.name.trim(), capital: 0 });
+      const summary = await api.get(`/periods/${period.id}/summary`);
+      const pos = summary.summary.portfolio.products.find((x) => x.assetId === asset.id);
+      onCreated(pos?.positionId || null);
+    } catch (error) {
+      setState({ busy: false, error });
+    }
+  };
+  return (
+    <Modal open title={tr('Inversión personalizada')} onClose={onClose}
+      footer={<Button onClick={save} loading={state.busy} disabled={!f.name.trim()}>{tr('Crear y usar esta inversión')}</Button>}>
+      <div className="stack">
+        <p className="small muted">{tr('Agrega una inversión con el nombre que tú quieras. Solo se crea en tu cuenta: nadie más la ve. Se clasifica en el Módulo 2 y en Mi portafolio de inversión con el tipo que elijas.')}</p>
+        <Field label={tr('Nombre de la inversión')}><Input autoFocus maxLength={120} value={f.name} onChange={(e) => setF({ ...f, name: e.target.value.toUpperCase() })} placeholder={tr('Ej. BONOS DEL TESORO, BTC, CASA, NEGOCIO')} /></Field>
+        <Field label={tr('Tipo')}><select className="input" value={f.productType} onChange={set('productType')}>{PRODUCT_KINDS.map(([v, l]) => <option key={v} value={v}>{tr(l)}</option>)}</select></Field>
+        <div className="form-grid cols-3">
+          <Field label={tr('Horizonte')}><select className="input" value={f.horizon} onChange={set('horizon')}><option value="CORTO">{tr('Corto plazo')}</option><option value="MEDIANO">{tr('Mediano plazo')}</option><option value="LARGO">{tr('Largo plazo')}</option></select></Field>
+          <Field label={tr('Liquidez')}><select className="input" value={f.liquidityLevel} onChange={set('liquidityLevel')}><option value="ALTA">{tr('Alta')}</option><option value="MEDIA">{tr('Media')}</option><option value="BAJA">{tr('Baja')}</option></select></Field>
+          <Field label={tr('Riesgo percibido')}><select className="input" value={f.perceivedRisk} onChange={set('perceivedRisk')}><option value="BAJO">{tr('Bajo')}</option><option value="MEDIO">{tr('Medio')}</option><option value="ALTO">{tr('Alto')}</option><option value="MUY_ALTO">{tr('Muy alto')}</option></select></Field>
+        </div>
+        <FormError error={state.error} />
+      </div>
+    </Modal>
+  );
+}
+
 function SplitAssign({ movement, products, onAssigned }) {
-  const { api } = useWorkspace();
+  const { api, period } = useWorkspace();
   const [rows, setRows] = useState([{ target: '', amount: String(movement.amount) }]);
+  const [creating, setCreating] = useState(null);
+  const [extra, setExtra] = useState([]);
   const [state, setState] = useState({ busy: false, error: null });
   const total = rows.reduce((acc, r) => acc + Number(r.amount || 0), 0);
   const left = Math.round((movement.amount - total) * 100) / 100;
@@ -135,9 +174,10 @@ function SplitAssign({ movement, products, onAssigned }) {
       <span><b>{money(movement.amount)}</b> · {tr(movement.description)}</span>
       {rows.map((r, i) => (
         <div key={i} className="inline-form">
-          <select className="input" value={r.target} onChange={(e) => setRow(i, { target: e.target.value })} aria-label={tr('Producto de destino')}>
+          <select className="input" value={r.target} onChange={(e) => (e.target.value === CUSTOM_TARGET ? setCreating(i) : setRow(i, { target: e.target.value }))} aria-label={tr('Producto de destino')}>
             <option value="">{tr('Selecciona el producto')}</option>
-            {products.map((p) => <option key={p.positionId} value={p.positionId}>{p.name}</option>)}
+            {[...products, ...extra].map((p) => <option key={p.positionId} value={p.positionId}>{p.name}</option>)}
+            <option value={CUSTOM_TARGET}>{tr('+ Inversión personalizada…')}</option>
           </select>
           <input className="input amount-input" type="number" inputMode="decimal" min="0" step="0.01" value={r.amount} onChange={(e) => setRow(i, { amount: e.target.value })} aria-label={tr('Monto para este producto')} />
           {rows.length > 1 && <button type="button" className="btn-link danger" onClick={() => setRows(rows.filter((_, k) => k !== i))}>{tr('Quitar')}</button>}
@@ -149,6 +189,20 @@ function SplitAssign({ movement, products, onAssigned }) {
         <Button variant="secondary" disabled={!valid} loading={state.busy} onClick={assign}>{tr('Asignar')}</Button>
       </div>
       <FormError error={state.error} />
+      {creating !== null && (
+        <CustomInvestmentModal
+          onClose={() => setCreating(null)}
+          onCreated={async (positionId) => {
+            if (positionId) {
+              const summary = await api.get(`/periods/${period.id}/summary`);
+              const pos = summary.summary.portfolio.products.find((x) => x.positionId === positionId);
+              if (pos) setExtra((list) => [...list, pos]);
+              setRow(creating, { target: positionId });
+            }
+            setCreating(null);
+          }}
+        />
+      )}
     </div>
   );
 }

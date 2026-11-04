@@ -425,7 +425,10 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
 }
 
 function BudgetHistory({ history, current, onSelect }) {
+  const { api } = useWorkspace();
+  const [error, setError] = useState(null);
   if (!history.length) return null;
+  const download = (h) => api.download(`/academy/budget/pdf?year=${h.year}&month=${h.month}`, `QLC_Presupuesto_${h.year}_${String(h.month).padStart(2, '0')}.pdf`).catch(setError);
   return (
     <ToolCard title={tr('Presupuestos guardados')} description={tr('Cada presupuesto se guarda por mes en tu cuenta. Abre uno para revisarlo, corregirlo o copiar su distribución a otro mes.')}>
       <DataTable
@@ -436,9 +439,15 @@ function BudgetHistory({ history, current, onSelect }) {
           { key: 'netIncome', label: tr('Ingreso neto'), align: 'right', render: (h) => money(h.netIncome) },
           { key: 'lines', label: tr('Distribución'), render: (h) => <span className="small">{h.lines.map((l) => `${categoryLabel(l.category)} ${pct(l.percent)}`).join(' · ')}</span> },
           { key: 'updatedAt', label: tr('Guardado'), render: (h) => <span className="small">{dateTime(h.updatedAt)}</span> },
-          { key: 'x', label: '', align: 'right', render: (h) => (h.year === current.year && h.month === current.month ? <span className="small muted">{tr('Abierto')}</span> : <button type="button" className="btn-link" onClick={() => onSelect({ year: h.year, month: h.month })}>{tr('Abrir')}</button>) },
+          { key: 'x', label: '', align: 'right', render: (h) => (
+            <span className="row-actions">
+              <button type="button" className="btn-link" onClick={() => download(h)}>{tr('Descargar PDF')}</button>
+              {h.year === current.year && h.month === current.month ? <span className="small muted">{tr('Abierto')}</span> : <button type="button" className="btn-link" onClick={() => onSelect({ year: h.year, month: h.month })}>{tr('Abrir')}</button>}
+            </span>
+          ) },
         ]}
       />
+      <FormError error={error} />
     </ToolCard>
   );
 }
