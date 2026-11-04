@@ -24,7 +24,7 @@ function OfferEditor({ offer, onSaved, canEdit }) {
       await api.put(`/admin/pricing/${offer.code}`, {
         ...f,
         price: f.price === '' ? null : Number(f.price),
-        accessDays: Number(f.accessDays || (offer.type === 'FULL_ANNUAL' ? 365 : 30)),
+        accessDays: Number(f.accessDays || (offer.type === 'TOOL_ONLY' ? 30 : 365)),
       });
       setConfirm(false);
       setState({ busy: false, error: null });
@@ -45,7 +45,7 @@ function OfferEditor({ offer, onSaved, canEdit }) {
         <Field label={tr('Nombre')} full><Input value={f.name} onChange={set('name')} disabled={!canEdit} /></Field>
         <Field label={tr('Precio')} hint={tr('Vacío = Precio por definir')}><MoneyInput value={f.price} onChange={set('price')} disabled={!canEdit} placeholder={tr('Por definir')} /></Field>
         <Field label={tr('Moneda')}><Input maxLength={3} value={f.currency} onChange={set('currency')} disabled={!canEdit} /></Field>
-        <Field label={offer.type === 'FULL_ANNUAL' ? tr('Días de acceso') : tr('Días por mensualidad')}><Input type="number" min="1" value={f.accessDays} onChange={set('accessDays')} disabled={!canEdit} /></Field>
+        <Field label={offer.type !== 'TOOL_ONLY' ? tr('Días de acceso') : tr('Días por mensualidad')}><Input type="number" min="1" value={f.accessDays} onChange={set('accessDays')} disabled={!canEdit} /></Field>
         <label className="check"><input type="checkbox" checked={f.active} onChange={set('active')} disabled={!canEdit} />{' '}{tr('Disponible para compra')}</label>
         <label className="check"><input type="checkbox" checked={f.giftable} onChange={set('giftable')} disabled={!canEdit} />{' '}{tr('Se puede regalar (QLC Gift Access)')}</label>
       </div>
@@ -68,6 +68,34 @@ function OfferEditor({ offer, onSaved, canEdit }) {
   );
 }
 
+function MasterclassSettings({ canEdit }) {
+  const res = useAsync(() => api.get('/admin/masterclass/settings'), []);
+  const [state, setState] = useState({ busy: false, error: null });
+  const toggle = async (includedWithFull) => {
+    setState({ busy: true, error: null });
+    try {
+      await api.put('/admin/masterclass/settings', { includedWithFull });
+      await res.reload();
+      setState({ busy: false, error: null });
+    } catch (error) {
+      setState({ busy: false, error });
+    }
+  };
+  if (!res.data) return null;
+  return (
+    <div className="stack">
+      <label className="check">
+        <input type="checkbox" checked={res.data.includedWithFull} disabled={!canEdit || state.busy} onChange={(e) => toggle(e.target.checked)} />
+        {' '}{tr('Incluir la Masterclass en el acceso completo anual')}
+      </label>
+      <p className="small muted">{res.data.includedWithFull
+        ? tr('Hoy la Masterclass se muestra a todos los clientes con acceso completo. Para cobrarla aparte, define su precio abajo, márcala como disponible para compra y desactiva esta casilla.')
+        : tr('La Masterclass se cobra aparte: solo la ven quienes compran el producto Masterclass.')}</p>
+      <FormError error={state.error} />
+    </div>
+  );
+}
+
 export default function AdminPricing() {
   const { user } = useAuth();
   const res = useAsync(() => api.get('/admin/pricing'), []);
@@ -84,6 +112,10 @@ export default function AdminPricing() {
             </Card>
             <Card title={tr('Solo herramientas · un solo pago mensual por las 12 herramientas')}>
               <div className="price-grid single">{offers.filter((o) => o.type === 'TOOL_ONLY' && !o.moduleNumber).map((o) => <OfferEditor key={`${o.code}-${o.price}-${o.active}`} offer={o} onSaved={res.reload} canEdit={canEdit} />)}</div>
+            </Card>
+            <Card title={tr('Masterclass · submódulo de cada módulo')}>
+              <MasterclassSettings canEdit={canEdit} />
+              <div className="price-grid single">{offers.filter((o) => o.type === 'MASTERCLASS').map((o) => <OfferEditor key={`${o.code}-${o.price}-${o.active}`} offer={o} onSaved={res.reload} canEdit={canEdit} />)}</div>
             </Card>
           </>
         )}

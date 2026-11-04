@@ -126,9 +126,11 @@ export default function ModulePage() {
 
   const m = mod.data;
   const Tool = TOOLS[number];
+  const showMasterclass = m.mode === 'ACADEMY' || m.masterclass?.available || !!m.masterclass?.offer;
+  const masterTab = showMasterclass ? [['masterclass', 'Masterclass']] : [];
   const tabs = m.mode === 'ACADEMY'
-    ? [...(m.hasMasterclass ? [['masterclass', 'Masterclass']] : []), ['clase', 'Instrucciones de uso de herramienta'], ['herramienta', 'Herramienta'], ['avance', 'Ejercicio y avance']]
-    : [['herramienta', 'Herramienta'], ['avance', 'Avance']];
+    ? [...masterTab, ['clase', 'Instrucciones de uso de herramienta'], ['herramienta', 'Herramienta'], ['avance', 'Ejercicio y avance']]
+    : [['herramienta', 'Herramienta'], ['avance', 'Avance'], ...masterTab];
   const active = tab && tabs.some(([k]) => k === tab) ? tab : tabs[0][0];
   const refresh = async () => { await Promise.all([overview.reload(), mod.reload()]); };
 
@@ -147,7 +149,7 @@ export default function ModulePage() {
         ))}
       </div>
       <div className="tab-panel" key={active}>
-        {active === 'masterclass' && <Masterclass number={number} />}
+        {active === 'masterclass' && <Masterclass number={number} status={m.masterclass} />}
         {active === 'clase' && <Lesson module={m} />}
         {active === 'herramienta' && (
           <>

@@ -27,7 +27,7 @@ function Summary({ offer, method, setMethod, gift, setGift, promo }) {
   return (
     <div className="checkout-summary">
       <div className="checkout-product">
-        <span className="checkout-kicker">{gift ? tr('Regalo · {duration}', { duration: durationText(offer) }) : promo ? tr('Promoción personalizada') : offer.type === 'FULL_ANNUAL' ? tr('Acceso completo') : (offer.moduleNumber ? tr('Herramienta · Módulo {n}', { n: offer.moduleNumber }) : tr('Herramientas M1–M12'))}</span>
+        <span className="checkout-kicker">{gift ? tr('Regalo · {duration}', { duration: durationText(offer) }) : promo ? tr('Promoción personalizada') : offer.type === 'MASTERCLASS' ? tr('Masterclass') : offer.type === 'FULL_ANNUAL' ? tr('Acceso completo') : (offer.moduleNumber ? tr('Herramienta · Módulo {n}', { n: offer.moduleNumber }) : tr('Herramientas M1–M12'))}</span>
         <b>{tr(offer.name)}</b>
         {offer.description && <p>{tr(offer.description)}</p>}
       </div>
