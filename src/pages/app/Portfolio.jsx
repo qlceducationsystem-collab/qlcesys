@@ -317,6 +317,8 @@ function IncomeDecisions({ data, products, categories, customCategories, onChang
   );
   const useText = (u) => (u.kind === 'EXPENSE'
     ? tr('{amount} de {name} usados en gastos · {category}', { amount: money(u.amount), name: tr(u.name), category: tr(EXPENSE_CATEGORIES[u.categoryName] || u.categoryName || '') })
+    : u.kind === 'SAVE'
+    ? tr('{amount} de {name} enviados a {target}', { amount: money(u.amount), name: tr(u.name), target: tr(u.category === 'META_PATRIMONIAL' ? 'tu meta patrimonial' : 'tu fondo de emergencia') })
     : tr('{amount} de {name} pasados a {target}', { amount: money(u.amount), name: tr(u.name), target: tr(u.targetName || '') }));
   return (
     <Card title={tr('Rentabilidad por decidir')}>

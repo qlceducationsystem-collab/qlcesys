@@ -187,13 +187,20 @@ function GoalEditor({ data, reload }) {
 function Contributions({ data, reload }) {
   const { api, canEdit } = useWorkspace();
   const action = useAction();
-  const [f, setF] = useState({ destination: 'FONDO_EMERGENCIA', amount: '', description: DEFAULT_TEXT.FONDO_EMERGENCIA });
+  const [f, setF] = useState({ destination: 'FONDO_EMERGENCIA', source: '', amount: '', description: DEFAULT_TEXT.FONDO_EMERGENCIA });
+  const sources = useAsync(() => (data.period?.status === 'OPEN' ? api.get(`/portfolio/income-uses?periodId=${data.period.id}`).catch(() => null) : Promise.resolve(null)), [api, data.period?.id, data.contributions.length]);
+  const available = sources.data?.month || [];
+  const chosen = available.find((m) => m.positionId === f.source);
   const setDestination = (destination) => setF({ ...f, destination, description: Object.values(DEFAULT_TEXT).includes(f.description) ? DEFAULT_TEXT[destination] : f.description });
   const add = async (e) => {
     e.preventDefault();
-    if (await action.run(() => api.post('/academy/emergency/contributions', { destination: f.destination, amount: Number(f.amount), description: f.description }))) {
-      setF({ ...f, amount: '' });
+    const ok = await action.run(() => (f.source
+      ? api.post(`/portfolio/positions/${f.source}/use-income`, { origin: 'MONTH', kind: 'SAVE', destination: f.destination, amount: Number(f.amount), description: f.description })
+      : api.post('/academy/emergency/contributions', { destination: f.destination, amount: Number(f.amount), description: f.description })));
+    if (ok) {
+      setF({ ...f, amount: '', source: '' });
       await reload();
+      await sources.reload();
     }
   };
   const remove = async (id) => {
@@ -206,7 +213,13 @@ function Contributions({ data, reload }) {
           <Field label={tr('Destino')}>
             <Select value={f.destination} onChange={(e) => setDestination(e.target.value)} options={[{ value: 'FONDO_EMERGENCIA', label: tr('Fondo de emergencia') }, ...(data.goal?.goal ? [{ value: 'META_PATRIMONIAL', label: tr('Meta patrimonial') }] : [])]} />
           </Field>
-          <Field label={tr('Importe aportado')}><MoneyInput required min="0.01" value={f.amount} onChange={(e) => setF({ ...f, amount: e.target.value })} /></Field>
+          <Field label={tr('¿De dónde sale el dinero?')} hint={chosen ? tr('Disponible de la rentabilidad de este mes: {amount}', { amount: money(chosen.available) }) : tr('Elige una inversión si quieres tomarlo de su rentabilidad por decidir.')}>
+            <Select value={f.source} onChange={(e) => {
+              const pick = available.find((m) => m.positionId === e.target.value);
+              setF({ ...f, source: e.target.value, amount: pick ? String(pick.available) : f.amount });
+            }} options={[{ value: '', label: tr('Dinero nuevo (ahorro de este mes)') }, ...available.map((m) => ({ value: m.positionId, label: tr('Rentabilidad de {name} · {amount}', { name: m.name, amount: money(m.available) }) }))]} />
+          </Field>
+          <Field label={tr('Importe aportado')}><MoneyInput required min="0.01" max={chosen ? chosen.available : undefined} value={f.amount} onChange={(e) => setF({ ...f, amount: e.target.value })} /></Field>
           <Field label={tr('Concepto')}><Input required maxLength={200} value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} /></Field>
           <Button type="submit" loading={action.busy}>{tr('Confirmar aportación')}</Button>
         </form>

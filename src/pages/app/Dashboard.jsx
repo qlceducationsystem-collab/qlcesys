@@ -50,6 +50,27 @@ function AcademyCard({ academy }) {
   );
 }
 
+function GoalCard({ goal }) {
+  const { basePath } = useWorkspace();
+  const g = goal?.goal;
+  const p = goal?.progress;
+  const name = g?.name && g.name !== 'Meta patrimonial' ? g.name : null;
+  return (
+    <Card title={tr('Meta patrimonial')} actions={<Link className="btn-secondary" to={`${basePath}/academia/m/8`}>{g ? tr('Aportar a mi meta') : tr('Definir mi meta')}</Link>}>
+      {!p ? <p className="muted">{tr('Aún no defines una meta patrimonial. Créala en el Módulo 8 para seguir su avance desde aquí.')}</p> : (
+        <>
+          {name && <Row label={tr('Concepto')} value={tr(name)} />}
+          <Row label={tr('Meta')} value={money(p.goal)} />
+          <Row label={tr('Aportado')} value={money(p.current)} valueTone={p.current > 0 ? 'up' : ''} />
+          <Row label={tr('Falta')} value={money(p.remaining)} />
+          <Row label={tr('Tiempo estimado')} value={p.reached ? tr('Meta alcanzada') : p.monthsToGoal === null ? tr('Define una aportación mensual') : tr('{n} meses', { n: p.monthsToGoal })} />
+          <ProgressBar value={Math.min(100, p.progress || 0)} label={tr('Avance {pct}', { pct: pct(p.progress) })} />
+        </>
+      )}
+    </Card>
+  );
+}
+
 function DiagnosisCard({ diagnosis, liquidity, expenses, income, returns }) {
   const { basePath } = useWorkspace();
   if (!diagnosis) {
@@ -121,6 +142,9 @@ function DashboardBody({ d }) {
       <div className="layout">
         <ProtectionReadingCard protection={s.protection} monthsCovered={s.indicators.monthsCovered} />
         <EmergencyFundCard emergency={d.patrimonial.emergency} />
+      </div>
+      <div className="layout">
+        <GoalCard goal={d.goal} />
       </div>
       <div className="layout">
         <Card title={tr('Allocation actual')}>
