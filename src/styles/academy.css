@@ -485,3 +485,20 @@ a.module-tile:hover { transform: translateY(-2px); border-color: rgba(0, 168, 25
 @media (max-width: 760px) { .indicator-glossary { grid-template-columns: minmax(0, 1fr); } }
 .locked-step { display: flex; flex-direction: column; gap: 6px; padding: 16px; border: 1px dashed var(--line2); border-radius: 12px; }
 .surplus-alert { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; padding: 14px 16px; border: 1px solid rgba(228, 185, 92, 0.45); border-radius: 12px; }
+.masterclass { max-width: 880px; margin: 0 auto; padding: 32px clamp(18px, 4vw, 48px); background: var(--panel); border: 1px solid var(--line); border-radius: 18px; color: #d6dde4; font-size: 15px; line-height: 1.75; }
+.masterclass > p:first-child { color: var(--blue2); letter-spacing: 3px; font-size: 12px; text-align: center; }
+.masterclass h1 { margin: 34px 0 12px; font-size: 22px; color: var(--text); padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.masterclass h1.mc-title { border: 0; text-align: center; font-size: 28px; margin-top: 8px; }
+.masterclass h2 { margin: 26px 0 10px; font-size: 18px; color: var(--blue2); }
+.masterclass h3, .masterclass h4 { margin: 20px 0 8px; font-size: 16px; color: var(--text); }
+.masterclass p { margin: 0 0 12px; }
+.masterclass strong { color: var(--text); }
+.masterclass ul, .masterclass ol { margin: 0 0 14px; padding-left: 22px; }
+.masterclass li { margin-bottom: 6px; }
+.masterclass table { width: 100%; margin: 18px 0; border-collapse: collapse; font-size: 14px; display: block; overflow-x: auto; }
+.masterclass td, .masterclass th { padding: 10px 12px; border: 1px solid var(--line2); vertical-align: top; min-width: 120px; }
+.masterclass td p { margin: 0 0 6px; }
+.masterclass td p:last-child { margin-bottom: 0; }
+.masterclass tr:first-child td { background: rgba(0, 168, 255, 0.06); }
+.masterclass table:has(tr:only-child td:only-child) { display: table; }
+.masterclass table:has(tr:only-child td:only-child) td { background: rgba(0, 168, 255, 0.07); border: 0; border-left: 3px solid var(--blue2); border-radius: 8px; }

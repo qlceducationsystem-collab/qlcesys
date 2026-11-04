@@ -20,6 +20,7 @@ import { M9Obligations } from '../../../features/academy/tools/M9Obligations.jsx
 import { M10NetReturn } from '../../../features/academy/tools/M10NetReturn.jsx';
 import { M11Inflation } from '../../../features/academy/tools/M11Inflation.jsx';
 import { M12AnnualReview } from '../../../features/academy/tools/M12AnnualReview.jsx';
+import { Masterclass } from '../../../features/academy/Masterclass.jsx';
 import { tr } from '../../../i18n/tr.js';
 
 const TOOLS = {
@@ -125,7 +126,9 @@ export default function ModulePage() {
 
   const m = mod.data;
   const Tool = TOOLS[number];
-  const tabs = m.mode === 'ACADEMY' ? [['clase', 'Clase'], ['herramienta', 'Herramienta'], ['avance', 'Ejercicio y avance']] : [['herramienta', 'Herramienta'], ['avance', 'Avance']];
+  const tabs = m.mode === 'ACADEMY'
+    ? [...(m.hasMasterclass ? [['masterclass', 'Masterclass']] : []), ['clase', 'Instrucciones de uso de herramienta'], ['herramienta', 'Herramienta'], ['avance', 'Ejercicio y avance']]
+    : [['herramienta', 'Herramienta'], ['avance', 'Avance']];
   const active = tab && tabs.some(([k]) => k === tab) ? tab : tabs[0][0];
   const refresh = async () => { await Promise.all([overview.reload(), mod.reload()]); };
 
@@ -144,6 +147,7 @@ export default function ModulePage() {
         ))}
       </div>
       <div className="tab-panel" key={active}>
+        {active === 'masterclass' && <Masterclass number={number} />}
         {active === 'clase' && <Lesson module={m} />}
         {active === 'herramienta' && (
           <>
