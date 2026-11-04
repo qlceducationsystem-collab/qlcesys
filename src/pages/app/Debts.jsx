@@ -19,6 +19,7 @@ const STATUS = { ACTIVE: 'Activa', PAID: 'Liquidada' };
 const fields = [
   { name: 'name', label: 'Obligación (hipoteca, tarjeta, crédito…)' },
   { name: 'type', label: 'Tipo', type: 'select', options: options.debtTypes, display: (v) => DEBT_TYPES[v], default: 'OTRA' },
+  { name: 'customType', label: 'Escribe el tipo de obligación', required: false, maxLength: 80, when: (v) => v.type === 'OTRA' },
   { name: 'lender', label: 'Acreedor (opcional)', required: false },
   { name: 'balance', label: 'Saldo al cierre del periodo', type: 'money', display: money },
   { name: 'payment', label: 'Pago mensual planeado', type: 'money', display: money },
@@ -28,7 +29,7 @@ const fields = [
 ];
 
 const columns = [
-  { key: 'name', label: 'Deuda', render: (d) => <>{tr(d.name)}<span className="small block">{tr(DEBT_TYPES[d.type])}{d.lender ? ` · ${d.lender}` : ''}</span></> },
+  { key: 'name', label: 'Deuda', render: (d) => <>{tr(d.name)}<span className="small block">{tr(d.type === 'OTRA' && d.customType ? d.customType : DEBT_TYPES[d.type])}{d.lender ? ` · ${d.lender}` : ''}</span></> },
   { key: 'balance', label: 'Saldo', align: 'right', render: (d) => money(d.balance) },
   { key: 'payment', label: 'Pago', align: 'right', render: (d) => money(d.payment) },
   { key: 'annualRate', label: 'Tasa anual', align: 'right', render: (d) => (d.rateKnown ? pct(d.annualRate) : <Pill variant="warn">{tr('Pendiente')}</Pill>) },

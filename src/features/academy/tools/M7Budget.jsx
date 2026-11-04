@@ -273,6 +273,16 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
               : tr('Sin deudas registradas: queda en $0. Se suma solo con el pago mensual de deudas que declares en el Módulo 1 y después con el desglose de cada obligación en el Módulo 9.')}
             {' '}<Link to={`${basePath}/academia/m/9`}>{tr('Ir al Módulo 9')}</Link>
           </small>
+          {data.debtBreakdown && data.debtBreakdown.declaredBalance > 0 && (
+            <div className="debt-breakdown">
+              <ProgressBar value={data.debtBreakdown.balancePercent} label={tr('Deudas desglosadas en el Módulo 9')} />
+              <small className={data.debtBreakdown.pendingBalance > 0 ? 'warn-text' : 'up'}>
+                {data.debtBreakdown.pendingBalance > 0
+                  ? tr('{pct} desglosado en el Módulo 9 · faltan {amount} de {declared}', { pct: pct(data.debtBreakdown.balancePercent), amount: money(data.debtBreakdown.pendingBalance), declared: money(data.debtBreakdown.declaredBalance) })
+                  : tr('100% desglosado en el Módulo 9')}
+              </small>
+            </div>
+          )}
         </div>
         <div className="budget-total">
           <ProgressBar value={Math.min(100, view.percentTotal)} label={tr('Ingreso distribuido')} />

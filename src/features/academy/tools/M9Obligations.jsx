@@ -15,8 +15,9 @@ import { ExplainRows, KindBadge, MetricCard, MetricGrid, RiskNote, SaveStatus, T
 import { useAction } from '../useAction.js';
 import { tr } from '../../../i18n/tr.js';
 
-const EMPTY = { name: '', type: 'TARJETA_CREDITO', balance: '', annualRate: '', payment: '', fees: '' };
-const toForm = (d) => ({ name: d.name, type: d.type, balance: d.balance, annualRate: d.annualRate ?? '', payment: d.payment, fees: d.fees });
+const EMPTY = { name: '', type: 'TARJETA_CREDITO', customType: '', balance: '', annualRate: '', payment: '', fees: '' };
+const toForm = (d) => ({ name: d.name, type: d.type, customType: d.customType || '', balance: d.balance, annualRate: d.annualRate ?? '', payment: d.payment, fees: d.fees });
+export const debtTypeLabel = (d) => (d.type === 'OTRA' && d.customType ? d.customType : DEBT_TYPES[d.type]);
 const toBody = (f) => ({ ...f, balance: Number(f.balance || 0), payment: Number(f.payment || 0), fees: Number(f.fees || 0), annualRate: f.annualRate === '' ? null : Number(f.annualRate) });
 const DIAGNOSIS_DEBTS = ['Deudas por desglosar (diagnóstico)', 'Deudas totales (diagnóstico)'];
 export const isDiagnosisDebt = (d) => DIAGNOSIS_DEBTS.includes(d.name);
@@ -37,7 +38,8 @@ function DebtForm({ initial, onSubmit, onCancel, busy, error, disabled }) {
     <form className="stack" onSubmit={(e) => { e.preventDefault(); onSubmit(toBody(f)); }}>
       <div className="form-grid cols-3">
         <Field label={tr('Nombre / entidad')}><Input required maxLength={200} value={f.name} onChange={set('name')} placeholder={tr('Ej. Crédito automotriz')} disabled={disabled} /></Field>
-        <Field label={tr('Tipo de obligación')}><Select value={f.type} onChange={set('type')} options={options.debtTypes} disabled={disabled} /></Field>
+        <Field label={tr('Tipo de obligación')}><Select value={f.type} onChange={set('type')} options={options.debtTypes.map((o) => (o.value === 'OTRA' ? { ...o, label: tr('Otra: escribir mi tipo…') } : o))} disabled={disabled} /></Field>
+        {f.type === 'OTRA' && <Field label={tr('Escribe el tipo de obligación')}><Input maxLength={80} value={f.customType} onChange={set('customType')} placeholder={tr('Ej. Préstamo de un familiar, crédito escolar')} disabled={disabled} /></Field>}
         <Field label={tr('Saldo pendiente')}><MoneyInput required value={f.balance} onChange={set('balance')} placeholder="0" disabled={disabled} /></Field>
         <Field label="Tasa anual (%)" hint={tr('Déjala vacía si no la conoces: se mostrará como tasa pendiente, no como 0%.')}>
           <input className="input" type="number" inputMode="decimal" min="0" max="1000" step="0.01" value={f.annualRate} onChange={set('annualRate')} placeholder={tr('Si se conoce')} disabled={disabled} />
@@ -103,7 +105,7 @@ export function M9Obligations({ onSaved }) {
 
   if (res.loading && !res.data) return <ToolSkeleton />;
   if (res.error) return <ErrorState error={res.error} onRetry={res.reload} />;
-  const { items, totals, period } = res.data;
+  const { items, totals, period, breakdown } = res.data;
   const closed = period?.status === 'CLOSED';
   const editable = canEdit && !closed;
   const pendingDebt = items.find(isDiagnosisDebt);
@@ -139,12 +141,20 @@ export function M9Obligations({ onSaved }) {
       {totals && (
         <MetricGrid>
           <MetricCard label={tr('Saldo total de obligaciones')} value={money(totals.balance)} hint={tr('{n} obligaciones · pasivo en Patrimonio', { n: totals.count })} />
+          {breakdown && <MetricCard label={tr('Saldo por desglosar')} value={money(breakdown.pendingBalance)} tone={breakdown.pendingBalance > 0 ? 'warn' : 'good'} hint={tr('De {declared} declarados en el Módulo 1 llevas {registered} · {pct}', { declared: money(breakdown.declaredBalance), registered: money(breakdown.registeredBalance), pct: pct(breakdown.balancePercent) })} />}
           <MetricCard label={tr('Pagos mensuales planeados')} value={money(totals.payments)} hint={tr('Al confirmar un pago, su abono a capital reduce el saldo')} />
           <MetricCard label={tr('Intereses mensuales estimados')} value={money(totals.interest)} tone={totals.incomplete ? 'warn' : ''} hint={totals.incomplete ? tr('Incompleto: hay tasas pendientes') : tr('Saldo × tasa anual / 12')} />
           <MetricCard label={tr('Pagos / ingreso mensual')} value={pct(totals.paymentToIncome)} hint={totals.paymentToIncome === null ? tr('N/D · sin ingreso registrado') : tr('Indicador descriptivo')} />
         </MetricGrid>
       )}
 
+      {breakdown && (
+        <div className="budget-total">
+          <ProgressBar value={breakdown.balancePercent} label={tr('Deuda desglosada')} />
+          <b>{pct(breakdown.balancePercent)} {tr('desglosado')}</b>
+          {breakdown.pendingBalance > 0 && <span className="warn-text small">{tr('Faltan {amount} por desglosar de la deuda que declaraste en el Módulo 1', { amount: money(breakdown.pendingBalance) })}</span>}
+        </div>
+      )}
       {items.some(isDiagnosisDebt) && (
         <Notice>{tr('La deuda total que declaraste en el diagnóstico aparece como «Deudas por desglosar». Cada obligación que registras se descuenta de ese renglón, así el saldo total no se duplica.')}</Notice>
       )}
@@ -161,7 +171,7 @@ export function M9Obligations({ onSaved }) {
           rows={items}
           empty={tr('No hay obligaciones registradas. Agrega una para comenzar.')}
           columns={[
-            { key: 'name', label: 'Obligación', render: (d) => <><b>{tr(d.name)}</b><span className="small block">{tr(DEBT_TYPES[d.type])}</span></> },
+            { key: 'name', label: 'Obligación', render: (d) => <><b>{tr(d.name)}</b><span className="small block">{tr(debtTypeLabel(d))}</span></> },
             { key: 'balance', label: tr('Saldo'), align: 'right', render: (d) => money(d.balance) },
             { key: 'annualRate', label: tr('Tasa anual'), align: 'right', render: (d) => (d.rateKnown ? pct(d.annualRate) : <Pill variant="warn">{tr('Tasa pendiente')}</Pill>) },
             { key: 'payment', label: tr('Pago planeado'), align: 'right', render: (d) => <>{money(d.payment)}{d.payment > 0 && <span className="small block muted">{tr('Interés {interest} · capital {capital}', { interest: money(d.monthlyInterest ?? 0), capital: money(Math.max(0, d.principalContribution)) })}</span>}</> },
@@ -201,12 +211,19 @@ export function M9Obligations({ onSaved }) {
               rows={[
                 ['Número de obligaciones', totals.count],
                 ['Saldo total pendiente', money(totals.balance)],
-                ...(pendingDebt ? [
+                ...(breakdown ? [
+                  ['Deuda declarada en el Módulo 1', money(breakdown.declaredBalance)],
+                  ['Saldo ya desglosado', money(breakdown.registeredBalance)],
+                  ['Saldo pendiente por desglosar', money(breakdown.pendingBalance), 'warn-text'],
+                ] : pendingDebt ? [
                   ['Saldo ya desglosado', money(totals.balance - pendingDebt.balance)],
                   ['Saldo pendiente por desglosar (diagnóstico)', money(pendingDebt.balance), 'warn-text'],
                 ] : []),
                 ['Pago mensual planeado', money(totals.payments)],
-                ...(pendingDebt ? [
+                ...(breakdown ? [
+                  ['Pago ya desglosado', money(breakdown.registeredPayment)],
+                  ['Pago pendiente por desglosar', money(breakdown.pendingPayment), 'warn-text'],
+                ] : pendingDebt ? [
                   ['Pago ya desglosado', money(totals.payments - pendingDebt.payment)],
                   ['Pago pendiente por desglosar (diagnóstico)', money(pendingDebt.payment), 'warn-text'],
                 ] : []),

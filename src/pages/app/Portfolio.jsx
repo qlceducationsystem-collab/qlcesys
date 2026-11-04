@@ -227,7 +227,7 @@ const NEW = '__NEW__';
 
 function UseModal({ item, products, categories, customCategories, onClose, onSaved }) {
   const { api } = useWorkspace();
-  const [f, setF] = useState({ amount: String(item.amount), category: '', newCategory: '', description: '', target: '', categoryCode: '', name: '' });
+  const [f, setF] = useState({ amount: String(item.amount), category: '', newCategory: '', description: '', target: '', categoryCode: '', name: '', horizon: 'MEDIANO', liquidityLevel: 'MEDIA', perceivedRisk: 'MEDIO' });
   const [state, setState] = useState({ busy: false, error: null });
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
   const expense = item.kind === 'EXPENSE';
@@ -243,7 +243,7 @@ function UseModal({ item, products, categories, customCategories, onClose, onSav
         amount: Number(f.amount),
         ...(expense
           ? { category: f.category === NEW ? null : f.category, newCategory: f.category === NEW ? f.newCategory.trim() : null, description: f.description || null }
-          : f.target === NEW ? { newProduct: { categoryCode: f.categoryCode, name: f.name.trim() } } : { targetPositionId: f.target }),
+          : f.target === NEW ? { newProduct: { categoryCode: f.categoryCode, name: f.name.trim(), horizon: f.horizon, liquidityLevel: f.liquidityLevel, perceivedRisk: f.perceivedRisk } } : { targetPositionId: f.target }),
       });
       onSaved();
     } catch (error) {
@@ -283,7 +283,17 @@ function UseModal({ item, products, categories, customCategories, onClose, onSav
           <>
             <Field label={tr('Categoría del portafolio')}><Select value={f.categoryCode} onChange={pickCategory} placeholder={tr('Selecciona…')} options={categories.map((c) => ({ value: c.code, label: c.name }))} /></Field>
             {f.categoryCode && <Field label={tr('Inversión de destino')}><Select value={f.target} onChange={set('target')} placeholder={tr('Selecciona…')} options={targetOptions} /></Field>}
-            {f.categoryCode && f.target === NEW && <Field label={tr('Nombre de la nueva inversión')}><Input value={f.name} maxLength={200} onChange={set('name')} /></Field>}
+            {f.categoryCode && f.target === NEW && (
+              <>
+                <Field label={tr('Nombre de la nueva inversión')}><Input value={f.name} maxLength={200} onChange={(e) => setF({ ...f, name: e.target.value.toUpperCase() })} placeholder={tr('Ej. BONOS DEL TESORO, BTC, CASA, NEGOCIO')} /></Field>
+                <div className="form-grid cols-3">
+                  <Field label={tr('Horizonte')}><select className="input" value={f.horizon} onChange={set('horizon')}><option value="CORTO">{tr('Corto plazo')}</option><option value="MEDIANO">{tr('Mediano plazo')}</option><option value="LARGO">{tr('Largo plazo')}</option></select></Field>
+                  <Field label={tr('Liquidez')}><select className="input" value={f.liquidityLevel} onChange={set('liquidityLevel')}><option value="ALTA">{tr('Alta')}</option><option value="MEDIA">{tr('Media')}</option><option value="BAJA">{tr('Baja')}</option></select></Field>
+                  <Field label={tr('Riesgo percibido')}><select className="input" value={f.perceivedRisk} onChange={set('perceivedRisk')}><option value="BAJO">{tr('Bajo')}</option><option value="MEDIO">{tr('Medio')}</option><option value="ALTO">{tr('Alto')}</option><option value="MUY_ALTO">{tr('Muy alto')}</option></select></Field>
+                </div>
+                <p className="small muted">{tr('Se registra también en el Módulo 2 con estos datos.')}</p>
+              </>
+            )}
           </>
         )}
         <FormError error={state.error} />
