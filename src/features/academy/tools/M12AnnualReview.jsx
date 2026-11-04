@@ -53,7 +53,8 @@ function NotesCard({ report }) {
   const action = useAction();
   const [note, setNote] = useState(report.note?.note || '');
   return (
-    <ToolCard title={tr('Notas de revisión anual')} description={tr('Tus notas no modifican datos financieros.')}>
+    <ToolCard title={tr('Notas de revisión anual')} description={tr('Tus notas se guardan aquí mismo, en el Módulo 12, para la revisión de este año. También aparecen en la sección «Notas» del informe en PDF («Guardar informe en PDF») y en cada revisión de tu historial. No modifican datos financieros.')}>
+      {report.note?.updatedAt && <p className="small muted">{tr('Última vez guardadas: {date}', { date: dateTime(report.note.updatedAt) })}</p>}
       <Field label={tr('Notas')}>
         <Textarea maxLength={5000} value={note} onChange={(e) => setNote(e.target.value)} disabled={!canEdit} placeholder={tr('Ej. Reducir deuda y aumentar liquidez')} />
       </Field>
