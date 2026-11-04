@@ -274,3 +274,6 @@ h1 { font-size: clamp(28px, 4vw, 44px); line-height: 1.12; letter-spacing: -.04e
 .pill.purple { background: rgba(156, 106, 222, 0.14); color: #b896f0; border-color: rgba(156, 106, 222, 0.3); }
 .notice.notice-danger { background: rgba(196, 61, 75, 0.10); border-color: rgba(196, 61, 75, 0.45); color: var(--red); }
 .notice.notice-danger b, .notice.notice-danger a { color: var(--red); }
+.notify-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.notify-group { margin: 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; display: flex; flex-direction: column; gap: 4px; }
+.notify-group legend { display: flex; gap: 10px; align-items: center; padding: 0 6px; font-weight: 700; font-size: 13px; }

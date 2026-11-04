@@ -9,7 +9,7 @@ import { DataTable } from '../../components/ui/DataTable.jsx';
 import { tr } from '../../i18n/tr.js';
 
 export const ACTORS = { ADMIN: 'Administrador', PASARELA: 'Pasarela', SISTEMA: 'Sistema', CLIENTE: 'Cliente' };
-export const CATEGORIES = { SUSCRIPCION: 'Suscripciones', PROMOCION: 'Promociones', ACCESO: 'Control de accesos', REGALO: 'Regalos' };
+export const CATEGORIES = { SUSCRIPCION: 'Suscripciones', PROMOCION: 'Promociones', ACCESO: 'Control de accesos', REGALO: 'Regalos', PLATAFORMA: 'Clientes y academia' };
 const PERIODS = { ANUAL: 'Anual', MENSUAL: 'Mensual' };
 
 const tone = (type) => (['PAGO_FALLIDO', 'VENCIDA', 'CANCELADA', 'ACCESO_RETIRADO', 'AUTORIZACION_FALLIDA', 'IMPORTE_NO_COINCIDE', 'AUTORIZACION_RECHAZADA', 'REGALO_CANCELADO', 'PROMOCION_CANCELADA'].includes(type)

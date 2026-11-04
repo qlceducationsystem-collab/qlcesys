@@ -81,6 +81,7 @@ const SLIDE_RENDERERS = {
             <span className="ta-icon"><FactIcon name="mail" /></span>
             <div><b>{c.program.admission.title}</b><p>{c.program.admission.text}</p></div>
           </div>
+          {c.program.bundle && <div className="ta-bundle"><b>{c.program.bundle.title}</b><p>{c.program.bundle.text}</p></div>}
           {c.program.details.map(([title, text]) => <section key={title}><h3>{title}</h3><p>{text}</p></section>)}
         </div>
         <article className="ta-panel is-featured reveal-card" style={{ '--c': 5 }}>

@@ -68,6 +68,10 @@ const ES = {
       title: 'Admisión mediante evaluación previa',
       text: 'Los candidatos recibirán por correo electrónico la notificación de aceptación o rechazo de su solicitud.',
     },
+    bundle: {
+      title: 'Formación y tecnología en un solo programa',
+      text: 'El programa completo incorpora, sin costo adicional, una licencia de uso por 3 años de nuestro software especializado de gestión y operación multicuentas.',
+    },
     details: [
       ['Duración y modalidad', 'Cada módulo dura 1 mes e incluye herramientas de apoyo y asesoría personalizada en línea por Google Meet para resolver dudas, revisar avances y reforzar lo aprendido.'],
       ['Proceso de admisión', 'Cupo limitado a 20 participantes por convocatoria, abierta cada tres meses. Los candidatos completan una evaluación previa para determinar su perfil y su adecuación a la metodología.'],
@@ -233,6 +237,10 @@ const EN = {
     admission: {
       title: 'Admission through a prior assessment',
       text: 'Candidates will receive an email notifying them whether their application has been accepted or rejected.',
+    },
+    bundle: {
+      title: 'Training and technology in a single program',
+      text: 'The complete program includes, at no additional cost, a 3-year license to use our specialized multi-account management and trading software.',
     },
     details: [
       ['Duration and format', 'Each module lasts 1 month and includes support tools and personalized online guidance via Google Meet to answer questions, review progress and reinforce what you learn.'],

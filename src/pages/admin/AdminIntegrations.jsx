@@ -11,6 +11,7 @@ import { FormError } from '../../components/ui/Form.jsx';
 import { AsyncView } from '../../components/ui/States.jsx';
 import { DataTable } from '../../components/ui/DataTable.jsx';
 import { tr } from '../../i18n/tr.js';
+import { MailSettings } from '../../features/admin/MailSettings.jsx';
 
 const META = {
   DRIVE: { name: 'Google Drive', icon: '▲', purpose: 'Videos y documentos de la academia. Permiso limitado a los archivos creados por la aplicación.' },
@@ -60,7 +61,7 @@ function IntegrationCard({ item, canManage, onChanged }) {
       </header>
       <p className="muted">{tr(meta.purpose)}</p>
       {!item.configured ? (
-        <div className="notice gold">{tr('Configuración de Google pendiente en el servidor. Define GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI y TOKEN_ENCRYPTION_KEY.')}</div>
+        <div className="notice gold">{tr('Falta la aplicación OAuth2 de Google: agrega el Client ID y el Client Secret en la tarjeta «Correo (Gmail) y notificaciones».')}</div>
       ) : (
         <dl className="integration-meta">
           <div><dt>{tr('Cuenta conectada')}</dt><dd>{item.email || '—'}</dd></div>
@@ -106,6 +107,7 @@ export default function AdminIntegrations() {
       <AsyncView {...res} onRetry={res.reload}>
         {(d) => (
           <>
+            <MailSettings canManage={user?.adminLevel === 'FULL'} onChanged={res.reload} />
             <div className="integration-grid">
               {d.items.map((item) => <IntegrationCard key={item.service} item={item} canManage={user?.adminLevel === 'FULL'} onChanged={res.reload} />)}
             </div>
