@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { api } from '../../api/client.js';
+import { useAuth } from '../../context/AuthContext.jsx';
 import { useAsync } from '../../hooks/useAsync.js';
 import { Card, Notice, Pill } from '../../components/ui/Card.jsx';
 import { Button } from '../../components/ui/Button.jsx';
@@ -10,6 +11,8 @@ import { dateTime } from '../../utils/format.js';
 import { tr } from '../../i18n/tr.js';
 
 function Editor({ data, canManage, onSaved }) {
+  const { user } = useAuth();
+  const [testTo, setTestTo] = useState(user?.email || '');
   const [f, setF] = useState({
     method: data.method || 'OAUTH',
     smtpEmail: data.smtpEmail || '',
@@ -51,12 +54,12 @@ function Editor({ data, canManage, onSaved }) {
   });
   const test = () => run(async () => {
     await persist();
-    const res = await api.post('/admin/integrations/gmail/test');
+    const res = await api.post('/admin/integrations/gmail/test', { to: testTo.trim() });
     if (!res.sent) {
       onSaved();
       throw new Error(res.error || tr('No se pudo enviar'));
     }
-  }, tr('Correo de prueba enviado a tu cuenta.'));
+  }, tr('Google aceptó el envío a {to}. Si no aparece en unos minutos, revisa Spam en ese correo y, en la cuenta que envía, las carpetas Enviados y Recibidos por si hay un aviso de rebote.', { to: testTo.trim() || user?.email }));
   const disconnect = () => run(async () => {
     await api.del('/admin/integrations/gmail');
     setConfirm(false);
@@ -185,6 +188,11 @@ function Editor({ data, canManage, onSaved }) {
 
       <FormError error={state.error} />
       {state.info && <p className="small up">{state.info}</p>}
+      {canManage && (
+        <Field label={tr('Enviar la prueba a')} hint={tr('Las notificaciones para administradores llegan a la cuenta conectada arriba, no necesariamente a este correo.')}>
+          <Input type="email" name="qlc-test-to" value={testTo} onChange={(e) => setTestTo(e.target.value)} />
+        </Field>
+      )}
       {canManage && (
         <div className="form-actions">
           <Button variant="secondary" loading={state.busy} disabled={!canTest} onClick={test}>{tr('Enviar correo de prueba')}</Button>
