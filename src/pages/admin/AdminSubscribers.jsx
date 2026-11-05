@@ -140,7 +140,7 @@ function RetentionCard() {
               <input type="checkbox" checked={d.enabled} disabled={!canEdit || state.busy} onChange={(e) => toggle(e.target.checked)} />
               {' '}{tr('Avisar por correo y eliminar la cuenta si el cliente no renueva en 30 días')}
             </label>
-            <p className="small muted">{tr('Cuando termina la suscripción, el cliente recibe un correo a los 10 días (le quedan 20), a los 20 días (le quedan 10) y a los 29 días (le queda 1). Si no renueva al día 30, el sistema elimina su cuenta y toda su información.')}</p>
+            <p className="small muted">{tr('Cuando termina la suscripción, el cliente recibe un correo a los 10 días (le quedan 20), a los 20 días (le quedan 10) y a los 29 días (le queda 1). Si no renueva al día 30, el sistema elimina su cuenta y toda su información. Mientras Gmail no esté conectado no se envían avisos, no corre el conteo y no se elimina ninguna cuenta.')}</p>
             {d.since && <p className="small muted">{tr('Activo desde {date}. Los clientes que ya estaban vencidos cuentan sus 30 días a partir de esa fecha.', { date: date(d.since) })}</p>}
             <FormError error={state.error} />
           </div>
