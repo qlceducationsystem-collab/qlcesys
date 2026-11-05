@@ -3,7 +3,7 @@ import { api } from '../../api/client.js';
 import { useAsync } from '../../hooks/useAsync.js';
 import { Card, Notice, Pill } from '../../components/ui/Card.jsx';
 import { Button } from '../../components/ui/Button.jsx';
-import { Field, FormError, Input, Textarea } from '../../components/ui/Form.jsx';
+import { Field, FormError, Input } from '../../components/ui/Form.jsx';
 import { ConfirmDialog } from '../../components/ui/Modal.jsx';
 import { AsyncView } from '../../components/ui/States.jsx';
 import { dateTime } from '../../utils/format.js';
@@ -17,7 +17,6 @@ function Editor({ data, canManage, onSaved }) {
     clientId: '',
     clientSecret: '',
     senderName: data.senderName || '',
-    recipients: (data.recipients || []).join(', '),
     disabled: new Set(data.disabled || []),
     clientDisabled: new Set(data.clientDisabled || []),
   });
@@ -41,7 +40,6 @@ function Editor({ data, canManage, onSaved }) {
     ...(f.clientId.trim() ? { clientId: f.clientId.trim() } : {}),
     ...(f.clientSecret.trim() ? { clientSecret: f.clientSecret.trim() } : {}),
     senderName: f.senderName.trim() || 'QLC Financial Education',
-    recipients: f.recipients.split(/[,\s;]+/).map((e) => e.trim()).filter(Boolean),
     disabled: [...f.disabled],
     clientDisabled: [...f.clientDisabled],
   });
@@ -92,7 +90,8 @@ function Editor({ data, canManage, onSaved }) {
       ))}
     </div>
   );
-  const oauthConnected = data.gmail.status === 'CONNECTED';
+  const linked = data.gmail.status === 'CONNECTED';
+  const oauthConnected = linked && !data.gmail.missingScope;
   const hasOauthApp = !!(data.clientId && data.hasSecret) || !!(f.clientId.trim() && f.clientSecret.trim());
   const canTest = f.method === 'SMTP' ? !!(f.smtpEmail.trim() && (data.hasSmtpPassword || f.smtpPassword.trim())) : oauthConnected;
   return (
@@ -164,11 +163,12 @@ function Editor({ data, canManage, onSaved }) {
               <li>{tr('Copia el Client ID y el Client Secret aquí y pulsa «Conectar con Google».')}</li>
             </ol>
           </details>
+          {data.gmail.missingScope && <Notice variant="gold">{tr('La cuenta {email} se conectó sin el permiso de enviar correos. Pulsa «Reconectar con Google» y, en la pantalla de Google, marca la casilla de enviar correo electrónico en tu nombre.', { email: data.gmail.email || '' })}</Notice>}
           {oauthConnected && <div className="mail-connected">✓ {tr('Conectado con Google como:')} <b>{data.gmail.email}</b></div>}
           {canManage && (
             <div className="form-actions mail-oauth-actions">
-              <Button variant="secondary" loading={state.busy} disabled={!hasOauthApp} onClick={connect}>{oauthConnected ? tr('Reconectar con Google') : tr('Conectar con Google')}</Button>
-              {oauthConnected && <Button variant="secondary" loading={state.busy} onClick={() => setConfirm(true)}>{tr('Desconectar')}</Button>}
+              <Button variant="secondary" loading={state.busy} disabled={!hasOauthApp} onClick={connect}>{linked ? tr('Reconectar con Google') : tr('Conectar con Google')}</Button>
+              {linked && <Button variant="secondary" loading={state.busy} onClick={() => setConfirm(true)}>{tr('Desconectar')}</Button>}
             </div>
           )}
         </>
@@ -176,13 +176,7 @@ function Editor({ data, canManage, onSaved }) {
       {!data.encryptionReady && <Notice variant="gold">{tr('Falta TOKEN_ENCRYPTION_KEY en el servidor: sin ella no se pueden guardar credenciales cifradas.')}</Notice>}
 
       <h4>{tr('Notificaciones para administradores')}</h4>
-      <div className="form-grid">
-        <Field label={tr('Correos que reciben los avisos')} hint={tr('Separa varios correos con comas. Si lo dejas vacío, se avisa a los administradores con nivel total.')}>
-          <Textarea rows={2} value={f.recipients} disabled={!canManage} onChange={(e) => setF({ ...f, recipients: e.target.value })} placeholder="avisos@qlc.com, direccion@qlc.com" />
-        </Field>
-      </div>
-
-      <p className="small muted">{tr('Avisos que reciben los correos de administración indicados arriba. Todos vienen activados. Desmarca los que no quieras recibir por correo; siguen guardándose en el panel.')}</p>
+      <p className="small muted">{tr('Todo lo que pasa en la plataforma se avisa a la cuenta de Gmail conectada arriba. Todos los avisos vienen activados. Desmarca los que no quieras recibir por correo; siguen guardándose en el panel.')}</p>
       {groupsFor('disabled', data.groups)}
 
       <h4>{tr('Notificaciones para clientes')}</h4>
