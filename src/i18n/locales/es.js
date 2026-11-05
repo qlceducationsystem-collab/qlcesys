@@ -148,6 +148,7 @@ export const es = {
       methods: 'Método de acceso',
       methodPassword: 'Contraseña',
       methodCode: 'Google Authenticator',
+      methodReset: 'Restablecer contraseña',
       codeHint: 'Disponible cuando ya registraste tu verificación en dos pasos.',
       submit: 'Entrar',
     },
@@ -183,6 +184,14 @@ export const es = {
       account: 'Cuenta: {account} · Emisor: {issuer}',
       code: 'Código de verificación',
       submit: 'Activar y continuar',
+    },
+    emailReset: {
+      intro: 'Escribe el correo de tu cuenta y te enviaremos un código para restablecer tu contraseña.',
+      send: 'Enviar código',
+      code: 'Código recibido por correo',
+      resend: 'Enviar otro código',
+      warning: 'Al restablecer tu contraseña también se reinicia tu Google Authenticator. Al iniciar sesión deberás registrarlo de nuevo.',
+      withAuthenticator: 'También puedes restablecerla con tu código de Google Authenticator',
     },
     reset: {
       title: 'Restablecer contraseña',

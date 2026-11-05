@@ -39,7 +39,7 @@ export function ModuleNav({ overview }) {
             to={`${basePath}/academia/filtro`}
             number="F"
             title={tr('Filtro de mercados')}
-            state={overview.filter.passed ? 'COMPLETED' : overview.route === 'MARKETS' || overview.access.mode === 'TOOLS' ? 'AVAILABLE' : 'LOCKED_ROUTE'}
+            state={overview.filter.passed ? 'COMPLETED' : overview.route === 'MARKETS' ? 'AVAILABLE' : 'LOCKED_ROUTE'}
           />
           {[m4, m5, m6].map(step)}
         </>

@@ -14,7 +14,7 @@ import { tr } from '../../i18n/tr.js';
 const STATE_LABEL = {
   AVAILABLE: ['Disponible', ''],
   PURCHASABLE: ['Lista para adquirir', 'warn'],
-  LOCKED_ORDER: ['Termina el módulo anterior', 'bad'],
+  LOCKED_ORDER: ['Termina el Módulo {n}', 'bad'],
   LOCKED: ['Bloqueada', 'bad'],
 };
 
@@ -32,7 +32,10 @@ function Catalog({ items, reload }) {
             <article key={m.number} className="module-card mc-catalog-item">
               <span className="section-kicker">{tr('Módulo {n}', { n: m.number })}</span>
               <h3>{tr(m.title)}</h3>
-              <div><Pill variant={m.completed ? '' : variant}>{m.completed ? tr('Terminada') : tr(label)}</Pill></div>
+              <div>
+                <Pill variant={m.completed ? '' : variant}>{m.completed ? tr('Terminada') : tr(label, { n: m.previousNumber })}</Pill>
+                {m.optional && <>{' '}<Pill variant="muted">{tr('Opcional')}</Pill></>}
+              </div>
               {m.expiresAt && <small className="muted">{tr('Acceso hasta {date}', { date: date(m.expiresAt) })}</small>}
               {m.state === 'AVAILABLE' && <Link className="btn-secondary" to={`${basePath}/masterclass/${m.number}`}>{tr('Abrir Masterclass')}</Link>}
               {m.state === 'PURCHASABLE' && m.offer && client && <Button onClick={() => setBuy(m.offer)}>{tr('Adquirir')} · {offerPrice(m.offer)}</Button>}
@@ -69,7 +72,7 @@ export default function MasterclassPage() {
   if (n) return <Reader number={Number(n)} />;
   return (
     <>
-      <PageHeader title={tr('Masterclass QLC')} subtitle={tr('Cada módulo se adquiere por separado con 30 días de acceso o completo con QLC Premium Access y QLC Diamond Access. Se avanza en orden y tu avance se conserva.')} />
+      <PageHeader title={tr('Masterclass QLC')} subtitle={tr('Cada módulo se adquiere por separado con 30 días de acceso o completo con QLC Premium Access y QLC Diamond Access. Se avanza en orden y tu avance se conserva. Los módulos 4, 5 y 6 son opcionales: después del Módulo 3 puedes pasar directo al Módulo 7.')} />
       <AsyncView {...res} onRetry={res.reload}>
         {(data) => <Catalog items={Array.isArray(data) ? data : data.items} reload={res.reload} />}
       </AsyncView>

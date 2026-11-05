@@ -29,7 +29,6 @@ const TOOLS = {
   7: M7Budget, 8: M8EmergencyFund, 9: M9Obligations, 10: M10NetReturn, 11: M11Inflation, 12: M12AnnualReview,
 };
 const NEXT_STEP = { 3: 'ruta', 6: 'm/7', 12: null };
-const QUESTIONS_NOTE = 'También puedes escribir aquí tus dudas o preguntas; el equipo de QLC las leerá y te responderá por este mismo medio.';
 
 function Lesson({ module }) {
   return (
@@ -76,9 +75,8 @@ function Progress({ module, onDone }) {
       {module.exerciseGuide?.steps ? (
         <ol className="exercise-steps">
           {module.exerciseGuide.steps.map((s) => <li key={s}>{tr(s)}</li>)}
-          <li className="is-note">{tr(QUESTIONS_NOTE)}</li>
         </ol>
-      ) : <p className="small muted">{tr(QUESTIONS_NOTE)}</p>}
+      ) : null}
       <Field label={tr('Tu registro')}>
         <Textarea value={exercise} onChange={(e) => setExercise(e.target.value)} maxLength={5000} disabled={!canEdit} placeholder={tr('Escribe tus respuestas y conclusiones')} />
       </Field>
@@ -90,7 +88,7 @@ function Progress({ module, onDone }) {
         </div>
       )}
       <FormError error={state.error} />
-      {state.saved && <p className="small up">{tr('Avance guardado. El equipo de QLC recibirá tu registro.')}</p>}
+      {state.saved && <p className="small up">{tr('Avance guardado.')}</p>}
       {canEdit && (
         <div className="form-actions">
           <Button variant="secondary" loading={state.busy} onClick={() => save('IN_PROGRESS')}>{tr('Guardar avance')}</Button>

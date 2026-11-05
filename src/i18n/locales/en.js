@@ -148,6 +148,7 @@ export const en = {
       methods: 'Sign-in method',
       methodPassword: 'Password',
       methodCode: 'Google Authenticator',
+      methodReset: 'Reset password',
       codeHint: 'Available once you have set up two-step verification.',
       submit: 'Sign in',
     },
@@ -183,6 +184,14 @@ export const en = {
       account: 'Account: {account} · Issuer: {issuer}',
       code: 'Verification code',
       submit: 'Activate and continue',
+    },
+    emailReset: {
+      intro: 'Enter your account email and we will send you a code to reset your password.',
+      send: 'Send code',
+      code: 'Code received by email',
+      resend: 'Send another code',
+      warning: 'Resetting your password also resets your Google Authenticator. You will have to register it again when you log in.',
+      withAuthenticator: 'You can also reset it with your Google Authenticator code',
     },
     reset: {
       title: 'Reset password',

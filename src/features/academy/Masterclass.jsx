@@ -79,7 +79,7 @@ function Locked({ number, status, onChange }) {
       <span className="section-kicker">{tr('Masterclass QLC')}</span>
       <h3>{tr('Masterclass del Módulo {n}', { n: number })}</h3>
       {!status.previousDone ? (
-        <p>{tr('Los módulos de la Masterclass se avanzan en orden. Primero termina la Masterclass del Módulo {n} para poder adquirir esta.', { n: number - 1 })}</p>
+        <p>{tr('Los módulos de la Masterclass se avanzan en orden. Primero termina el Módulo {n} para poder adquirir esta.', { n: status.previousNumber ?? number - 1 })}</p>
       ) : status.offer ? (
         <p>{tr('Cada módulo de la Masterclass se adquiere por separado con 30 días de acceso. Al terminar el periodo se bloquea y tu avance se conserva. También se incluye en QLC Premium Access y QLC Diamond Access.')}</p>
       ) : (

@@ -39,7 +39,58 @@ function useForm(initial) {
 const homeFor = (u) => (u.role === 'ADMIN' ? '/admin' : '/app');
 const SETUP_PATH = '/seguridad/2fa';
 
-const METHODS = [['password', 'auth.login.methodPassword'], ['code', 'auth.login.methodCode']];
+const METHODS = [['password', 'auth.login.methodPassword'], ['code', 'auth.login.methodCode'], ['reset', 'auth.login.methodReset']];
+
+function EmailReset({ onDone }) {
+  const { t } = useI18n();
+  const f = useForm({ email: '', code: '', password: '', confirm: '' });
+  const [sent, setSent] = useState(null);
+  const [local, setLocal] = useState(null);
+  const send = (e) => {
+    e?.preventDefault();
+    f.run(async ({ email }) => {
+      const res = await api.post('/auth/password-reset/request', { email });
+      setSent(res.message);
+    });
+  };
+  const confirm = (e) => {
+    e.preventDefault();
+    if (f.values.password !== f.values.confirm) return setLocal({ message: t('common.passwordMismatch') });
+    setLocal(null);
+    f.run(({ email, code, password }) => api.post('/auth/password-reset/confirm', { email, code, password }));
+  };
+  if (f.state.done?.message) {
+    return (
+      <div className="stack">
+        <p className="notice">{f.state.done.message}</p>
+        <Button type="button" onClick={onDone}>{t('common.login')}</Button>
+      </div>
+    );
+  }
+  if (!sent) {
+    return (
+      <form className="stack" onSubmit={send}>
+        <p className="small muted">{t('auth.emailReset.intro')}</p>
+        <Field label={t('auth.email')}><Input type="email" autoComplete="email" required {...f.bind('email')} /></Field>
+        <FormError error={f.state.error} />
+        <Button type="submit" loading={f.state.busy}>{t('auth.emailReset.send')}</Button>
+        <p className="small muted"><Link to="/recuperar">{t('auth.emailReset.withAuthenticator')}</Link></p>
+      </form>
+    );
+  }
+  return (
+    <form className="stack" onSubmit={confirm}>
+      <p className="notice">{sent}</p>
+      <Field label={t('auth.emailReset.code')}><CodeInput {...f.bind('code')} /></Field>
+      <Field label={t('auth.newPassword')} hint={t('auth.minChars')}><Input type="password" required minLength={8} autoComplete="new-password" {...f.bind('password')} /></Field>
+      <Field label={t('auth.confirmPassword')}><Input type="password" required minLength={8} autoComplete="new-password" {...f.bind('confirm')} /></Field>
+      <p className="small muted">{t('auth.emailReset.warning')}</p>
+      <FormError error={local || f.state.error} />
+      <Button type="submit" loading={f.state.busy}>{t('auth.reset.submit')}</Button>
+      <button type="button" className="btn-link" onClick={send}>{t('auth.emailReset.resend')}</button>
+    </form>
+  );
+}
 
 export function Login() {
   const { login, loginWithCode } = useAuth();
@@ -58,12 +109,13 @@ export function Login() {
   };
   return (
     <AuthCard title={t('auth.login.title')} subtitle={t('auth.login.subtitle')}
-      footer={<>{t('auth.login.noAccount')} <Link to="/registro">{t('common.register')}</Link> · <Link to="/recuperar">{t('auth.login.forgot')}</Link></>}>
+      footer={<>{t('auth.login.noAccount')} <Link to="/registro">{t('common.register')}</Link> · <button type="button" className="btn-link" onClick={() => setMethod('reset')}>{t('auth.login.forgot')}</button></>}>
       <div className="auth-methods" role="tablist" aria-label={t('auth.login.methods')}>
         {METHODS.map(([key, label]) => (
           <button key={key} type="button" role="tab" aria-selected={method === key} className={method === key ? 'is-active' : ''} onClick={() => setMethod(key)}>{t(label)}</button>
         ))}
       </div>
+      {method === 'reset' ? <EmailReset onDone={() => setMethod('password')} /> : (
       <form className="stack" onSubmit={submit}>
         <Field label={t('auth.email')}><Input type="email" autoComplete="email" required {...f.bind('email')} /></Field>
         {method === 'password' ? (
@@ -76,6 +128,7 @@ export function Login() {
         <FormError error={f.state.error} />
         <Button type="submit" loading={f.state.busy}>{t('auth.login.submit')}</Button>
       </form>
+      )}
     </AuthCard>
   );
 }
