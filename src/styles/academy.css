@@ -248,6 +248,19 @@ a.module-tile:hover { transform: translateY(-2px); border-color: rgba(0, 168, 25
 .access-gate { max-width: 1100px; }
 
 .checkout { width: min(520px, 100%); }
+.checkout-steps { list-style: none; margin: 0 0 14px; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.checkout-steps li { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); padding-bottom: 8px; border-bottom: 2px solid var(--line); }
+.checkout-steps li span { width: 20px; height: 20px; flex: none; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; border: 1px solid var(--line); }
+.checkout-steps li.is-current { color: var(--text, #f4f7fb); border-color: var(--blue); }
+.checkout-steps li.is-current span { background: var(--blue); border-color: var(--blue); color: #fff; }
+.checkout-steps li.is-done { border-color: var(--green); }
+.checkout-steps li.is-done span { color: var(--green); border-color: var(--green); }
+.checkout-question { font-size: 17px; margin: 0; }
+.checkout-paths { margin: 0; display: grid; gap: 8px; }
+.checkout-paths div { padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; }
+.checkout-paths dt { font-size: 12.5px; font-weight: 700; }
+.checkout-paths dd { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); }
+.checkout-outcome { margin: 4px 0 6px; padding-left: 18px; text-align: left; font-size: 13.5px; color: var(--muted); display: grid; gap: 4px; }
 .checkout-env { margin: -4px 0 14px; font-size: 10px; letter-spacing: 0.14em; color: var(--gold2); padding: 6px 10px; border: 1px dashed rgba(200, 155, 60, 0.4); border-radius: 8px; text-align: center; }
 .checkout-summary { display: grid; gap: 14px; }
 .checkout-product { padding: 14px; border-radius: 12px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--line); }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { Modal } from '../../components/ui/Modal.jsx';
@@ -79,19 +80,84 @@ function Summary({ offer, method, setMethod, gift, setGift, promo, quantity, set
   );
 }
 
-function Result({ attempt, offer, codes, gift, onClose, onRetry }) {
+const STEPS = ['Resumen', 'Pago', 'Resultado'];
+
+function Steps({ current }) {
+  const index = STEPS.findIndex((s) => s === current);
+  return (
+    <ol className="checkout-steps">
+      {STEPS.map((label, i) => (
+        <li key={label} className={i < index ? 'is-done' : i === index ? 'is-current' : ''} aria-current={i === index ? 'step' : undefined}>
+          <span>{i < index ? '✓' : i + 1}</span>{tr(label)}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+const untilText = (value) => (value ? tr('hasta el {date}', { date: date(value) }) : tr('sin fecha de vencimiento'));
+
+function outcomeOf(offer, attempt, access, credits) {
+  const isDiamond = offer.sessions > 0;
+  if (offer.type === 'TOOL_ONLY') {
+    return {
+      lines: [tr('Ya puedes usar las herramientas {until}.', { until: untilText(access?.toolAccess?.[0]?.expiresAt) }), ...(access?.full ? [] : [tr('La Masterclass sigue bloqueada: se adquiere por separado.')])],
+      actions: [{ label: tr('Ir a las herramientas'), to: '/app/academia' }],
+    };
+  }
+  if (offer.type === 'FULL_ANNUAL') {
+    return {
+      lines: [
+        tr('Ya tienes todas las herramientas y la Masterclass completa {until}.', { until: untilText(access?.full?.expiresAt) }),
+        ...(isDiamond ? [tr('Tienes {n} sesión(es) de orientación de 20 minutos disponible(s).', { n: credits?.ORIENTACION ?? offer.sessions })] : []),
+      ],
+      actions: [{ label: tr('Abrir la Masterclass'), to: '/app/masterclass' }, ...(isDiamond ? [{ label: tr('Agendar una sesión'), to: '/app/asesoria' }] : [{ label: tr('Ir a las herramientas'), to: '/app/academia' }])],
+    };
+  }
+  if (offer.type === 'MASTERCLASS') {
+    const expiresAt = access?.masterclassModules?.find((m) => m.moduleNumber === offer.moduleNumber)?.expiresAt;
+    return {
+      lines: [tr('La Masterclass del Módulo {n} está abierta {until}.', { n: offer.moduleNumber, until: untilText(expiresAt) }), tr('Al terminarla pulsa "Terminé esta Masterclass" para poder adquirir el siguiente módulo.')],
+      actions: [{ label: tr('Abrir la Masterclass'), to: `/app/masterclass/${offer.moduleNumber}` }],
+    };
+  }
+  if (offer.type === 'CONSULTA') {
+    return {
+      lines: [tr('Compraste {q} consulta(s). Ahora tienes {n} disponible(s).', { q: attempt.quantity, n: credits?.CONSULTA ?? attempt.quantity }), tr('Escríbela en la pestaña Ejercicio y avance de cualquier módulo. El equipo QLC te responde ahí mismo.')],
+      actions: [{ label: tr('Ir a los módulos'), to: '/app/academia' }],
+    };
+  }
+  if (offer.type === 'ORIENTACION') {
+    return {
+      lines: [tr('Compraste {q} sesión(es) de 20 minutos. Ahora tienes {n} disponible(s).', { q: attempt.quantity, n: credits?.ORIENTACION ?? attempt.quantity })],
+      actions: [{ label: tr('Agendar una sesión'), to: '/app/asesoria' }],
+    };
+  }
+  return { lines: [tr('Tu acceso a {name} ya está activo.', { name: offer.name })], actions: [] };
+}
+
+const paidPreview = (offer, mode, promo) => {
+  if (mode === 'gift') return tr('Se generan los códigos de regalo y quedan guardados en Mis regalos.');
+  if (promo) return tr('El pago queda confirmado y el acceso se activa cuando el Administrador General lo autorice.');
+  if (offer.type === 'CONSULTA') return tr('Se suman las consultas a tu cuenta.');
+  if (offer.type === 'ORIENTACION') return tr('Se suman las sesiones a tu cuenta.');
+  return tr('Se activa {name} de inmediato.', { name: offer.name });
+};
+
+function Result({ attempt, offer, codes, gift, access, credits, onClose, onGo, onRetry }) {
   const [card, setCard] = useState(null);
   const ok = attempt.status === 'APPROVED';
   const pending = ok && attempt.kind === 'PROMO';
+  const outcome = ok && !pending && !codes ? outcomeOf(offer, attempt, access, credits) : null;
   return (
     <div className={`checkout-result ${ok ? 'is-ok' : 'is-bad'}`} role="status">
       <span className="checkout-result-icon" aria-hidden="true">{ok ? '✓' : '!'}</span>
-      <h4>{!ok ? tr('Pago rechazado') : pending ? tr('Pago confirmado') : tr('Pago aprobado')}</h4>
-      {!ok && <p>{tr('No se otorgó ningún acceso. Puedes intentarlo de nuevo.')}</p>}
+      <h4>{!ok ? tr('El pago no se realizó') : pending ? tr('Pago confirmado') : tr('Pago realizado')}</h4>
+      {!ok && <p>{tr('No se hizo ningún cobro y no se activó nada. Tu cuenta y tu información siguen igual. Puedes intentarlo de nuevo cuando quieras.')}</p>}
       {pending && <p>{tr('Recibimos tu pago promocional. Tu acceso a {name} se activará en cuanto el Administrador de QLC lo autorice; te avisaremos al quedar listo.', { name: offer.name })}</p>}
       {ok && !pending && codes && (
         <>
-          <p>{tr('Tu regalo está listo. Comparte el código con la persona que quieres obsequiar; también te lo enviamos por correo.')}</p>
+          <p>{tr('Tu regalo está listo. Comparte el código con la persona que quieres obsequiar. También queda guardado en Mis regalos, dentro de Mi acceso.')}</p>
           <div className="gift-codes">
             {codes.map((code) => (
               <div key={code} className="gift-code-row">
@@ -102,18 +168,27 @@ function Result({ attempt, offer, codes, gift, onClose, onRetry }) {
           </div>
         </>
       )}
-      {ok && !pending && !codes && <p>{isService(offer) ? tr('Tu compra de {name} quedó disponible en tu cuenta.', { name: offer.name }) : tr('Tu acceso a {name} ya está activo.', { name: offer.name })}</p>}
+      {outcome && (
+        <>
+          <b>{tr(offer.name)}</b>
+          <ul className="checkout-outcome">{outcome.lines.map((line) => <li key={line}>{line}</li>)}</ul>
+        </>
+      )}
       <div className="form-actions">
-        {!ok && <Button variant="secondary" onClick={onRetry}>{tr('Intentar de nuevo')}</Button>}
-        <Button onClick={onClose}>{ok ? tr('Continuar') : 'Cerrar'}</Button>
+        {!ok && <Button variant="secondary" onClick={onClose}>{tr('Cerrar')}</Button>}
+        {!ok && <Button onClick={onRetry}>{tr('Intentar de nuevo')}</Button>}
+        {ok && <Button variant={outcome?.actions.length ? 'secondary' : undefined} onClick={onClose}>{outcome?.actions.length ? tr('Quedarme aquí') : tr('Continuar')}</Button>}
+        {outcome?.actions.map((action) => <Button key={action.to} onClick={() => onGo(action.to)}>{action.label}</Button>)}
       </div>
       {card && <GiftCardModal gift={card} onClose={() => setCard(null)} />}
     </div>
   );
 }
 
-export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose, onCompleted }) {
+export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
   const { refreshAccess } = useAuth();
+  const navigate = useNavigate();
+  const [outcome, setOutcome] = useState({ paid: false, access: null, credits: null });
   const [step, setStep] = useState('summary');
   const [method, setMethod] = useState('CARD');
   const [gift, setGift] = useState(mode === 'gift' ? { quantity: 1, recipientName: '', message: '' } : null);
@@ -147,16 +222,26 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose, onCo
     const res = await api.post(`/payments/attempts/${attempt.id}/simulate`, { outcome });
     setAttempt(res.attempt);
     setCodes(res.gifts || null);
+    const paid = res.attempt.status === 'APPROVED';
+    const credits = paid ? await api.get('/payments/credits').catch(() => null) : null;
+    setOutcome({ paid, access: res.access || null, credits });
     setStep('result');
-    if (outcome === 'APPROVED') {
-      await refreshAccess();
-      onCompleted?.(res);
-    }
   });
 
+  const finish = async () => {
+    if (outcome.paid) await refreshAccess();
+    onClose();
+  };
+
+  const go = async (to) => {
+    await finish();
+    navigate(to);
+  };
+
   return (
-    <Modal open title={gift ? tr('Regalar acceso') : tr('Pago seguro')} onClose={onClose} className="checkout">
+    <Modal open title={gift ? tr('Regalar acceso') : tr('Pago seguro')} onClose={finish} className="checkout">
       <div className="checkout-env">{tr('ENTORNO DE PRUEBA · No se realiza ningún cobro real')}</div>
+      <Steps current={step === 'summary' ? 'Resumen' : step === 'test' ? 'Pago' : 'Resultado'} />
       {step === 'summary' && (
         <>
           <Summary offer={product} method={method} setMethod={setMethod} gift={gift} setGift={setGift} promo={promo} quantity={quantity} setQuantity={setQuantity} />
@@ -172,20 +257,25 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose, onCo
           <div className="checkout-processing">
             <span className="checkout-pulse" aria-hidden="true" />
             <div>
-              <b>{tr('Solicitud de pago creada')}</b>
-              <small>Referencia {attempt.id.slice(-8).toUpperCase()} · {date(attempt.createdAt)}</small>
+              <b>{tr(product.name)}</b>
+              <small>{attempt.amount === null ? tr('Precio por definir') : `${priceMoney(attempt.amount)} ${attempt.currency}`} · {tr('Referencia')} {attempt.id.slice(-8).toUpperCase()} · {date(attempt.createdAt)}</small>
             </div>
           </div>
-          <p className="muted small">{tr('Controles internos de prueba: elige el resultado que devolverá el proveedor simulado.')}</p>
+          <h4 className="checkout-question">{tr('¿Se realizó el pago?')}</h4>
+          <dl className="checkout-paths">
+            <div><dt>{tr('Sí se pagó')}</dt><dd>{paidPreview(product, mode, promo)}</dd></div>
+            <div><dt>{tr('No se pagó')}</dt><dd>{tr('No se cobra ni se activa nada, y puedes intentarlo de nuevo.')}</dd></div>
+          </dl>
           <FormError error={state.error} />
           <div className="checkout-sim">
-            <Button variant="danger" loading={state.busy} onClick={() => simulate('REJECTED')}>{tr('Simular pago rechazado')}</Button>
-            <Button loading={state.busy} onClick={() => simulate('APPROVED')}>{tr('Simular pago aprobado')}</Button>
+            <Button variant="danger" loading={state.busy} onClick={() => simulate('REJECTED')}>{tr('No se pagó')}</Button>
+            <Button loading={state.busy} onClick={() => simulate('APPROVED')} data-autofocus>{tr('Sí se pagó')}</Button>
           </div>
+          <p className="muted small">{tr('Si cierras esta ventana sin elegir, el pago queda pendiente y no se activa nada.')}</p>
         </div>
       )}
       {step === 'result' && attempt && (
-        <Result attempt={attempt} offer={product} codes={codes} gift={gift} onClose={onClose} onRetry={() => { setAttempt(null); setStep('summary'); }} />
+        <Result attempt={attempt} offer={product} codes={codes} gift={gift} access={outcome.access} credits={outcome.credits} onClose={finish} onGo={go} onRetry={() => { setAttempt(null); setOutcome({ paid: false, access: null, credits: null }); setStep('summary'); }} />
       )}
     </Modal>
   );

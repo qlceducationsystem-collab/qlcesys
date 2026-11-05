@@ -102,7 +102,9 @@ export function AccessOffers({ title = 'Elige cómo usar QLC Financial Education
                 <h3>{tr(name)}</h3>
                 <p>{tr(text)}</p>
                 <div className="offer-price">{offerPrice(offer)}{' '}{tr(unit)}</div>
-                <Button variant="secondary" onClick={() => setSelected(offer)}>{tr('Adquirir')}</Button>
+                {offer.code === 'CONSULTA' && !access.hasAny
+                  ? <p className="small muted">{tr('Disponible con Herramientas o una membresía activa.')}</p>
+                  : <Button variant="secondary" onClick={() => setSelected(offer)}>{tr('Adquirir')}</Button>}
               </article>
             );
           })}

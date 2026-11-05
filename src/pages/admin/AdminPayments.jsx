@@ -36,7 +36,7 @@ export default function AdminPayments() {
             <DataTable rows={list} empty={tr('Sin intentos de pago.')} columns={[
               { key: 'createdAt', label: tr('Fecha'), render: (a) => dateTime(a.createdAt) },
               { key: 'user', label: tr('Cliente'), render: (a) => <Link to={`/admin/clientes/${a.user.id}`}>{tr(a.user.name)}<span className="small block">{a.user.email}</span></Link> },
-              { key: 'offer', label: tr('Producto'), render: (a) => a.offer?.name },
+              { key: 'offer', label: tr('Producto'), render: (a) => `${a.offer?.name || ''}${a.quantity > 1 ? ` × ${a.quantity}` : ''}${a.kind === 'GIFT' ? ` · ${tr('Regalo')}` : a.kind === 'PROMO' ? ` · ${tr('Promoción')}` : ''}` },
               { key: 'amount', label: tr('Monto'), align: 'right', render: (a) => (a.amount === null ? tr('Por definir') : `${priceMoney(a.amount)} ${a.currency}`) },
               { key: 'provider', label: tr('Proveedor'), render: (a) => (a.provider === 'MOCK' ? 'Simulado' : a.provider) },
               { key: 'status', label: tr('Estado'), render: (a) => <Pill variant={a.status === 'APPROVED' ? '' : a.status === 'REJECTED' ? 'bad' : 'warn'}>{tr(PAYMENT_STATUS[a.status])}</Pill> },
