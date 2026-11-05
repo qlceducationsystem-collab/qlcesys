@@ -86,11 +86,11 @@ function MasterclassSettings({ canEdit }) {
     <div className="stack">
       <label className="check">
         <input type="checkbox" checked={res.data.includedWithFull} disabled={!canEdit || state.busy} onChange={(e) => toggle(e.target.checked)} />
-        {' '}{tr('Incluir la Masterclass en el acceso completo anual')}
+        {' '}{tr('Incluir la Masterclass completa en QLC Premium Access y QLC Diamond Access')}
       </label>
       <p className="small muted">{res.data.includedWithFull
-        ? tr('Hoy la Masterclass se muestra a todos los clientes con acceso completo. Para cobrarla aparte, define su precio abajo, márcala como disponible para compra y desactiva esta casilla.')
-        : tr('La Masterclass se cobra aparte: solo la ven quienes compran el producto Masterclass.')}</p>
+        ? tr('Las membresías anuales incluyen los 12 módulos de la Masterclass. Cada módulo también se vende por separado (Masterclass M1 a M12) con 30 días de acceso y en orden.')
+        : tr('La Masterclass se cobra aparte: solo la ven quienes compran cada módulo.')}</p>
       <FormError error={state.error} />
     </div>
   );

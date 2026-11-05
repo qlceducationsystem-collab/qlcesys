@@ -86,6 +86,71 @@ export default function AdminExercises() {
         )}
       </AsyncView>
       {open && <ReplyModal item={open} canEdit={canEdit} onClose={() => setOpen(null)} onSaved={() => { setOpen(null); res.reload(); }} />}
+      <PaidQuestions canEdit={canEdit} />
     </>
+  );
+}
+
+function AnswerModal({ item, canEdit, onClose, onSaved }) {
+  const [answer, setAnswer] = useState(item.answer || '');
+  const [state, setState] = useState({ busy: false, error: null });
+  const save = async () => {
+    setState({ busy: true, error: null });
+    try {
+      await api.patch(`/admin/questions/${item.id}`, { answer });
+      onSaved();
+    } catch (error) {
+      setState({ busy: false, error });
+    }
+  };
+  return (
+    <Modal
+      open
+      title={tr('Consulta · Módulo {n} · {name}', { n: item.moduleNumber, name: item.user?.name })}
+      onClose={onClose}
+      footer={canEdit ? <><Button variant="secondary" onClick={onClose}>{tr('Cancelar')}</Button><Button loading={state.busy} disabled={!answer.trim()} onClick={save}>{tr('Enviar respuesta')}</Button></> : <Button onClick={onClose}>{tr('Cerrar')}</Button>}
+    >
+      <div className="stack">
+        <p className="small muted">{item.user?.email} · {dateTime(item.createdAt)}</p>
+        <div className="exercise-message">{item.question}</div>
+        {canEdit ? (
+          <Field label={tr('Respuesta')} hint={tr('El cliente la verá en Ejercicio y avance de este módulo, dentro de Consultas al equipo QLC.')}>
+            <Textarea rows={5} maxLength={5000} value={answer} onChange={(e) => setAnswer(e.target.value)} />
+          </Field>
+        ) : item.answer && <div className="exercise-reply"><b>{tr('Respuesta enviada')}</b><p>{item.answer}</p></div>}
+        <FormError error={state.error} />
+      </div>
+    </Modal>
+  );
+}
+
+function PaidQuestions({ canEdit }) {
+  const [status, setStatus] = useState('PENDING');
+  const [open, setOpen] = useState(null);
+  const res = useAsync(() => api.get(`/admin/questions${status ? `?status=${status}` : ''}`), [status]);
+  return (
+    <Card title={tr('Consultas pagadas')}>
+      <p className="small muted">{tr('Consultas pagadas que los clientes envían desde Ejercicio y avance. Se responden aquí y el cliente las ve en el mismo módulo.')}</p>
+      <div className="form-grid cols-2">
+        <Field label={tr('Estado')}><Select value={status} onChange={(e) => setStatus(e.target.value)} placeholder={tr('Todos')} options={Object.entries(STATUS).map(([value, [label]]) => ({ value, label: tr(label) }))} /></Field>
+      </div>
+      <AsyncView {...res} onRetry={res.reload}>
+        {(d) => (
+          <DataTable
+            rows={d.items}
+            empty={tr('No hay consultas en este estado.')}
+            columns={[
+              { key: 'createdAt', label: tr('Fecha'), render: (x) => dateTime(x.createdAt) },
+              { key: 'user', label: tr('Cliente'), render: (x) => <><Link to={`/admin/clientes/${x.user?.id}`}><b>{x.user?.name}</b></Link><span className="small block">{x.user?.email}</span></> },
+              { key: 'module', label: tr('Módulo'), render: (x) => `M${x.moduleNumber}` },
+              { key: 'question', label: tr('Consulta'), render: (x) => preview(x.question) },
+              { key: 'status', label: tr('Estado'), render: (x) => { const [label, variant] = STATUS[x.answeredAt ? 'ANSWERED' : 'PENDING']; return <Pill variant={variant}>{tr(label)}</Pill>; } },
+              { key: 'x', label: '', align: 'right', render: (x) => <button type="button" className="btn-link" onClick={() => setOpen(x)}>{canEdit ? tr('Responder') : tr('Ver')}</button> },
+            ]}
+          />
+        )}
+      </AsyncView>
+      {open && <AnswerModal item={open} canEdit={canEdit} onClose={() => setOpen(null)} onSaved={() => { setOpen(null); res.reload(); }} />}
+    </Card>
   );
 }

@@ -115,6 +115,41 @@ function Promotions({ reloadKey, onChanged }) {
   );
 }
 
+function RetentionCard() {
+  const { user } = useAuth();
+  const res = useAsync(() => api.get('/admin/retention'), []);
+  const [state, setState] = useState({ busy: false, error: null });
+  const canEdit = user?.adminLevel === 'FULL';
+  const toggle = async (enabled) => {
+    if (!enabled && !window.confirm(tr('¿Desactivar los avisos y la eliminación automática de cuentas sin renovar?'))) return;
+    setState({ busy: true, error: null });
+    try {
+      await api.put('/admin/retention', { enabled });
+      await res.reload();
+      setState({ busy: false, error: null });
+    } catch (error) {
+      setState({ busy: false, error });
+    }
+  };
+  return (
+    <Card title={tr('Avisos de renovación y eliminación de cuentas')}>
+      <AsyncView {...res} onRetry={res.reload}>
+        {(d) => (
+          <div className="stack">
+            <label className="check">
+              <input type="checkbox" checked={d.enabled} disabled={!canEdit || state.busy} onChange={(e) => toggle(e.target.checked)} />
+              {' '}{tr('Avisar por correo y eliminar la cuenta si el cliente no renueva en 30 días')}
+            </label>
+            <p className="small muted">{tr('Cuando termina la suscripción, el cliente recibe un correo a los 10 días (le quedan 20), a los 20 días (le quedan 10) y a los 29 días (le queda 1). Si no renueva al día 30, el sistema elimina su cuenta y toda su información.')}</p>
+            {d.since && <p className="small muted">{tr('Activo desde {date}. Los clientes que ya estaban vencidos cuentan sus 30 días a partir de esa fecha.', { date: date(d.since) })}</p>}
+            <FormError error={state.error} />
+          </div>
+        )}
+      </AsyncView>
+    </Card>
+  );
+}
+
 export default function AdminSubscribers() {
   const { user } = useAuth();
   const [state, setState] = useState('');
@@ -135,6 +170,7 @@ export default function AdminSubscribers() {
         <StatCard label={tr('Vencidos')} value={counts.VENCIDO ?? '—'} />
         <StatCard label={tr('Sin suscripción')} value={counts.SIN_SUSCRIPCION ?? '—'} />
       </StatGrid>
+      <RetentionCard />
       <Card>
         <div className="inline-form">
           <Select value={state} onChange={(e) => setState(e.target.value)} options={STATES.map(([value, label]) => ({ value, label: tr(label) }))} aria-label={tr('Estado')} />

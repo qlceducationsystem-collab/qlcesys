@@ -41,7 +41,8 @@ const columns = [
 
 function Body() {
   const { api, basePath } = useWorkspace();
-  const { summary: s, reload, period } = usePeriodSummary();
+  const { summary: s, reload, period, data } = usePeriodSummary();
+  const breakdown = data?.debtBreakdown;
   const hist = useAsync(() => api.get('/periods/history'), [api, period?.id]);
   const [paying, setPaying] = useState(null);
   const changed = () => {
@@ -61,6 +62,7 @@ function Body() {
           <StatCard label={tr('Pagos del periodo')} value={money(s.debts.totalPayment)} />
           <StatCard label={tr('Costo financiero mensual estimado')} value={money(s.debts.totalMonthlyCost)} delta={s.debts.ratesIncomplete ? tr('Incompleto: hay tasas pendientes') : tr('Intereses + cargos')} />
           <StatCard label={tr('Impacto en patrimonio neto')} value={money(-s.debts.totalBalance)} delta={tr('Las deudas son pasivos, no inversiones')} />
+          {breakdown && <StatCard label={tr('Saldo por desglosar')} value={money(breakdown.pendingBalance)} valueTone={breakdown.pendingBalance > 0 ? 'warn' : 'up'} delta={tr('{pct} desglosado de {declared} declarados en el Módulo 1', { pct: `${breakdown.balancePercent.toFixed(2)}%`, declared: money(breakdown.declaredBalance) })} />}
         </StatGrid>
       )}
       <RecordManager endpoint="/debts" title={tr('Obligaciones')} addLabel={tr('+ Registrar deuda')} fields={fields} columns={columns}

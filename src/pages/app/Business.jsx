@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useWorkspace } from '../../context/WorkspaceContext.jsx';
 import { usePeriodSummary } from '../../hooks/usePeriodSummary.js';
 import { money } from '../../utils/format.js';
-import { PageHeader, StatCard, StatGrid } from '../../components/ui/Card.jsx';
+import { Notice, PageHeader, StatCard, StatGrid } from '../../components/ui/Card.jsx';
 import { Empty } from '../../components/ui/States.jsx';
 import { ClosedNotice, Money } from '../../components/finance/Finance.jsx';
 import { RecordManager } from '../../features/records/RecordManager.jsx';
@@ -20,6 +20,7 @@ function Body() {
   return (
     <>
       <PageHeader title={tr('Negocios y flujo de efectivo')} subtitle={tr('Diversificación más allá de los mercados financieros')} />
+      <Notice>{tr('Este módulo es solo para tu control interno: los ingresos, gastos y flujo que registras aquí no modifican Mi portafolio de inversión ni tu patrimonio.')}</Notice>
       <ClosedNotice />
       <StatGrid>
         <StatCard label={tr('Negocios registrados')} value={businesses.length} />

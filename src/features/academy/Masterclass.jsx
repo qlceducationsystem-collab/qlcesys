@@ -6,6 +6,7 @@ import { ErrorState, Loading } from '../../components/ui/States.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { CheckoutModal, offerPrice } from '../access/CheckoutModal.jsx';
 import { tr } from '../../i18n/tr.js';
+import { date } from '../../utils/format.js';
 
 function Rich({ spans = [] }) {
   return spans.map(([text, style], i) => {
@@ -68,37 +69,63 @@ function Blocks({ blocks = [] }) {
   return blocks.map((b, i) => <Fragment key={i}>{RENDER[b.type]?.(b) ?? null}</Fragment>);
 }
 
-function Locked({ status }) {
+function Locked({ number, status, onChange }) {
   const { user } = useAuth();
   const { isAdminView } = useWorkspace();
   const [buy, setBuy] = useState(false);
+  const client = !isAdminView && user?.role === 'CLIENT';
   return (
     <div className="mc-locked">
       <span className="section-kicker">{tr('Masterclass QLC')}</span>
-      <h3>{tr('Contenido exclusivo de la Masterclass')}</h3>
-      <p>{status.offer
-        ? tr('La Masterclass de cada módulo se adquiere por separado. Con ella obtienes el contenido completo de los 12 módulos de la academia.')
-        : tr('La Masterclass está disponible con el acceso completo a QLC Financial Education.')}</p>
-      {status.offer && !isAdminView && user?.role === 'CLIENT' && (
+      <h3>{tr('Masterclass del Módulo {n}', { n: number })}</h3>
+      {!status.previousDone ? (
+        <p>{tr('Los módulos de la Masterclass se avanzan en orden. Primero termina la Masterclass del Módulo {n} para poder adquirir esta.', { n: number - 1 })}</p>
+      ) : status.offer ? (
+        <p>{tr('Cada módulo de la Masterclass se adquiere por separado con 30 días de acceso. Al terminar el periodo se bloquea y tu avance se conserva. También se incluye en QLC Premium Access y QLC Diamond Access.')}</p>
+      ) : (
+        <p>{tr('La Masterclass está disponible con QLC Premium Access o QLC Diamond Access.')}</p>
+      )}
+      {status.canBuy && client && (
         <>
           <p className="mc-price">{offerPrice(status.offer)}</p>
-          <Button onClick={() => setBuy(true)}>{tr('Adquirir la Masterclass')}</Button>
+          <Button onClick={() => setBuy(true)}>{tr('Adquirir este módulo')}</Button>
         </>
       )}
-      {buy && <CheckoutModal offer={status.offer} onClose={() => setBuy(false)} onCompleted={() => window.location.reload()} />}
+      {buy && <CheckoutModal offer={status.offer} onClose={() => { setBuy(false); onChange?.(); }} />}
     </div>
   );
 }
 
-function Content({ number }) {
-  const { api } = useWorkspace();
+function Content({ number, status, onChange }) {
+  const { api, canEdit, isAdminView } = useWorkspace();
   const res = useAsync(() => api.get(`/academy/modules/${number}/masterclass`), [api, number]);
+  const [done, setDone] = useState(!!status?.completed);
+  const [busy, setBusy] = useState(false);
   if (res.loading && !res.data) return <Loading />;
   if (res.error) return <ErrorState error={res.error} onRetry={res.reload} />;
-  return <article className="masterclass"><Blocks blocks={res.data.blocks} /></article>;
+  const finish = async () => {
+    setBusy(true);
+    try {
+      await api.post(`/academy/modules/${number}/masterclass/complete`, {});
+      setDone(true);
+      onChange?.();
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <>
+      <article className="masterclass"><Blocks blocks={res.data.blocks} /></article>
+      <div className="mc-done">
+        {status?.expiresAt && <span className="muted small">{tr('Acceso a este módulo hasta {date}', { date: date(status.expiresAt) })}</span>}
+        {done ? <span className="small up">{tr('Terminaste esta Masterclass. Ya puedes continuar con el siguiente módulo.')}</span>
+          : canEdit && !isAdminView && <Button loading={busy} onClick={finish}>{tr('Terminé esta Masterclass')}</Button>}
+      </div>
+    </>
+  );
 }
 
-export function Masterclass({ number, status }) {
-  if (!status?.available) return <Locked status={status || {}} />;
-  return <Content number={number} />;
+export function Masterclass({ number, status, onChange }) {
+  if (!status?.available) return <Locked number={number} status={status || {}} onChange={onChange} />;
+  return <Content number={number} status={status} onChange={onChange} />;
 }

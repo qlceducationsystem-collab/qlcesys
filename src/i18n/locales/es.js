@@ -100,7 +100,7 @@ export const es = {
     nav: {
       home: 'Inicio', academy: 'Academia', portfolio: 'Mi portafolio de inversión', patrimony: 'Patrimonio', cashflow: 'Ingresos y gastos',
       protection: 'Protección patrimonial', debts: 'Deudas', business: 'Negocios y flujo', allocation: 'Allocation',
-      movements: 'Movimientos patrimoniales', closes: 'Cortes mensuales', annual: 'Informe anual', advisory: 'Asesoría personalizada',
+      movements: 'Movimientos patrimoniales', closes: 'Cortes mensuales', annual: 'Informe anual', advisory: 'Asesoría personalizada', masterclass: 'Masterclass',
     },
     adminNav: {
       general: 'General', dashboard: 'Dashboard', clients: 'Clientes', leads: 'Solicitudes de información', loginNotice: 'Aviso Trading Bot', exercises: 'Ejercicios y dudas', appointments: 'Citas de asesoría',

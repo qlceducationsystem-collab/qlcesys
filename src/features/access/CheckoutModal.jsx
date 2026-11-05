@@ -21,13 +21,23 @@ const durationText = (offer) => {
   return days >= 365 ? tr('Anual') : days >= 28 && days <= 31 ? tr('Mensual') : tr('{n} días', { n: days });
 };
 
-function Summary({ offer, method, setMethod, gift, setGift, promo }) {
+export const isService = (offer) => offer?.type === 'CONSULTA' || offer?.type === 'ORIENTACION';
+
+const kickerOf = (offer) => {
+  if (offer.type === 'MASTERCLASS') return offer.moduleNumber ? tr('Masterclass · Módulo {n}', { n: offer.moduleNumber }) : tr('Masterclass');
+  if (offer.type === 'CONSULTA') return tr('Consulta sobre ejercicios');
+  if (offer.type === 'ORIENTACION') return tr('Orientación personalizada · 20 minutos');
+  if (offer.type === 'FULL_ANNUAL') return tr('Membresía anual');
+  return offer.moduleNumber ? tr('Herramienta · Módulo {n}', { n: offer.moduleNumber }) : tr('Herramientas M1–M12');
+};
+
+function Summary({ offer, method, setMethod, gift, setGift, promo, quantity, setQuantity }) {
   const unit = offer.price === null || offer.price === undefined ? null : Number(offer.price);
-  const total = promo ? promo.finalPrice : unit === null ? null : unit * (gift ? Number(gift.quantity || 1) : 1);
+  const total = promo ? promo.finalPrice : unit === null ? null : unit * (gift ? Number(gift.quantity || 1) : isService(offer) ? Number(quantity || 1) : 1);
   return (
     <div className="checkout-summary">
       <div className="checkout-product">
-        <span className="checkout-kicker">{gift ? tr('Regalo · {duration}', { duration: durationText(offer) }) : promo ? tr('Promoción personalizada') : offer.type === 'MASTERCLASS' ? tr('Masterclass') : offer.type === 'FULL_ANNUAL' ? tr('Acceso completo') : (offer.moduleNumber ? tr('Herramienta · Módulo {n}', { n: offer.moduleNumber }) : tr('Herramientas M1–M12'))}</span>
+        <span className="checkout-kicker">{gift ? tr('Regalo · {duration}', { duration: durationText(offer) }) : promo ? tr('Promoción personalizada') : kickerOf(offer)}</span>
         <b>{tr(offer.name)}</b>
         {offer.description && <p>{tr(offer.description)}</p>}
       </div>
@@ -40,6 +50,11 @@ function Summary({ offer, method, setMethod, gift, setGift, promo }) {
           <Field label={tr('Mensaje para la tarjeta (opcional)')}><Textarea maxLength={500} rows={3} value={gift.message} onChange={(e) => setGift({ ...gift, message: e.target.value })} /></Field>
         </div>
       )}
+      {!gift && !promo && isService(offer) && (
+        <Field label={offer.type === 'CONSULTA' ? tr('Número de consultas') : tr('Número de sesiones de 20 minutos')}>
+          <Input type="number" min="1" max="20" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+        </Field>
+      )}
       <div className="checkout-amount">
         <span>{tr('Total')}</span>
         {promo && unit !== null && <small className="checkout-strike">{priceMoney(unit)} {offer.currency} · −{promo.discountPercent}%</small>}
@@ -47,7 +62,9 @@ function Summary({ offer, method, setMethod, gift, setGift, promo }) {
         {gift && <small>{tr('El periodo empieza cuando la persona active su regalo, no hoy.')}</small>}
         {promo && <small>{tr('Tu acceso se activará cuando el equipo de QLC autorice el pago.')}</small>}
         {!gift && !promo && offer.type === 'FULL_ANNUAL' && <small>{tr('Vigencia de')}{' '}{offer.accessDays || 365}{' '}{tr('días')}</small>}
-        {!gift && !promo && offer.type === 'TOOL_ONLY' && <small>{tr('Suscripción mensual ·')}{' '}{offer.accessDays || 30}{' '}{tr('días de acceso por pago')}</small>}
+        {!gift && !promo && offer.type === 'TOOL_ONLY' && <small>{offer.accessDays || 30}{' '}{tr('días de acceso por pago. Al terminar se bloquea y puedes renovar.')}</small>}
+        {!gift && !promo && offer.type === 'MASTERCLASS' && <small>{offer.accessDays || 30}{' '}{tr('días de acceso a este módulo. Tu avance se conserva.')}</small>}
+        {!gift && !promo && offer.sessions > 0 && <small>{tr('Incluye {n} sesiones de orientación de 20 minutos', { n: offer.sessions })}</small>}
       </div>
       <fieldset className="checkout-methods">
         <legend>{tr('Método de pago')}</legend>
@@ -85,7 +102,7 @@ function Result({ attempt, offer, codes, gift, onClose, onRetry }) {
           </div>
         </>
       )}
-      {ok && !pending && !codes && <p>{tr('Tu acceso a {name} ya está activo.', { name: offer.name })}</p>}
+      {ok && !pending && !codes && <p>{isService(offer) ? tr('Tu compra de {name} quedó disponible en tu cuenta.', { name: offer.name }) : tr('Tu acceso a {name} ya está activo.', { name: offer.name })}</p>}
       <div className="form-actions">
         {!ok && <Button variant="secondary" onClick={onRetry}>{tr('Intentar de nuevo')}</Button>}
         <Button onClick={onClose}>{ok ? tr('Continuar') : 'Cerrar'}</Button>
@@ -102,6 +119,7 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose, onCo
   const [gift, setGift] = useState(mode === 'gift' ? { quantity: 1, recipientName: '', message: '' } : null);
   const [attempt, setAttempt] = useState(null);
   const [codes, setCodes] = useState(null);
+  const [quantity, setQuantity] = useState(1);
   const [state, setState] = useState({ busy: false, error: null });
   const product = promo ? promo.offer : offer;
 
@@ -118,7 +136,7 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose, onCo
   const start = () => run(async () => {
     const body = promo
       ? { promoCode: promo.code }
-      : { offerCode: offer.code, ...(gift ? { gift: { quantity: Number(gift.quantity || 1), recipientName: gift.recipientName || null, message: gift.message || null } } : {}) };
+      : { offerCode: offer.code, ...(isService(offer) ? { quantity: Math.min(20, Math.max(1, Number(quantity) || 1)) } : {}), ...(gift ? { gift: { quantity: Number(gift.quantity || 1), recipientName: gift.recipientName || null, message: gift.message || null } } : {}) };
     const res = await api.post('/payments/checkout', body);
     setAttempt(res.attempt);
     if (res.checkout.mode === 'REDIRECT' && res.checkout.initPoint) window.location.assign(res.checkout.initPoint);
@@ -141,7 +159,7 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose, onCo
       <div className="checkout-env">{tr('ENTORNO DE PRUEBA · No se realiza ningún cobro real')}</div>
       {step === 'summary' && (
         <>
-          <Summary offer={product} method={method} setMethod={setMethod} gift={gift} setGift={setGift} promo={promo} />
+          <Summary offer={product} method={method} setMethod={setMethod} gift={gift} setGift={setGift} promo={promo} quantity={quantity} setQuantity={setQuantity} />
           <FormError error={state.error} />
           <div className="form-actions">
             <Button variant="secondary" onClick={onClose}>{tr('Cancelar')}</Button>

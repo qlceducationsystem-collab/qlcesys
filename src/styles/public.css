@@ -372,6 +372,10 @@ h1.ps-title { font-size: clamp(32px, min(5.4vw, 8.4dvh), 78px); }
 
 .access { display: grid; align-content: center; gap: clamp(14px, 2.6dvh, 26px); }
 .access-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 18px; min-height: 0; }
+.access-grid.access-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.access-extra { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; }
+.access-extra li { display: flex; gap: 8px; align-items: baseline; }
+.access-extra b { color: var(--accent, #5bd4ff); }
 .access-card { position: relative; border: 1px solid var(--line); border-radius: 22px; padding: clamp(18px, 3dvh, 30px); background: rgba(13, 19, 26, 0.85); display: flex; flex-direction: column; gap: 10px; overflow: hidden; min-height: 0; }
 .access-card.is-featured { border-color: rgba(0, 168, 255, 0.4); background: linear-gradient(150deg, rgba(0, 168, 255, 0.12), rgba(13, 19, 26, 0.92) 55%); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35); }
 .access-tag { align-self: flex-start; font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; padding: 5px 10px; border-radius: 99px; border: 1px solid rgba(91, 212, 255, 0.3); color: var(--blue2); }
@@ -493,7 +497,7 @@ h1.ps-title { font-size: clamp(32px, min(5.4vw, 8.4dvh), 78px); }
   .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); max-height: none; gap: 10px; }
   .feature.is-secondary { display: none; }
   .features-more { display: block; }
-  .access-grid { grid-template-columns: 1fr; max-height: none; gap: 10px; }
+  .access-grid, .access-grid.access-grid-3 { grid-template-columns: 1fr; max-height: none; gap: 10px; }
   .routes { align-content: start; gap: 12px; }
   .routes .ps-lead { font-size: 13px; line-height: 1.45; }
   .routes-grid { grid-template-columns: 1fr; gap: 8px; }

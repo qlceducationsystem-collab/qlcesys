@@ -19,6 +19,7 @@ import { LoginNotice } from '../features/notice/LoginNotice.jsx';
 export const NAV = [
   { to: '', icon: '⌂', label: 'home', end: true },
   { to: 'academia', icon: '▤', label: 'academy', free: true },
+  { to: 'masterclass', icon: '✦', label: 'masterclass', free: true },
   { to: 'cartera', icon: '◈', label: 'portfolio' },
   { to: 'patrimonio', icon: '◫', label: 'patrimony' },
   { to: 'ingresos-gastos', icon: '↕', label: 'cashflow' },
@@ -29,10 +30,10 @@ export const NAV = [
   { to: 'movimientos', icon: '⇄', label: 'movements' },
   { to: 'cortes', icon: '▧', label: 'closes' },
   { to: 'informe-anual', icon: '◎', label: 'annual' },
-  { to: 'asesoria', icon: '◌', label: 'advisory' },
+  { to: 'asesoria', icon: '◌', label: 'advisory', free: true },
 ];
 
-const FREE_PATHS = ['/academia', '/acceso'];
+const FREE_PATHS = ['/academia', '/acceso', '/masterclass', '/asesoria'];
 
 function AccessGate() {
   return (

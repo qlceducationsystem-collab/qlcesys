@@ -100,7 +100,7 @@ export const en = {
     nav: {
       home: 'Home', academy: 'Academy', portfolio: 'My investment portfolio', patrimony: 'Net worth', cashflow: 'Income and expenses',
       protection: 'Wealth protection', debts: 'Debts', business: 'Business and cash flow', allocation: 'Allocation',
-      movements: 'Wealth movements', closes: 'Monthly closings', annual: 'Annual report', advisory: 'Personal advisory',
+      movements: 'Wealth movements', closes: 'Monthly closings', annual: 'Annual report', advisory: 'Personal advisory', masterclass: 'Masterclass',
     },
     adminNav: {
       general: 'General', dashboard: 'Dashboard', clients: 'Clients', leads: 'Information requests', loginNotice: 'Trading Bot notice', exercises: 'Exercises and questions', appointments: 'Advisory appointments',

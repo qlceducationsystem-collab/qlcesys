@@ -73,36 +73,44 @@ export function FeatureSection({ section, go }) {
   );
 }
 
+const PUBLIC_PLANS = [
+  ['TOOLS_ALL', { es: ['Herramientas', '30 días', 'Todas las herramientas financieras durante 30 días. Se bloquean al terminar y se renuevan cuando quieras. No incluye la Masterclass.'], en: ['Tools', '30 days', 'All financial tools for 30 days. They lock when the period ends and can be renewed anytime. Masterclass not included.'] }],
+  ['FULL_ANNUAL', { es: ['Membresía anual', '1 año', 'Todas las herramientas y todos los módulos de la Masterclass durante 12 meses.'], en: ['Annual membership', '1 year', 'All tools and every Masterclass module for 12 months.'] }],
+  ['DIAMOND_ANNUAL', { es: ['Membresía anual', '1 año', 'Todo lo de QLC Premium Access más 6 sesiones de orientación personalizada de 20 minutos.'], en: ['Annual membership', '1 year', 'Everything in QLC Premium Access plus 6 personal guidance sessions of 20 minutes.'] }],
+];
+
 export function AccessSection({ section, offers, go }) {
   const { t, lang } = useI18n();
-  const full = offers.find((o) => o.type === 'FULL_ANNUAL');
-  const tools = offers.find((o) => o.type === 'TOOL_ONLY');
-  const [optionFull, optionTools] = section.items || [];
+  const find = (code) => offers.find((o) => o.code === code);
+  const extra = [
+    [find('MASTERCLASS_M1'), lang === 'es' ? 'Masterclass por módulo · 30 días, en orden' : 'Masterclass per module · 30 days, in order'],
+    [find('CONSULTA'), lang === 'es' ? 'Consulta sobre ejercicios' : 'Exercise question'],
+    [find('ORIENTACION'), lang === 'es' ? 'Orientación personalizada · 20 minutos' : 'Personal guidance · 20 minutes'],
+  ].filter(([o]) => o);
   return (
     <div className="ps-container access">
       <SectionHead section={section} compact />
-      <div className="access-grid">
-        <article className="access-card is-featured reveal-card" style={{ '--c': 0 }}>
-          <span className="access-tag">{optionFull?.tag || t('public.option1')}</span>
-          <h3>{(lang === 'es' && full?.name) || optionFull?.title || t('public.fullAnnual')}</h3>
-          <p>{optionFull?.text || (lang === 'es' ? full?.description : '')}</p>
-          <div className="access-price">{priceLabel(full, t)}</div>
-          <ul className="access-list">
-            {t('public.fullIncludes').map((item) => <li key={item}>{item}</li>)}
-          </ul>
-          <CtaButton label={lang === 'es' ? '🎁 Regalar este programa' : '🎁 Give this program'} target="/app/acceso#regalar" go={go} variant="ghost" />
-        </article>
-        <article className="access-card reveal-card" style={{ '--c': 1 }}>
-          <span className="access-tag">{optionTools?.tag || t('public.option2')}</span>
-          <h3>{optionTools?.title || t('public.toolsOnly')}</h3>
-          <p>{optionTools?.text}</p>
-          <div className="access-price">{priceLabel(tools, t)}<small>{t('public.perTool')}</small></div>
-          <ul className="access-tools">
-            {Array.from({ length: 12 }, (_, i) => <li key={i}><span>M{i + 1}</span></li>)}
-          </ul>
-          <CtaButton label={lang === 'es' ? '🎁 Regalar las herramientas' : '🎁 Give the tools'} target="/app/acceso#regalar" go={go} variant="ghost" />
-        </article>
+      <div className="access-grid access-grid-3">
+        {PUBLIC_PLANS.map(([code, copy], i) => {
+          const offer = find(code);
+          if (!offer) return null;
+          const [tag, period, text] = copy[lang === 'es' ? 'es' : 'en'];
+          return (
+            <article key={code} className={`access-card reveal-card ${code === 'DIAMOND_ANNUAL' ? 'is-featured' : ''}`} style={{ '--c': i }}>
+              <span className="access-tag">{tag}</span>
+              <h3>{offer.name}</h3>
+              <p>{text}</p>
+              <div className="access-price">{priceLabel(offer, t)}<small> / {period}</small></div>
+              {offer.giftable !== false && <CtaButton label={lang === 'es' ? '🎁 Regalar' : '🎁 Give as a gift'} target="/app/acceso#regalar" go={go} variant="ghost" />}
+            </article>
+          );
+        })}
       </div>
+      {extra.length > 0 && (
+        <ul className="access-extra">
+          {extra.map(([o, label]) => <li key={o.code}><span>{label}</span><b>{priceLabel(o, t)}</b></li>)}
+        </ul>
+      )}
       <SectionCtas section={section} go={go} />
     </div>
   );
