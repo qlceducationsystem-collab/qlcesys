@@ -1,7 +1,7 @@
 import { useI18n } from '../../i18n/I18nContext.jsx';
 
 export function LanguageSwitcher({ className = '' }) {
-  const { lang, setLang, languages, t } = useI18n();
+  const { lang, chooseLang, languages, t } = useI18n();
   return (
     <div className={`lang-switch ${className}`} role="group" aria-label={t('common.language')}>
       <span className="lang-thumb" style={{ '--i': languages.findIndex((l) => l.code === lang) }} aria-hidden="true" />
@@ -14,7 +14,7 @@ export function LanguageSwitcher({ className = '' }) {
           aria-label={l.label}
           aria-pressed={lang === l.code}
           className={lang === l.code ? 'is-active' : ''}
-          onClick={() => setLang(l.code)}
+          onClick={() => chooseLang(l.code)}
         >
           {l.short}
         </button>

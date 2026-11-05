@@ -6,6 +6,7 @@ import { CurrencyProvider } from './context/CurrencyContext.jsx';
 import { I18nProvider } from './i18n/I18nContext.jsx';
 import AppRoutes from './routes/AppRoutes.jsx';
 import { UpdatePrompt } from './features/updates/UpdatePrompt.jsx';
+import { LanguageSync } from './i18n/LanguageSync.jsx';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/app.css';
@@ -21,6 +22,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <I18nProvider>
         <CurrencyProvider>
           <AuthProvider>
+            <LanguageSync />
             <AppRoutes />
             <UpdatePrompt />
           </AuthProvider>

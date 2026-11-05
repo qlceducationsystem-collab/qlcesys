@@ -13,6 +13,21 @@ export const LANGUAGES = [
 const MESSAGES = { es, en };
 const DEFAULT_LANG = 'es';
 const STORAGE_KEY = 'qlc_lang';
+const PENDING_KEY = 'qlc_lang_pending';
+
+export const langChoice = {
+  pending: () => {
+    try { return localStorage.getItem(PENDING_KEY) === '1'; } catch { return false; }
+  },
+  mark: () => {
+    try { localStorage.setItem(PENDING_KEY, '1'); } catch { return undefined; }
+    return undefined;
+  },
+  clear: () => {
+    try { localStorage.removeItem(PENDING_KEY); } catch { return undefined; }
+    return undefined;
+  },
+};
 
 const lookup = (dict, key) => key.split('.').reduce((node, part) => (node == null ? undefined : node[part]), dict);
 
@@ -52,12 +67,18 @@ export function I18nProvider({ children }) {
     if (MESSAGES[code]) setLangState(code);
   }, []);
 
+  const chooseLang = useCallback((code) => {
+    if (!MESSAGES[code]) return;
+    langChoice.mark();
+    setLangState(code);
+  }, []);
+
   const t = useCallback((key, vars) => {
     const value = lookup(MESSAGES[lang], key) ?? lookup(MESSAGES[DEFAULT_LANG], key) ?? key;
     return interpolate(value, vars);
   }, [lang]);
 
-  const value = useMemo(() => ({ lang, setLang, t, languages: LANGUAGES }), [lang, setLang, t]);
+  const value = useMemo(() => ({ lang, setLang, chooseLang, t, languages: LANGUAGES }), [lang, setLang, chooseLang, t]);
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 }
 
