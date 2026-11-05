@@ -30,8 +30,12 @@ export function LanguageSync() {
       langChoice.clear();
       markSynced(user.id);
       if (saved.current.language !== lang) {
+        const previous = saved.current.language;
         saved.current.language = lang;
-        api.put('/auth/language', { language: lang }).catch(() => null);
+        api.put('/auth/language', { language: lang }).catch(() => {
+          saved.current.language = previous;
+          langChoice.mark();
+        });
       }
       return;
     }

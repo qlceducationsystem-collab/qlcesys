@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { useI18n } from '../../i18n/I18nContext.jsx';
 import { useAsync } from '../../hooks/useAsync.js';
 import { Card, Notice, Pill } from '../../components/ui/Card.jsx';
 import { Button } from '../../components/ui/Button.jsx';
@@ -12,6 +13,7 @@ import { tr } from '../../i18n/tr.js';
 
 function Editor({ data, canManage, onSaved }) {
   const { user } = useAuth();
+  const { lang } = useI18n();
   const [testTo, setTestTo] = useState(user?.email || '');
   const [f, setF] = useState({
     method: data.method || 'OAUTH',
@@ -54,7 +56,7 @@ function Editor({ data, canManage, onSaved }) {
   });
   const test = () => run(async () => {
     await persist();
-    const res = await api.post('/admin/integrations/gmail/test', { to: testTo.trim() });
+    const res = await api.post('/admin/integrations/gmail/test', { to: testTo.trim(), language: lang });
     if (!res.sent) {
       onSaved();
       throw new Error(res.error || tr('No se pudo enviar'));
