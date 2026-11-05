@@ -14,7 +14,6 @@ import { tr } from '../../i18n/tr.js';
 import { MailSettings } from '../../features/admin/MailSettings.jsx';
 
 const META = {
-  DRIVE: { name: 'Google Drive', icon: '▲', purpose: 'Videos y documentos de la academia. Permiso limitado a los archivos creados por la aplicación.' },
   GMAIL: { name: 'Gmail', icon: '✉', purpose: 'Envío de correos del sistema (bienvenida, recuperación de contraseña, avisos). Solo permiso de envío.' },
 };
 const STATUS = { CONNECTED: ['Conectado', ''], ERROR: ['Error de conexión', 'bad'], DISCONNECTED: ['No conectado', 'muted'] };
@@ -80,7 +79,7 @@ function IntegrationCard({ item, canManage, onChanged }) {
         </div>
       )}
       <ConfirmDialog open={confirm} title={tr('Desconectar {name}', { name: meta.name })} danger confirmLabel={tr('Desconectar')} loading={state.busy}
-        message={tr('Se revocará el acceso y se eliminará el token cifrado. Los archivos existentes en Drive no se borran.')} onConfirm={disconnect} onClose={() => setConfirm(false)} />
+        message={tr('Se revocará el acceso y se eliminará el token cifrado. El envío de correos del sistema se detendrá hasta volver a conectar.')} onConfirm={disconnect} onClose={() => setConfirm(false)} />
     </article>
   );
 }
@@ -109,7 +108,7 @@ export default function AdminIntegrations() {
           <>
             <MailSettings canManage={user?.adminLevel === 'FULL'} onChanged={res.reload} />
             <div className="integration-grid">
-              {d.items.map((item) => <IntegrationCard key={item.service} item={item} canManage={user?.adminLevel === 'FULL'} onChanged={res.reload} />)}
+              {d.items.filter((item) => META[item.service]).map((item) => <IntegrationCard key={item.service} item={item} canManage={user?.adminLevel === 'FULL'} onChanged={res.reload} />)}
             </div>
             <Card title={tr('URI de redirección autorizada')}>
               <code className="code-line">{tr(d.redirectUri)}</code>
