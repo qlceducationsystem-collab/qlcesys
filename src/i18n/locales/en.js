@@ -191,6 +191,10 @@ export const en = {
       code: 'Code received by email',
       resend: 'Send another code',
       warning: 'Resetting your password also resets your Google Authenticator. You will have to register it again when you log in.',
+      sent: 'If the email is registered as a client, we sent you a 6-digit code that expires in 15 minutes. Check your spam folder too.',
+      invalid: 'Incorrect or expired code. Your password was not changed.',
+      unavailable: 'Reset by email is not available yet. Use your Google Authenticator code or contact the QLC team.',
+      done: 'Password reset. When you log in, you will have to register Google Authenticator again.',
       withAuthenticator: 'You can also reset it with your Google Authenticator code',
     },
     reset: {

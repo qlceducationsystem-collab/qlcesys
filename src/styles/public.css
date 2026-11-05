@@ -617,6 +617,8 @@ h1.ps-title { font-size: clamp(32px, min(5.4vw, 8.4dvh), 78px); }
 .auth-legal { color: #8593a1; }
 @keyframes authCardIn { from { opacity: 0; transform: translateY(14px) scale(0.985); } to { opacity: 1; transform: none; } }
 .auth-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; margin-bottom: 16px; border: 1px solid var(--line); border-radius: 12px; background: rgba(0, 0, 0, 0.35); }
+.auth-methods.is-three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.auth-methods.is-three button { padding: 9px 6px; line-height: 1.25; }
 .auth-methods button { border: 0; background: none; color: var(--muted); padding: 9px 10px; border-radius: 9px; font-size: 12.5px; cursor: pointer; transition: background 0.2s, color 0.2s; }
 .auth-methods button.is-active { background: rgba(0, 168, 255, 0.16); color: #fff; }
 .auth-methods button:focus-visible { outline: 2px solid var(--blue2); outline-offset: 2px; }

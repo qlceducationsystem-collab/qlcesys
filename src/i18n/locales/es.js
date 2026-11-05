@@ -191,6 +191,10 @@ export const es = {
       code: 'Código recibido por correo',
       resend: 'Enviar otro código',
       warning: 'Al restablecer tu contraseña también se reinicia tu Google Authenticator. Al iniciar sesión deberás registrarlo de nuevo.',
+      sent: 'Si el correo está registrado como cliente, te enviamos un código de 6 dígitos que vence en 15 minutos. Revisa también la carpeta de spam.',
+      invalid: 'Código incorrecto o vencido. No se cambió tu contraseña.',
+      unavailable: 'El restablecimiento por correo todavía no está disponible. Usa tu código de Google Authenticator o contacta al equipo de QLC.',
+      done: 'Contraseña restablecida. Al iniciar sesión deberás registrar de nuevo Google Authenticator.',
       withAuthenticator: 'También puedes restablecerla con tu código de Google Authenticator',
     },
     reset: {

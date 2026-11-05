@@ -49,20 +49,24 @@ function EmailReset({ onDone }) {
   const send = (e) => {
     e?.preventDefault();
     f.run(async ({ email }) => {
-      const res = await api.post('/auth/password-reset/request', { email });
-      setSent(res.message);
+      await api.post('/auth/password-reset/request', { email });
+      setSent(true);
     });
   };
   const confirm = (e) => {
     e.preventDefault();
     if (f.values.password !== f.values.confirm) return setLocal({ message: t('common.passwordMismatch') });
     setLocal(null);
-    f.run(({ email, code, password }) => api.post('/auth/password-reset/confirm', { email, code, password }));
+    f.run(async ({ email, code, password }) => {
+      await api.post('/auth/password-reset/confirm', { email, code, password });
+      return { reset: true };
+    });
   };
-  if (f.state.done?.message) {
+  const failure = f.state.error && (f.state.error.status === 503 ? { message: t('auth.emailReset.unavailable') } : f.state.error.status === 400 && sent ? { message: t('auth.emailReset.invalid') } : f.state.error);
+  if (f.state.done?.reset) {
     return (
       <div className="stack">
-        <p className="notice">{f.state.done.message}</p>
+        <p className="notice">{t('auth.emailReset.done')}</p>
         <Button type="button" onClick={onDone}>{t('common.login')}</Button>
       </div>
     );
@@ -72,7 +76,7 @@ function EmailReset({ onDone }) {
       <form className="stack" onSubmit={send}>
         <p className="small muted">{t('auth.emailReset.intro')}</p>
         <Field label={t('auth.email')}><Input type="email" autoComplete="email" required {...f.bind('email')} /></Field>
-        <FormError error={f.state.error} />
+        <FormError error={failure} />
         <Button type="submit" loading={f.state.busy}>{t('auth.emailReset.send')}</Button>
         <p className="small muted"><Link to="/recuperar">{t('auth.emailReset.withAuthenticator')}</Link></p>
       </form>
@@ -80,12 +84,12 @@ function EmailReset({ onDone }) {
   }
   return (
     <form className="stack" onSubmit={confirm}>
-      <p className="notice">{sent}</p>
+      <p className="notice">{t('auth.emailReset.sent')}</p>
       <Field label={t('auth.emailReset.code')}><CodeInput {...f.bind('code')} /></Field>
       <Field label={t('auth.newPassword')} hint={t('auth.minChars')}><Input type="password" required minLength={8} autoComplete="new-password" {...f.bind('password')} /></Field>
       <Field label={t('auth.confirmPassword')}><Input type="password" required minLength={8} autoComplete="new-password" {...f.bind('confirm')} /></Field>
       <p className="small muted">{t('auth.emailReset.warning')}</p>
-      <FormError error={local || f.state.error} />
+      <FormError error={local || failure} />
       <Button type="submit" loading={f.state.busy}>{t('auth.reset.submit')}</Button>
       <button type="button" className="btn-link" onClick={send}>{t('auth.emailReset.resend')}</button>
     </form>
@@ -110,7 +114,7 @@ export function Login() {
   return (
     <AuthCard title={t('auth.login.title')} subtitle={t('auth.login.subtitle')}
       footer={<>{t('auth.login.noAccount')} <Link to="/registro">{t('common.register')}</Link> · <button type="button" className="btn-link" onClick={() => setMethod('reset')}>{t('auth.login.forgot')}</button></>}>
-      <div className="auth-methods" role="tablist" aria-label={t('auth.login.methods')}>
+      <div className="auth-methods is-three" role="tablist" aria-label={t('auth.login.methods')}>
         {METHODS.map(([key, label]) => (
           <button key={key} type="button" role="tab" aria-selected={method === key} className={method === key ? 'is-active' : ''} onClick={() => setMethod(key)}>{t(label)}</button>
         ))}
