@@ -14,6 +14,7 @@ function Editor({ data, canManage, onSaved }) {
     senderName: data.senderName || '',
     recipients: (data.recipients || []).join(', '),
     disabled: new Set(data.disabled || []),
+    clientDisabled: new Set(data.clientDisabled || []),
   });
   const [state, setState] = useState({ busy: false, error: null, info: null });
   const run = async (fn, info) => {
@@ -32,6 +33,7 @@ function Editor({ data, canManage, onSaved }) {
     senderName: f.senderName.trim() || 'QLC Financial Education',
     recipients: f.recipients.split(/[,\s;]+/).map((e) => e.trim()).filter(Boolean),
     disabled: [...f.disabled],
+    clientDisabled: [...f.clientDisabled],
   }), tr('Configuración guardada.'));
   const connect = () => run(async () => {
     const { url } = await api.get('/admin/integrations/gmail/connect');
@@ -41,17 +43,35 @@ function Editor({ data, canManage, onSaved }) {
     const res = await api.post('/admin/integrations/gmail/test');
     if (!res.sent) throw new Error(res.error || tr('No se pudo enviar'));
   }, tr('Correo de prueba enviado a tu cuenta.'));
-  const toggle = (type) => {
-    const next = new Set(f.disabled);
+  const toggle = (key, type) => {
+    const next = new Set(f[key]);
     if (next.has(type)) next.delete(type);
     else next.add(type);
-    setF({ ...f, disabled: next });
+    setF({ ...f, [key]: next });
   };
-  const setGroup = (events, on) => {
-    const next = new Set(f.disabled);
+  const setGroup = (key, events, on) => {
+    const next = new Set(f[key]);
     events.forEach((e) => (on ? next.delete(e.type) : next.add(e.type)));
-    setF({ ...f, disabled: next });
+    setF({ ...f, [key]: next });
   };
+  const groupsFor = (key, groups) => (
+    <div className="notify-groups">
+      {groups.map((g) => (
+        <fieldset key={g.label} className="notify-group">
+          <legend>
+            {tr(g.label)}
+            {canManage && <button type="button" className="btn-link" onClick={() => setGroup(key, g.events, g.events.some((e) => f[key].has(e.type)))}>{g.events.some((e) => f[key].has(e.type)) ? tr('Activar todos') : tr('Desactivar todos')}</button>}
+          </legend>
+          {g.events.map((e) => (
+            <label key={e.type} className="check">
+              <input type="checkbox" checked={!f[key].has(e.type)} disabled={!canManage} onChange={() => toggle(key, e.type)} />
+              {tr(e.label)}
+            </label>
+          ))}
+        </fieldset>
+      ))}
+    </div>
+  );
   const connected = data.gmail.status === 'CONNECTED';
   return (
     <div className="stack">
@@ -94,24 +114,13 @@ function Editor({ data, canManage, onSaved }) {
         </Field>
       </div>
 
-      <h4>{tr('3. ¿Qué quieres que te notifique?')}</h4>
-      <p className="small muted">{tr('Todos los avisos vienen activados. Desmarca los que no quieras recibir por correo; siguen guardándose en el panel.')}</p>
-      <div className="notify-groups">
-        {data.groups.map((g) => (
-          <fieldset key={g.label} className="notify-group">
-            <legend>
-              {tr(g.label)}
-              {canManage && <button type="button" className="btn-link" onClick={() => setGroup(g.events, g.events.some((e) => f.disabled.has(e.type)))}>{g.events.some((e) => f.disabled.has(e.type)) ? tr('Activar todos') : tr('Desactivar todos')}</button>}
-            </legend>
-            {g.events.map((e) => (
-              <label key={e.type} className="check">
-                <input type="checkbox" checked={!f.disabled.has(e.type)} disabled={!canManage} onChange={() => toggle(e.type)} />
-                {tr(e.label)}
-              </label>
-            ))}
-          </fieldset>
-        ))}
-      </div>
+      <h4>{tr('3. Notificaciones para administradores')}</h4>
+      <p className="small muted">{tr('Avisos que reciben los correos de administración indicados arriba. Todos vienen activados. Desmarca los que no quieras recibir por correo; siguen guardándose en el panel.')}</p>
+      {groupsFor('disabled', data.groups)}
+
+      <h4>{tr('4. Correos para clientes')}</h4>
+      <p className="small muted">{tr('Correos que recibe cada cliente en su propia cuenta de correo. Desmarca los que no quieras enviar. Los correos de verificación, recuperación de contraseña y avisos antes de eliminar una cuenta siempre se envían.')}</p>
+      {groupsFor('clientDisabled', data.clientGroups || [])}
 
       <FormError error={state.error} />
       {state.info && <p className="small up">{state.info}</p>}
