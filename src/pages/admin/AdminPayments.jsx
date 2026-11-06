@@ -21,8 +21,8 @@ export default function AdminPayments() {
     <>
       <PageHeader
         kicker={tr('Comercial')}
-        title={tr('Pagos de prueba')}
-        subtitle={tr('Intentos de pago registrados en Neon por el proveedor simulado.')}
+        title={tr('Pagos')}
+        subtitle={tr('Intentos de pago registrados por Mercado Pago o por el modo de prueba.')}
         actions={<Select className="month" value={status} onChange={(e) => setStatus(e.target.value)} options={statusOptions} aria-label={tr('Estado')} />}
       />
       <StatGrid cols={3}>
@@ -37,8 +37,8 @@ export default function AdminPayments() {
               { key: 'createdAt', label: tr('Fecha'), render: (a) => dateTime(a.createdAt) },
               { key: 'user', label: tr('Cliente'), render: (a) => <Link to={`/admin/clientes/${a.user.id}`}>{tr(a.user.name)}<span className="small block">{a.user.email}</span></Link> },
               { key: 'offer', label: tr('Producto'), render: (a) => `${a.offer?.name || ''}${a.quantity > 1 ? ` × ${a.quantity}` : ''}${a.kind === 'GIFT' ? ` · ${tr('Regalo')}` : a.kind === 'PROMO' ? ` · ${tr('Promoción')}` : ''}` },
-              { key: 'amount', label: tr('Monto'), align: 'right', render: (a) => (a.amount === null ? tr('Por definir') : `${priceMoney(a.amount)} ${a.currency}`) },
-              { key: 'provider', label: tr('Proveedor'), render: (a) => (a.provider === 'MOCK' ? 'Simulado' : a.provider) },
+              { key: 'amount', label: tr('Monto'), align: 'right', render: (a) => (a.amount === null ? tr('Por definir') : `${priceMoney(a.amount)} ${a.currency}${a.chargedAmount !== null && a.chargedAmount !== undefined && a.chargedCurrency !== a.currency ? ` · ${priceMoney(a.chargedAmount)} ${a.chargedCurrency}` : ''}`) },
+              { key: 'provider', label: tr('Proveedor'), render: (a) => (a.provider === 'MOCK' ? 'Simulado' : 'Mercado Pago') },
               { key: 'status', label: tr('Estado'), render: (a) => <Pill variant={a.status === 'APPROVED' ? '' : a.status === 'REJECTED' ? 'bad' : 'warn'}>{tr(PAYMENT_STATUS[a.status])}</Pill> },
             ]} />
           )}

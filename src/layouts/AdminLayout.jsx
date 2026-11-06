@@ -27,6 +27,7 @@ const NAV = [
   { group: 'commercial' },
   { to: '/admin/precios', icon: '◇', label: 'pricing' },
   { to: '/admin/pagos', icon: '⇄', label: 'payments' },
+  { to: '/admin/pasarela', icon: '▣', label: 'gateway', full: true },
   { to: '/admin/suscriptores', icon: '◉', label: 'subscribers' },
   { to: '/admin/regalos', icon: '✦', label: 'gifts' },
   { group: 'generalAdmin', full: true },

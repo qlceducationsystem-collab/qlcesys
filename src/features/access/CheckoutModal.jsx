@@ -32,7 +32,17 @@ const kickerOf = (offer) => {
   return offer.moduleNumber ? tr('Herramienta · Módulo {n}', { n: offer.moduleNumber }) : tr('Herramientas M1–M12');
 };
 
-function Summary({ offer, method, setMethod, gift, setGift, promo, quantity, setQuantity }) {
+const chargePreview = (total, currency, charge) => {
+  if (!charge || total === null || total === undefined) return null;
+  const source = String(currency).toUpperCase();
+  if (source === charge.currency) return null;
+  const rate = Number(charge.rates?.[source]);
+  if (!(rate > 0)) return null;
+  const value = Number(total) * rate;
+  return `${priceMoney(charge.whole ? Math.ceil(value) : Math.round(value * 100) / 100)} ${charge.currency}`;
+};
+
+function Summary({ offer, method, setMethod, gift, setGift, promo, quantity, setQuantity, charge }) {
   const unit = offer.price === null || offer.price === undefined ? null : Number(offer.price);
   const total = promo ? promo.finalPrice : unit === null ? null : unit * (gift ? Number(gift.quantity || 1) : isService(offer) ? Number(quantity || 1) : 1);
   return (
@@ -60,6 +70,7 @@ function Summary({ offer, method, setMethod, gift, setGift, promo, quantity, set
         <span>{tr('Total')}</span>
         {promo && unit !== null && <small className="checkout-strike">{priceMoney(unit)} {offer.currency} · −{promo.discountPercent}%</small>}
         <strong>{total === null ? tr('Precio por definir — simulación de acceso') : `${priceMoney(total)} ${offer.currency}`}</strong>
+        {chargePreview(total, offer.currency, charge) && <small><b>{tr('Se cobrará en Mercado Pago: {amount}', { amount: chargePreview(total, offer.currency, charge) })}</b></small>}
         {gift && <small>{tr('El periodo empieza cuando la persona active su regalo, no hoy.')}</small>}
         {promo && <small>{tr('Tu acceso se activará cuando el equipo de QLC autorice el pago.')}</small>}
         {!gift && !promo && offer.type === 'FULL_ANNUAL' && <small>{tr('Vigencia de')}{' '}{offer.accessDays || 365}{' '}{tr('días')}</small>}
@@ -67,6 +78,7 @@ function Summary({ offer, method, setMethod, gift, setGift, promo, quantity, set
         {!gift && !promo && offer.type === 'MASTERCLASS' && <small>{offer.accessDays || 30}{' '}{tr('días de acceso a este módulo. Tu avance se conserva.')}</small>}
         {!gift && !promo && offer.sessions > 0 && <small>{tr('Incluye {n} sesiones de orientación de 20 minutos', { n: offer.sessions })}</small>}
       </div>
+      {charge ? <p className="small muted">{tr('Te llevaremos a Mercado Pago para pagar de forma segura. Ahí eliges tu método de pago. QLC no recibe ni guarda los datos de tu tarjeta.')}</p> : (
       <fieldset className="checkout-methods">
         <legend>{tr('Método de pago')}</legend>
         {METHODS.map((m) => (
@@ -76,13 +88,14 @@ function Summary({ offer, method, setMethod, gift, setGift, promo, quantity, set
           </label>
         ))}
       </fieldset>
+      )}
     </div>
   );
 }
 
 const STEPS = ['Resumen', 'Pago', 'Resultado'];
 
-function Steps({ current }) {
+export function Steps({ current }) {
   const index = STEPS.findIndex((s) => s === current);
   return (
     <ol className="checkout-steps">
@@ -144,7 +157,7 @@ const paidPreview = (offer, mode, promo) => {
   return tr('Se activa {name} de inmediato.', { name: offer.name });
 };
 
-function Result({ attempt, offer, codes, gift, access, credits, onClose, onGo, onRetry }) {
+export function PaymentResult({ attempt, offer, codes, gift, access, credits, onClose, onGo, onRetry }) {
   const [card, setCard] = useState(null);
   const ok = attempt.status === 'APPROVED';
   const pending = ok && attempt.kind === 'PROMO';
@@ -186,7 +199,9 @@ function Result({ attempt, offer, codes, gift, access, credits, onClose, onGo, o
 }
 
 export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
-  const { refreshAccess } = useAuth();
+  const { refreshAccess, accessInfo } = useAuth();
+  const gateway = accessInfo?.provider === 'MERCADOPAGO';
+  const charge = gateway ? accessInfo?.charge || { currency: null } : null;
   const navigate = useNavigate();
   const [outcome, setOutcome] = useState({ paid: false, access: null, credits: null });
   const [step, setStep] = useState('summary');
@@ -240,15 +255,15 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
 
   return (
     <Modal open title={gift ? tr('Regalar acceso') : tr('Pago seguro')} onClose={finish} className="checkout">
-      <div className="checkout-env">{tr('ENTORNO DE PRUEBA · No se realiza ningún cobro real')}</div>
+      {!gateway && <div className="checkout-env">{tr('ENTORNO DE PRUEBA · No se realiza ningún cobro real')}</div>}
       <Steps current={step === 'summary' ? 'Resumen' : step === 'test' ? 'Pago' : 'Resultado'} />
       {step === 'summary' && (
         <>
-          <Summary offer={product} method={method} setMethod={setMethod} gift={gift} setGift={setGift} promo={promo} quantity={quantity} setQuantity={setQuantity} />
+          <Summary offer={product} method={method} setMethod={setMethod} gift={gift} setGift={setGift} promo={promo} quantity={quantity} setQuantity={setQuantity} charge={charge} />
           <FormError error={state.error} />
           <div className="form-actions">
             <Button variant="secondary" onClick={onClose}>{tr('Cancelar')}</Button>
-            <Button loading={state.busy} onClick={start} data-autofocus>{tr('Continuar al pago')}</Button>
+            <Button loading={state.busy} onClick={start} data-autofocus>{gateway ? tr('Ir a Mercado Pago') : tr('Continuar al pago')}</Button>
           </div>
         </>
       )}
@@ -275,7 +290,7 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
         </div>
       )}
       {step === 'result' && attempt && (
-        <Result attempt={attempt} offer={product} codes={codes} gift={gift} access={outcome.access} credits={outcome.credits} onClose={finish} onGo={go} onRetry={() => { setAttempt(null); setOutcome({ paid: false, access: null, credits: null }); setStep('summary'); }} />
+        <PaymentResult attempt={attempt} offer={product} codes={codes} gift={gift} access={outcome.access} credits={outcome.credits} onClose={finish} onGo={go} onRetry={() => { setAttempt(null); setOutcome({ paid: false, access: null, credits: null }); setStep('summary'); }} />
       )}
     </Modal>
   );

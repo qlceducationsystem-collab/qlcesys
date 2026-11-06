@@ -105,7 +105,7 @@ export const es = {
     adminNav: {
       general: 'General', dashboard: 'Dashboard', clients: 'Clientes', leads: 'Solicitudes de información', loginNotice: 'Aviso Trading Bot', exercises: 'Ejercicios y dudas', appointments: 'Citas de asesoría',
       content: 'Contenido', files: 'Academia / archivos', commercial: 'Comercial', pricing: 'Precios y accesos', payments: 'Pagos de prueba',
-      system: 'Sistema', integrations: 'Integraciones', team: 'Administradores',
+      system: 'Sistema', gateway: 'Pasarela de pago', integrations: 'Integraciones', team: 'Administradores',
       subscribers: 'Suscriptores', gifts: 'Regalos', generalAdmin: 'Administración general', accessControl: 'Control de accesos',
     },
     security: {

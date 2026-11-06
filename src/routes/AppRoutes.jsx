@@ -46,6 +46,7 @@ const ADMIN_PAGES = [
   ['pagos', page(() => import('../pages/admin/AdminPayments.jsx'))],
   ['archivos', page(() => import('../pages/admin/AdminModuleFiles.jsx'))],
   ['integraciones', page(() => import('../pages/admin/AdminIntegrations.jsx'))],
+  ['pasarela', page(() => import('../pages/admin/AdminGateway.jsx'))],
   ['citas', page(() => import('../pages/admin/AdminAppointments.jsx'))],
   ['equipo', page(() => import('../pages/admin/AdminTeam.jsx'))],
   ['suscriptores', page(() => import('../pages/admin/AdminSubscribers.jsx'))],
