@@ -76,14 +76,19 @@ export default function AdminClientDetail() {
           <PageHeader title={c.name} subtitle={c.email} actions={c.dataShare
             ? (
               <span className="row-actions">
-                <Link className="btn-primary" to={`/admin/clientes/${c.id}/app`}>{tr('Ver datos compartidos')}</Link>
+                <Link className="btn-primary" to={`/admin/clientes/${c.id}/app`}>{c.dataShare.allowEdit ? tr('Entrar y modificar datos') : tr('Ver datos compartidos')}</Link>
                 <Button variant="danger" onClick={async () => { await api.post(`/admin/clients/${c.id}/data-share/stop`, {}); client.reload(); }}>{tr('Salir de compartir datos')}</Button>
               </span>
             )
             : <Pill variant="muted">{tr('El cliente no comparte sus datos')}</Pill>} />
           <Card title={tr('Datos compartidos por el cliente')}>
             {c.dataShare
-              ? <p className="small">{tr('El cliente autorizó compartir sus datos desde el {date}; el acceso dura hasta que tú pulses «Salir de compartir datos» o el cliente deje de compartirlos.', { date: dateTime(c.dataShare.grantedAt) })}</p>
+              ? (
+                <>
+                  <p className="small">{tr('El cliente autorizó compartir sus datos desde el {date}; el acceso dura hasta que tú pulses «Salir de compartir datos» o el cliente deje de compartirlos.', { date: dateTime(c.dataShare.grantedAt) })}</p>
+                  <p className="small">{c.dataShare.allowEdit ? tr('También autorizó que modifiques sus datos: puedes escribir en su panel como si fueras el cliente. Cada cambio queda registrado.') : tr('Solo puedes ver sus datos. Para modificarlos, pídele que active «Autorizar modificar mis datos».')}</p>
+                </>
+              )
               : <p className="small muted">{tr('Solo puedes ver el panel del cliente cuando él lo autoriza desde Mi acceso o Asesoría personalizada, con el botón «Compartir mis datos».')}</p>}
           </Card>
           <div className="layout">

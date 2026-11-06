@@ -40,7 +40,7 @@ export function WorkspaceProvider({ clientId = null, client = null, children }) 
     client,
     isAdminView,
     basePath: clientId ? `/admin/clientes/${clientId}/app` : '/app',
-    canEdit: !isAdminView || (LEVELS[user?.adminLevel] || 0) >= LEVELS.EDIT,
+    canEdit: !isAdminView || ((LEVELS[user?.adminLevel] || 0) >= LEVELS.EDIT && !!client?.dataShare?.allowEdit),
     isFullAdmin: isAdminView && user?.adminLevel === 'FULL',
     periods,
     period: periods.find((p) => p.id === periodId) || null,

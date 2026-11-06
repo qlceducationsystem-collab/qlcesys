@@ -115,7 +115,7 @@ function DashboardBody({ d }) {
         </div>
       )}
       <StatGrid>
-        <StatCard label={tr('Ingresos mensuales')} value={money(s.cashflow.income)} delta={prev ? tr('{amount} vs. mes anterior', { amount: signedMoney(s.cashflow.income - prev.income) }) : null} deltaTone={prev ? tone(s.cashflow.income - prev.income) : ''} />
+        <StatCard label={tr('Ingresos mensuales')} value={money(s.cashflow.income)} delta={[s.cashflow.incomeFromPortfolio > 0 ? tr('Incluye {amount} pasados desde tu portafolio', { amount: money(s.cashflow.incomeFromPortfolio) }) : null, prev ? tr('{amount} vs. mes anterior', { amount: signedMoney(s.cashflow.income - prev.income) }) : null].filter(Boolean).join(' · ') || null} deltaTone={prev ? tone(s.cashflow.income - prev.income) : ''} />
         <StatCard label={tr('Gastos mensuales')} value={money(s.cashflow.expenses)} delta={tr('Incluye {debts} de pago de deudas · Capacidad de ahorro: {amount}', { debts: money(debtExpenses), amount: money(s.cashflow.savings) })} />
         <StatCard
           label={tr('Inversiones y activos')}
@@ -134,7 +134,7 @@ function DashboardBody({ d }) {
       </StatGrid>
       <div className="layout">
         <AcademyCard academy={d.academy} />
-        <DiagnosisCard diagnosis={d.diagnosis} liquidity={liquidity} expenses={s.cashflow.expenses} income={s.cashflow.income} returns={s.portfolio.products.reduce((acc, p) => acc + (p.incomeAmount || 0), 0)} />
+        <DiagnosisCard diagnosis={d.diagnosis} liquidity={liquidity} expenses={s.cashflow.expenses} income={s.cashflow.income - (s.cashflow.incomeFromPortfolio || 0)} returns={s.portfolio.products.reduce((acc, p) => acc + (p.incomeAmount || 0), 0)} />
       </div>
       <div className="layout">
         <Block2Summary patrimonial={d.patrimonial} academy={d.academy} />

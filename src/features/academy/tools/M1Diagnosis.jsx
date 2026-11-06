@@ -18,7 +18,7 @@ const EMPTY = {
 };
 
 const GROUPS = [
-  { step: '1', title: 'Flujo mensual', description: 'Tu situación mensual actual.', fields: [['income', 'Ingresos mensuales'], ['expenses', 'Gastos mensuales'], ['debtPayment', 'Pago mensual de deudas'], ['monthlyInvestment', 'Aportación mensual a inversión']] },
+  { step: '1', title: 'Flujo mensual', description: 'Tu situación mensual actual.', fields: [['income', 'Ingresos mensuales fijos', 'Solo ingresos fijos de una actividad laboral, como sueldo u honorarios. Si tus ingresos provienen únicamente de inversiones o negocios, escribe 0: en los módulos posteriores podrás añadir su rentabilidad como ingreso.'], ['expenses', 'Gastos mensuales'], ['debtPayment', 'Pago mensual de deudas'], ['monthlyInvestment', 'Aportación mensual a inversión']] },
   { step: '2', title: 'Patrimonio actual', description: 'Activos, liquidez e inversiones para obtener tu patrimonio neto.', fields: [['cash', 'Efectivo y liquidez'], ['investments', 'Inversiones'], ['otherAssets', 'Bienes y otros activos'], ['totalDebt', 'Deudas totales']] },
 ];
 
@@ -27,7 +27,7 @@ const monthsTone = (m) => (m === null ? '' : m >= 6 ? 'good' : m >= 3 ? 'warn' :
 
 function Results({ result }) {
   const { summary } = usePeriodSummary();
-  const income = summary ? summary.cashflow.income : Number(result.income || 0);
+  const income = summary ? summary.cashflow.income - (summary.cashflow.incomeFromPortfolio || 0) : Number(result.income || 0);
   const returns = summary ? summary.portfolio.products.reduce((acc, p) => acc + (p.incomeAmount || 0), 0) : 0;
   return (
     <ToolCard step="4" title={tr('Resultado del diagnóstico')} description={tr('Tu línea base. Así estás hoy.')} aside={<RealBadge />}>
@@ -83,8 +83,8 @@ export function M1Diagnosis({ onSaved }) {
         {GROUPS.map((g) => (
           <ToolCard key={g.step} step={g.step} title={g.title} description={g.description}>
             <div className="form-grid cols-2">
-              {g.fields.map(([name, label]) => (
-                <Field key={name} label={label}>
+              {g.fields.map(([name, label, hint]) => (
+                <Field key={name} label={label} hint={hint ? tr(hint) : undefined}>
                   <MoneyInput name={name} value={values[name]} onChange={set(name)} placeholder="0" disabled={!canEdit} />
                 </Field>
               ))}

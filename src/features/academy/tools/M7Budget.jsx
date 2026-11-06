@@ -222,6 +222,10 @@ function BudgetEditor({ data, history, reload, onSaved, monthField }) {
             <MoneyInput value={netIncome} onChange={(e) => setNetIncome(e.target.value)} disabled={!editable} placeholder="0" />
           </Field>
         </div>
+        {data.incomeFromPortfolio > 0 && <p className="small muted">{tr('Incluye {amount} pasados desde tu portafolio de inversión.', { amount: money(data.incomeFromPortfolio) })}</p>}
+        {income === 0 && data.realIncome === 0 && editable && (
+          <Notice variant="gold">{tr('Si vives de tus inversiones, ve a Mi portafolio de inversión y usa «Pasar a ingresos» en la rentabilidad que quieras desglosar. Ese monto aparecerá aquí para que puedas distribuirlo.')} <Link to={`${basePath}/cartera`}>{tr('Ir a Mi portafolio de inversión')}</Link></Notice>
+        )}
         {data.realIncome > 0 && income !== data.realIncome && editable && (
           <Button type="button" variant="secondary" onClick={() => setNetIncome(String(data.realIncome))}>{tr('Usar el ingreso registrado ({amount})', { amount: money(data.realIncome) })}</Button>
         )}

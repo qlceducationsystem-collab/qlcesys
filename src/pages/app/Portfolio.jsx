@@ -10,7 +10,7 @@ import { ConfirmDialog, Modal } from '../../components/ui/Modal.jsx';
 import { AsyncView, Empty } from '../../components/ui/States.jsx';
 import { ClosedNotice, ReconciliationBanner, Roi } from '../../components/finance/Finance.jsx';
 import { Field, FormError, Input, MoneyInput, Select } from '../../components/ui/Form.jsx';
-import { EXPENSE_CATEGORIES, options } from '../../utils/labels.js';
+import { EXPENSE_CATEGORIES } from '../../utils/labels.js';
 import { RecordForm } from '../../features/records/RecordManager.jsx';
 import { RequirePeriod } from '../../features/periods/PeriodControls.jsx';
 import { tr } from '../../i18n/tr.js';
@@ -225,15 +225,13 @@ function UnassignedContributions({ movements, products, onAssigned }) {
 
 const NEW = '__NEW__';
 
-function UseModal({ item, products, categories, customCategories, onClose, onSaved }) {
+function UseModal({ item, products, categories, onClose, onSaved }) {
   const { api } = useWorkspace();
-  const [f, setF] = useState({ amount: String(item.amount), category: '', newCategory: '', description: '', target: '', categoryCode: '', name: '', horizon: 'MEDIANO', liquidityLevel: 'MEDIA', perceivedRisk: 'MEDIO' });
+  const [f, setF] = useState({ amount: String(item.amount), target: '', categoryCode: '', name: '', horizon: 'MEDIANO', liquidityLevel: 'MEDIA', perceivedRisk: 'MEDIO' });
   const [state, setState] = useState({ busy: false, error: null });
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
-  const expense = item.kind === 'EXPENSE';
-  const ready = Number(f.amount) > 0 && (expense
-    ? (f.category && (f.category !== NEW || f.newCategory.trim()))
-    : (f.categoryCode && f.target && (f.target !== NEW || f.name.trim())));
+  const toIncome = item.kind === 'INCOME';
+  const ready = Number(f.amount) > 0 && (toIncome || (f.categoryCode && f.target && (f.target !== NEW || f.name.trim())));
   const save = async () => {
     setState({ busy: true, error: null });
     try {
@@ -241,8 +239,8 @@ function UseModal({ item, products, categories, customCategories, onClose, onSav
         origin: item.origin,
         kind: item.kind,
         amount: Number(f.amount),
-        ...(expense
-          ? { category: f.category === NEW ? null : f.category, newCategory: f.category === NEW ? f.newCategory.trim() : null, description: f.description || null }
+        ...(toIncome
+          ? {}
           : f.target === NEW ? { newProduct: { categoryCode: f.categoryCode, name: f.name.trim(), horizon: f.horizon, liquidityLevel: f.liquidityLevel, perceivedRisk: f.perceivedRisk } } : { targetPositionId: f.target }),
       });
       onSaved();
@@ -250,11 +248,6 @@ function UseModal({ item, products, categories, customCategories, onClose, onSav
       setState({ busy: false, error });
     }
   };
-  const expenseOptions = [
-    ...options.expense.filter((o) => o.value !== 'DEUDAS'),
-    ...customCategories.map((c) => ({ value: c, label: c.slice('CUSTOM:'.length) })),
-    { value: NEW, label: tr('+ Crear una categoría nueva') },
-  ];
   const targetOptions = [
     ...products.filter((p) => p.positionId !== item.positionId && p.categoryCode === f.categoryCode).map((p) => ({ value: p.positionId, label: tr(p.name) })),
     { value: NEW, label: tr('+ Crear una inversión nueva en esta categoría') },
@@ -266,20 +259,14 @@ function UseModal({ item, products, categories, customCategories, onClose, onSav
     setF({ ...f, categoryCode: code, target: code && !has ? NEW : '', name: cat ? `${cat.name} · ${item.name}` : '' });
   };
   return (
-    <Modal open title={expense ? tr('Usar en gastos · {name}', { name: item.name }) : tr('Pasar a otra inversión · {name}', { name: item.name })} onClose={onClose}
-      footer={<Button onClick={save} loading={state.busy} disabled={!ready}>{expense ? tr('Mover a gastos') : tr('Pasar a la inversión')}</Button>}>
+    <Modal open title={toIncome ? tr('Pasar a ingresos · {name}', { name: item.name }) : tr('Pasar a otra inversión · {name}', { name: item.name })} onClose={onClose}
+      footer={<Button onClick={save} loading={state.busy} disabled={!ready}>{toIncome ? tr('Pasar a ingresos') : tr('Pasar a la inversión')}</Button>}>
       <div className="stack">
-        <p className="small muted">{expense
-          ? tr('Se registra como gasto en la categoría que elijas, dentro de Ingresos y gastos, y sale de este producto. Tu portafolio y tu patrimonio quedan conciliados.')
+        <p className="small muted">{toIncome
+          ? tr('El monto sale de este producto y se suma a tus ingresos del mes, sin afectar tus ingresos fijos. Tu patrimonio no aumenta: el dinero solo cambia de lugar. Después podrás desglosarlo en gastos en el Módulo 7.')
           : tr('El monto sale de este producto y se suma al capital de la inversión que elijas. Tu patrimonio total no cambia.')}</p>
         <Field label={tr('Monto')} hint={tr('Disponible: {amount}', { amount: money(item.amount) })}><MoneyInput value={f.amount} onChange={set('amount')} /></Field>
-        {expense ? (
-          <>
-            <Field label={tr('Categoría de gasto')}><Select value={f.category} onChange={set('category')} placeholder={tr('Selecciona…')} options={expenseOptions} /></Field>
-            {f.category === NEW && <Field label={tr('Nombre de la nueva categoría')} hint={tr('También aparecerá en tu presupuesto del mes.')}><Input value={f.newCategory} maxLength={60} onChange={set('newCategory')} /></Field>}
-            <Field label={tr('Descripción (opcional)')}><Input value={f.description} maxLength={200} onChange={set('description')} /></Field>
-          </>
-        ) : (
+        {!toIncome && (
           <>
             <Field label={tr('Categoría del portafolio')}><Select value={f.categoryCode} onChange={pickCategory} placeholder={tr('Selecciona…')} options={categories.map((c) => ({ value: c.code, label: c.name }))} /></Field>
             {f.categoryCode && <Field label={tr('Inversión de destino')}><Select value={f.target} onChange={set('target')} placeholder={tr('Selecciona…')} options={targetOptions} /></Field>}
@@ -302,7 +289,7 @@ function UseModal({ item, products, categories, customCategories, onClose, onSav
   );
 }
 
-function IncomeDecisions({ data, products, categories, customCategories, onChanged }) {
+function IncomeDecisions({ data, products, categories, onChanged }) {
   const { api } = useWorkspace();
   const [modal, setModal] = useState(null);
   const [state, setState] = useState({ busy: null, error: null });
@@ -322,10 +309,12 @@ function IncomeDecisions({ data, products, categories, customCategories, onChang
   const actions = (item) => (
     <div className="row-actions">
       {item.amount > 0 && <Button variant="secondary" onClick={() => setModal({ ...item, kind: 'INVEST' })}>{tr('Pasar a otra inversión')}</Button>}
-      {item.amount > 0 && <Button variant="secondary" onClick={() => setModal({ ...item, kind: 'EXPENSE' })}>{tr('Usar en gastos')}</Button>}
+      {item.amount > 0 && <Button variant="secondary" onClick={() => setModal({ ...item, kind: 'INCOME' })}>{tr('Pasar a ingresos')}</Button>}
     </div>
   );
-  const useText = (u) => (u.kind === 'EXPENSE'
+  const useText = (u) => (u.kind === 'INCOME'
+    ? tr('{amount} de {name} pasados a ingresos', { amount: money(u.amount), name: tr(u.name) })
+    : u.kind === 'EXPENSE'
     ? tr('{amount} de {name} usados en gastos · {category}', { amount: money(u.amount), name: tr(u.name), category: tr(EXPENSE_CATEGORIES[u.categoryName] || u.categoryName || '') })
     : u.kind === 'SAVE'
     ? tr('{amount} de {name} enviados a {target}', { amount: money(u.amount), name: tr(u.name), target: tr(u.category === 'META_PATRIMONIAL' ? 'tu meta patrimonial' : 'tu fondo de emergencia') })
@@ -335,7 +324,7 @@ function IncomeDecisions({ data, products, categories, customCategories, onChang
       <p className="small muted">{tr('Aquí puedes elegir el destino de la rentabilidad de este mes. La rentabilidad de meses anteriores ya forma parte de tu capital inicial.')}</p>
       {month.map((m) => (
         <div key={`month-${m.positionId}`} className="inline-form">
-          <span><b>{tr(m.name)}</b> · {tr('De este mes')}: <b className="up">{signedMoney(m.available)}</b> · {tr('La rentabilidad ya está integrada en tu capital final. Puedes mantenerla en este producto, transferirla a otra inversión o destinarla a gastos. Si no realizas ningún movimiento, permanecerá invertida en este producto.')}</span>
+          <span><b>{tr(m.name)}</b> · {tr('De este mes')}: <b className="up">{signedMoney(m.available)}</b> · {tr('La rentabilidad ya está integrada en tu capital final. Puedes mantenerla en este producto, transferirla a otra inversión o pasarla a ingresos. Si no realizas ningún movimiento, permanecerá invertida en este producto.')}</span>
           {actions({ origin: 'MONTH', positionId: m.positionId, name: m.name, amount: m.available })}
         </div>
       ))}
@@ -347,7 +336,7 @@ function IncomeDecisions({ data, products, categories, customCategories, onChang
         </div>
       ))}
       <FormError error={state.error} />
-      {modal && <UseModal item={modal} products={products} categories={categories} customCategories={customCategories}
+      {modal && <UseModal item={modal} products={products} categories={categories}
         onClose={() => setModal(null)} onSaved={() => { setModal(null); onChanged(); }} />}
     </Card>
   );
@@ -391,7 +380,7 @@ function ProductCard({ p, writable, onEdit, onDelete, basePath }) {
   );
 }
 
-function PortfolioBody({ summary, categories, decisions, customCategories, reload }) {
+function PortfolioBody({ summary, categories, decisions, reload }) {
   const carried = new Set(decisions.carried || []);
   const { api, period, canEdit, basePath } = useWorkspace();
   const writable = canEdit && period.status === 'OPEN';
@@ -483,7 +472,7 @@ function PortfolioBody({ summary, categories, decisions, customCategories, reloa
       />
       <ClosedNotice />
       <ReconciliationBanner reconciliation={summary.reconciliation} compact={summary.reconciliation.reconciled} />
-      {writable && <IncomeDecisions data={decisions} products={portfolio.products} categories={categories} customCategories={customCategories} onChanged={reload} />}
+      {writable && <IncomeDecisions data={decisions} products={portfolio.products} categories={categories} onChanged={reload} />}
       {writable && <UnassignedContributions movements={summary.patrimony.unassignedMovements || []} products={portfolio.products} onAssigned={reload} />}
 
       {portfolio.products.length === 0 && (
@@ -549,17 +538,14 @@ export default function Portfolio() {
   const res = usePeriodSummary();
   const cats = useAsync(() => api.get('/portfolio/categories'), [api]);
   const decisions = useAsync(() => api.get(`/portfolio/income-uses?periodId=${period.id}`), [api, period?.id], { enabled: !!period });
-  const budget = useAsync(() => api.get(`/academy/budget?year=${period.year}&month=${period.month}`).catch(() => null), [api, period?.id], { enabled: !!period });
-  const customCategories = (budget.data?.lines || []).map((l) => l.category).filter((c) => c.startsWith('CUSTOM:'));
   const reload = async () => {
     await res.reload();
     await decisions.reload();
-    await budget.reload();
   };
   return (
     <RequirePeriod>
       <AsyncView loading={res.loading || cats.loading} error={res.error || cats.error} data={res.summary && cats.data ? res : null} onRetry={res.reload}>
-        {() => <PortfolioBody summary={res.summary} categories={cats.data} decisions={decisions.data || {}} customCategories={customCategories} reload={reload} />}
+        {() => <PortfolioBody summary={res.summary} categories={cats.data} decisions={decisions.data || {}} reload={reload} />}
       </AsyncView>
     </RequirePeriod>
   );
