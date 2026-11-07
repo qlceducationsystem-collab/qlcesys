@@ -65,12 +65,20 @@ const chargePreview = (total, currency, charge) => {
 const GATEWAYS = {
   MERCADOPAGO: { label: 'Tarjeta', hint: 'Débito o crédito' },
   PAYPAL: { label: 'PayPal', hint: 'Con tu cuenta o tarjeta' },
+  DLOCALGO: { label: 'Pago local', hint: 'Métodos de pago de tu país' },
+};
+
+const COUNTRY_NAMES = { AR: 'Argentina', BO: 'Bolivia', BR: 'Brasil', CL: 'Chile', CO: 'Colombia', CR: 'Costa Rica', DO: 'República Dominicana', EC: 'Ecuador', GT: 'Guatemala', ID: 'Indonesia', KE: 'Kenia', MX: 'México', MY: 'Malasia', NG: 'Nigeria', PA: 'Panamá', PE: 'Perú', PY: 'Paraguay', UY: 'Uruguay' };
+
+const guessCountry = (list) => {
+  const region = String(navigator.language || '').split('-')[1]?.toUpperCase();
+  return list.includes(region) ? region : '';
 };
 
 const periodLabel = (cycle) => tr(cycle === 'YEARLY' ? 'año' : 'mes');
 
-function Summary({ offer, method, setMethod, gift, setGift, promo, quantity, setQuantity, charge, gateways, gateway, setGateway }) {
-  const recurring = gateways.length > 0 && !gift && !promo ? offer.billingCycle : null;
+function Summary({ offer, method, setMethod, gift, setGift, promo, quantity, setQuantity, charge, gateways, gateway, setGateway, countries, country, setCountry }) {
+  const recurring = gateways.length > 0 && gateway !== 'DLOCALGO' && !gift && !promo ? offer.billingCycle : null;
   const unit = offer.price === null || offer.price === undefined ? null : Number(offer.price);
   const total = promo ? promo.finalPrice : unit === null ? null : unit * (gift ? Number(gift.quantity || 1) : isService(offer) ? Number(quantity || 1) : 1);
   return (
@@ -101,6 +109,8 @@ function Summary({ offer, method, setMethod, gift, setGift, promo, quantity, set
         {chargePreview(total, offer.currency, charge) && <small><b>{tr(recurring ? 'Se cobrará cada ' + (recurring === 'YEARLY' ? 'año' : 'mes') + ': {amount}' : 'Se cobrará: {amount}', { amount: chargePreview(total, offer.currency, charge) })}</b></small>}
         {gift && <small>{tr('El periodo empieza cuando la persona active su regalo, no hoy.')}</small>}
         {promo && <small>{tr('Tu acceso se activará cuando el equipo de QLC autorice el pago.')}</small>}
+        {gateway === 'DLOCALGO' && <small>{tr('Al pagar verás el monto en la moneda de tu país.')}</small>}
+        {gateway === 'DLOCALGO' && !gift && !promo && offer.billingCycle && <small><b>{tr('Este pago no se renueva solo: te avisaremos por correo antes de que venza.')}</b></small>}
         {recurring && <small><b>{tr('Suscripción con cobro automático cada {period} hasta que canceles en Mi acceso.', { period: periodLabel(recurring) })}</b></small>}
         {!recurring && !gift && !promo && offer.type === 'FULL_ANNUAL' && <small>{tr('Vigencia de')}{' '}{offer.accessDays || 365}{' '}{tr('días')}</small>}
         {!recurring && !gift && !promo && offer.type === 'TOOL_ONLY' && <small>{offer.accessDays || 30}{' '}{tr('días de acceso por pago. Al terminar se bloquea y puedes renovar.')}</small>}
@@ -118,7 +128,7 @@ function Summary({ offer, method, setMethod, gift, setGift, promo, quantity, set
               </label>
             ))}
           </fieldset>
-        ) : <p className="small muted">{gateway === 'PAYPAL' ? tr('En el siguiente paso pagarás con PayPal.') : tr('En el siguiente paso escribes los datos de tu tarjeta de débito o crédito.')}</p>
+        ) : <p className="small muted">{gateway === 'DLOCALGO' ? tr('En el siguiente paso pagarás con los métodos de pago de tu país.') : gateway === 'PAYPAL' ? tr('En el siguiente paso pagarás con PayPal.') : tr('En el siguiente paso escribes los datos de tu tarjeta de débito o crédito.')}</p>
       ) : (
       <fieldset className="checkout-methods">
         <legend>{tr('Método de pago')}</legend>
@@ -129,6 +139,14 @@ function Summary({ offer, method, setMethod, gift, setGift, promo, quantity, set
           </label>
         ))}
       </fieldset>
+      )}
+      {gateway === 'DLOCALGO' && (
+        <Field label={tr('Tu país')}>
+          <select className="input" value={country} onChange={(e) => setCountry(e.target.value)}>
+            <option value="">{tr('Selecciona tu país')}</option>
+            {countries.map((c) => <option key={c} value={c}>{tr(COUNTRY_NAMES[c] || c)}</option>)}
+          </select>
+        </Field>
       )}
     </div>
   );
@@ -245,7 +263,9 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
   const gateways = accessInfo?.providers || [];
   const hasGateway = gateways.length > 0;
   const [selectedGateway, setGateway] = useState(gateways[0] || null);
-  const charge = selectedGateway === 'PAYPAL' ? accessInfo?.paypal : selectedGateway === 'MERCADOPAGO' ? accessInfo?.charge : null;
+  const charge = selectedGateway === 'PAYPAL' ? accessInfo?.paypal : selectedGateway === 'MERCADOPAGO' ? accessInfo?.charge : selectedGateway === 'DLOCALGO' ? accessInfo?.dlocal : null;
+  const countries = accessInfo?.dlocal?.countries || [];
+  const [country, setCountry] = useState(() => guessCountry(countries));
   const navigate = useNavigate();
   const [outcome, setOutcome] = useState({ paid: false, access: null, credits: null, reason: null });
   const [card, setCard] = useState(null);
@@ -273,11 +293,13 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
     const body = promo
       ? { promoCode: promo.code }
       : { offerCode: offer.code, ...(isService(offer) ? { quantity: Math.min(20, Math.max(1, Number(quantity) || 1)) } : {}), ...(gift ? { gift: { quantity: Number(gift.quantity || 1), recipientName: gift.recipientName || null, message: gift.message || null } } : {}) };
-    const res = await api.post('/payments/checkout', { ...body, ...(selectedGateway ? { provider: selectedGateway } : {}) });
+    const res = await api.post('/payments/checkout', { ...body, ...(selectedGateway ? { provider: selectedGateway } : {}), ...(selectedGateway === 'DLOCALGO' ? { country } : {}) });
     setAttempt(res.attempt);
     if (res.checkout.mode === 'CARD') {
       setCard({ publicKey: res.checkout.publicKey, challenge: null });
       setStep('card');
+    } else if (res.checkout.mode === 'REDIRECT' && res.checkout.initPoint) {
+      window.location.assign(res.checkout.initPoint);
     } else if (res.checkout.mode === 'PAYPAL') {
       setPaypal({ clientId: res.checkout.clientId, currency: res.checkout.currency });
       setStep('paypal');
@@ -340,11 +362,11 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
       <Steps current={step === 'summary' ? 'Resumen' : step === 'result' ? 'Resultado' : 'Pago'} />
       {step === 'summary' && (
         <>
-          <Summary offer={product} method={method} setMethod={setMethod} gift={gift} setGift={setGift} promo={promo} quantity={quantity} setQuantity={setQuantity} charge={charge} gateways={gateways} gateway={selectedGateway} setGateway={setGateway} />
+          <Summary offer={product} method={method} setMethod={setMethod} gift={gift} setGift={setGift} promo={promo} quantity={quantity} setQuantity={setQuantity} charge={charge} gateways={gateways} gateway={selectedGateway} setGateway={setGateway} countries={countries} country={country} setCountry={setCountry} />
           <FormError error={state.error} />
           <div className="form-actions">
             <Button variant="secondary" onClick={onClose}>{tr('Cancelar')}</Button>
-            <Button loading={state.busy} onClick={start} data-autofocus>{tr('Continuar al pago')}</Button>
+            <Button loading={state.busy} disabled={selectedGateway === 'DLOCALGO' && !country} onClick={start} data-autofocus>{tr('Continuar al pago')}</Button>
           </div>
         </>
       )}

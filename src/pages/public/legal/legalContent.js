@@ -76,7 +76,7 @@ const ES = {
         'Los precios y el tipo de cambio pueden cambiar en cualquier momento. El cambio se aplica a compras nuevas y no afecta los accesos ya pagados ni el monto de las suscripciones ya contratadas.',
       ]],
       ['Formas de pago y procesadores', [
-        'Los pagos se realizan con tarjeta de débito o crédito o con PayPal, a través de procesadores de pago externos, a cuyas condiciones también quedas sujeto. QLC no recibe ni guarda el número ni el código de seguridad de tu tarjeta.',
+        'Los pagos se realizan con tarjeta de débito o crédito, con PayPal o con los métodos locales disponibles en tu país, a través de procesadores de pago externos, a cuyas condiciones también quedas sujeto. QLC no recibe ni guarda el número ni el código de seguridad de tu tarjeta.',
         'En tu estado de cuenta o en los comprobantes puede aparecer el nombre del procesador de pago. Tu banco puede pedirte una verificación adicional o rechazar un pago por sus propias reglas. Si el pago queda en proceso, el acceso se activa cuando se confirme.',
       ]],
       ['Suscripciones y renovación automática', [
@@ -84,6 +84,7 @@ const ES = {
         'Puedes cancelar en cualquier momento desde Mi acceso. La cancelación evita los cobros futuros y conservas tu acceso hasta su fecha de vencimiento. Para que no se haga el siguiente cobro, cancela antes de la fecha de renovación. Una suscripción cancelada no se reactiva: para continuar debes contratarla de nuevo.',
         'Si un cobro periódico no se puede realizar, el procesador puede volver a intentarlo. Si no se confirma, el acceso termina a su vencimiento y se reactiva si el cobro se recupera. Es tu responsabilidad mantener vigente tu forma de pago.',
         'Solo puedes tener una suscripción activa a la vez; para cambiar de plan primero debes cancelar la actual. Eliminar tu cuenta también cancela tus suscripciones. Los productos de pago único no se renuevan automáticamente.',
+        'Los pagos con métodos locales del país no se renuevan automáticamente: cada periodo debes pagar de nuevo antes del vencimiento. Te avisaremos por correo, pero el aviso no es condición para que el acceso venza.',
       ]],
       ['Sin reembolsos', [
         'Todos los pagos son finales y no reembolsables, en cualquier forma de pago. No se realizan reembolsos totales ni parciales por cancelar antes del vencimiento, por no usar el producto, por periodos parciales, por cambio de plan, por renovaciones que no se cancelaron a tiempo, por eliminar la cuenta ni por suspensión debida al incumplimiento de estos términos.',
@@ -209,7 +210,7 @@ const EN = {
         'Prices and the exchange rate may change at any time. Changes apply to new purchases and do not affect access already paid for or the amount of subscriptions already contracted.',
       ]],
       ['Payment methods and processors', [
-        'Payments are made by debit or credit card or with PayPal, through external payment processors, whose conditions also apply to you. QLC does not receive or store your card number or security code.',
+        'Payments are made by debit or credit card, with PayPal or with the local methods available in your country, through external payment processors, whose conditions also apply to you. QLC does not receive or store your card number or security code.',
         'Your statement or receipts may show the payment processor’s name. Your bank may ask for additional verification or decline a payment under its own rules. If a payment is in process, access activates once it is confirmed.',
       ]],
       ['Subscriptions and automatic renewal', [
@@ -217,6 +218,7 @@ const EN = {
         'You can cancel at any time from My access. Cancelling prevents future charges and you keep your access until its expiration date. To avoid the next charge, cancel before the renewal date. A cancelled subscription cannot be reactivated: to continue you must contract it again.',
         'If a recurring charge cannot be made, the processor may try again. If it is not confirmed, access ends at expiration and is reactivated if the charge is recovered. You are responsible for keeping your payment method valid.',
         'You can only have one active subscription at a time; to change plans you must first cancel the current one. Deleting your account also cancels your subscriptions. One-time products do not renew automatically.',
+        'Payments with local country methods do not renew automatically: you must pay again each period before expiration. We will email you, but the notice is not a condition for the access to expire.',
       ]],
       ['No refunds', [
         'All payments are final and non-refundable, for every payment method. No full or partial refunds are given for cancelling before expiration, not using the product, partial periods, plan changes, renewals not cancelled in time, deleting the account or suspension due to a breach of these terms.',

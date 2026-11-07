@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { api as rootApi } from '../api/client.js';
 import { DataShareBanner } from '../features/share/DataShare.jsx';
+import { PaymentReturn } from '../features/access/PaymentReturn.jsx';
 import { ShareChat } from '../features/share/ShareChat.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useWorkspace } from '../context/WorkspaceContext.jsx';
@@ -126,6 +127,7 @@ export function AppLayout() {
         )}
         <div className="page-enter" key={`${location.pathname}-${lang}-${currency}`}>{gated ? <AccessGate /> : <Outlet />}</div>
         {!isAdminView && <LoginNotice />}
+        {!isAdminView && <PaymentReturn />}
         <Disclaimer />
       </main>
     </div>

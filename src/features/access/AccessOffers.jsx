@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { date } from '../../utils/format.js';
 import { Pill } from '../../components/ui/Card.jsx';
@@ -42,7 +42,19 @@ export function AccessOffers({ title = 'Elige cómo usar QLC Financial Education
   const [gift, setGift] = useState(null);
   const offers = accessInfo?.offers || [];
   const billing = accessInfo?.subscription?.billing || null;
-  const recurring = (offer) => (accessInfo?.providers || []).length > 0 && !!offer.billingCycle;
+  const providers = accessInfo?.providers || [];
+  const recurring = (offer) => providers.length > 0 && !!offer.billingCycle;
+  const automatic = providers.some((p) => p !== 'DLOCALGO');
+  const [params, setParams] = useSearchParams();
+  const renew = params.get('renovar');
+  useEffect(() => {
+    if (!renew || !offers.length) return;
+    const offer = offers.find((o) => o.code === renew);
+    if (offer) setSelected(offer);
+    const next = new URLSearchParams(params);
+    next.delete('renovar');
+    setParams(next, { replace: true });
+  }, [renew, offers, params, setParams]);
   const byCode = (code) => offers.find((o) => o.code === code);
   const plans = ['TOOLS_ALL', 'FULL_ANNUAL', 'DIAMOND_ANNUAL'].map(byCode).filter(Boolean);
   const services = ['CONSULTA', 'ORIENTACION'].map(byCode).filter(Boolean);
@@ -77,7 +89,7 @@ export function AccessOffers({ title = 'Elige cómo usar QLC Financial Education
               <p>{tr(info.text)}</p>
               <ul className="offer-list">{info.list.map((l) => <li key={l}>{tr(l)}</li>)}</ul>
               <div className="offer-price">{offerPrice(offer)}{' '}{recurring(offer) ? tr(offer.billingCycle === 'YEARLY' ? '/ año' : '/ mes') : offer.type === 'TOOL_ONLY' ? tr('/ 30 días') : tr('/ 1 año')}</div>
-              {recurring(offer) && <small className="muted">{tr('Cobro automático. Cancela cuando quieras.')}</small>}
+              {recurring(offer) && automatic && <small className="muted">{tr(providers.includes('DLOCALGO') ? 'Cobro automático con tarjeta o PayPal. Cancela cuando quieras.' : 'Cobro automático. Cancela cuando quieras.')}</small>}
               {billing?.offerCode === offer.code
                 ? <Pill>{tr('Suscripción activa')}</Pill>
                 : offer.type === 'TOOL_ONLY' && toolsOwned && !toolsUntil
