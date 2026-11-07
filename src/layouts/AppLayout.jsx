@@ -15,7 +15,6 @@ import { useI18n } from '../i18n/I18nContext.jsx';
 import { LanguageSwitcher } from '../components/ui/LanguageSwitcher.jsx';
 import { useCurrency } from '../context/CurrencyContext.jsx';
 import { LoginNotice } from '../features/notice/LoginNotice.jsx';
-import { PaymentReturn } from '../features/access/PaymentReturn.jsx';
 
 export const NAV = [
   { to: '', icon: '⌂', label: 'home', end: true },
@@ -127,7 +126,6 @@ export function AppLayout() {
         )}
         <div className="page-enter" key={`${location.pathname}-${lang}-${currency}`}>{gated ? <AccessGate /> : <Outlet />}</div>
         {!isAdminView && <LoginNotice />}
-        {!isAdminView && <PaymentReturn />}
         <Disclaimer />
       </main>
     </div>

@@ -10,7 +10,7 @@ import { AsyncView } from '../../components/ui/States.jsx';
 import { tr } from '../../i18n/tr.js';
 
 function Editor({ data, canManage, onSaved }) {
-  const [f, setF] = useState({ accessToken: '', webhookSecret: '', rates: { ...data.rates } });
+  const [f, setF] = useState({ accessToken: '', publicKey: data.publicKey || '', webhookSecret: '', rates: { ...data.rates } });
   const [state, setState] = useState({ busy: false, error: null, info: null });
   const run = async (fn, info) => {
     setState({ busy: true, error: null, info: null });
@@ -26,6 +26,7 @@ function Editor({ data, canManage, onSaved }) {
   };
   const body = () => ({
     ...(f.accessToken.trim() ? { accessToken: f.accessToken.trim() } : {}),
+    ...(f.publicKey.trim() ? { publicKey: f.publicKey.trim() } : {}),
     ...(f.webhookSecret.trim() ? { webhookSecret: f.webhookSecret.trim() } : {}),
     rates: Object.fromEntries(Object.entries(f.rates).filter(([, v]) => Number(v) > 0).map(([k, v]) => [k, Number(v)])),
   });
@@ -56,6 +57,9 @@ function Editor({ data, canManage, onSaved }) {
         <Field label={tr('Access Token')} hint={data.hasToken ? tr('Ya hay un token guardado. Al cambiarlo, Mercado Pago se desactiva hasta volver a probar la conexión.') : tr('Empieza con APP_USR- o TEST-.')}>
           <Input type="password" name="qlc-mp-token" autoComplete="new-password" value={f.accessToken} disabled={!canManage} onChange={(e) => setF({ ...f, accessToken: e.target.value })} placeholder={data.hasToken ? '••••••••' : 'APP_USR-...'} />
         </Field>
+        <Field label={tr('Public Key')} hint={tr('Permite mostrar el formulario de tarjeta dentro de la plataforma. Debe ser del mismo tipo que el Access Token: prueba o producción.')}>
+          <Input name="qlc-mp-public" autoComplete="off" value={f.publicKey} disabled={!canManage} onChange={(e) => setF({ ...f, publicKey: e.target.value })} placeholder="APP_USR-..." />
+        </Field>
         <Field label={tr('Clave secreta del webhook')} hint={data.hasWebhookSecret ? tr('Ya hay una clave guardada.') : tr('Sirve para comprobar que cada aviso de pago viene de Mercado Pago.')}>
           <Input type="password" name="qlc-mp-webhook" autoComplete="new-password" value={f.webhookSecret} disabled={!canManage} onChange={(e) => setF({ ...f, webhookSecret: e.target.value })} placeholder={data.hasWebhookSecret ? '••••••••' : ''} />
         </Field>
@@ -67,8 +71,8 @@ function Editor({ data, canManage, onSaved }) {
       <details className="more-actions">
         <summary>{tr('Cómo obtener estos datos')}</summary>
         <ol className="small">
-          <li>{tr('Entra a «Tus integraciones» en Mercado Pago Developers y crea una aplicación de tipo «Pagos en línea» con Checkout Pro.')}</li>
-          <li>{tr('En «Credenciales de producción» copia el Access Token. Para probar sin dinero real usa las credenciales de un usuario de prueba.')}</li>
+          <li>{tr('Entra a «Tus integraciones» en Mercado Pago Developers y crea una aplicación de tipo «Pagos en línea» con Checkout API.')}</li>
+          <li>{tr('En «Credenciales de producción» copia la Public Key y el Access Token. Para probar sin dinero real usa las credenciales de prueba.')}</li>
           <li>{tr('En «Webhooks» pega la URL de arriba, marca el evento «Pagos» y guarda.')}</li>
           <li>{tr('Copia la «Clave secreta» que muestra esa misma pantalla y pégala aquí.')}</li>
           <li>{tr('Pulsa «Guardar y probar conexión», revisa los tipos de cambio y activa Mercado Pago.')}</li>
