@@ -13,7 +13,8 @@ import { tr } from '../../i18n/tr.js';
 const priceText = (o) => (o.price === null ? tr('Precio por definir') : `${priceMoney(o.price)} ${o.currency}`);
 
 function OfferEditor({ offer, onSaved, canEdit }) {
-  const [f, setF] = useState({ name: offer.name, description: offer.description || '', price: offer.price ?? '', currency: offer.currency, accessDays: offer.accessDays ?? '', active: offer.active, giftable: offer.giftable !== false });
+  const [f, setF] = useState({ name: offer.name, description: offer.description || '', price: offer.price ?? '', currency: offer.currency, accessDays: offer.accessDays ?? '', billingCycle: offer.billingCycle || '', active: offer.active, giftable: offer.giftable !== false });
+  const recurrable = offer.type === 'TOOL_ONLY' || offer.type === 'FULL_ANNUAL';
   const [confirm, setConfirm] = useState(false);
   const [state, setState] = useState({ busy: false, error: null });
   const set = (k) => (e) => setF({ ...f, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
@@ -25,6 +26,7 @@ function OfferEditor({ offer, onSaved, canEdit }) {
         ...f,
         price: f.price === '' ? null : Number(f.price),
         accessDays: Number(f.accessDays || (offer.type === 'TOOL_ONLY' ? 30 : 365)),
+        ...(recurrable ? { billingCycle: f.billingCycle || null } : {}),
       });
       setConfirm(false);
       setState({ busy: false, error: null });
@@ -46,6 +48,15 @@ function OfferEditor({ offer, onSaved, canEdit }) {
         <Field label={tr('Precio')} hint={tr('Vacío = Precio por definir')}><MoneyInput value={f.price} onChange={set('price')} disabled={!canEdit} placeholder={tr('Por definir')} /></Field>
         <Field label={tr('Moneda')}><Input maxLength={3} value={f.currency} onChange={set('currency')} disabled={!canEdit} /></Field>
         <Field label={offer.type !== 'TOOL_ONLY' ? tr('Días de acceso') : tr('Días por mensualidad')}><Input type="number" min="1" value={f.accessDays} onChange={set('accessDays')} disabled={!canEdit} /></Field>
+        {recurrable && (
+          <Field label={tr('Forma de cobro')} hint={tr('Las suscripciones ya contratadas conservan su precio y su periodo.')}>
+            <select className="input" value={f.billingCycle} onChange={set('billingCycle')} disabled={!canEdit}>
+              <option value="">{tr('Pago único')}</option>
+              <option value="MONTHLY">{tr('Suscripción mensual')}</option>
+              <option value="YEARLY">{tr('Suscripción anual')}</option>
+            </select>
+          </Field>
+        )}
         <label className="check"><input type="checkbox" checked={f.active} onChange={set('active')} disabled={!canEdit} />{' '}{tr('Disponible para compra')}</label>
         <label className="check"><input type="checkbox" checked={f.giftable} onChange={set('giftable')} disabled={!canEdit} />{' '}{tr('Se puede regalar (QLC Gift Access)')}</label>
       </div>

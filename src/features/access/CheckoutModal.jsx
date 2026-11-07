@@ -9,6 +9,7 @@ import { date, priceMoney } from '../../utils/format.js';
 import { GiftCardModal } from '../gifts/GiftCard.jsx';
 import { Loading } from '../../components/ui/States.jsx';
 import { CardChallenge, CardForm } from './CardForm.jsx';
+import { PayPalForm } from './PayPalForm.jsx';
 import { tr } from '../../i18n/tr.js';
 
 const CONFIRM_TRIES = 6;
@@ -61,7 +62,15 @@ const chargePreview = (total, currency, charge) => {
   return `${priceMoney(charge.whole ? Math.ceil(value) : Math.round(value * 100) / 100)} ${charge.currency}`;
 };
 
-function Summary({ offer, method, setMethod, gift, setGift, promo, quantity, setQuantity, charge }) {
+const GATEWAYS = {
+  MERCADOPAGO: { label: 'Tarjeta', hint: 'Débito o crédito' },
+  PAYPAL: { label: 'PayPal', hint: 'Con tu cuenta o tarjeta' },
+};
+
+const periodLabel = (cycle) => tr(cycle === 'YEARLY' ? 'año' : 'mes');
+
+function Summary({ offer, method, setMethod, gift, setGift, promo, quantity, setQuantity, charge, gateways, gateway, setGateway }) {
+  const recurring = gateways.length > 0 && !gift && !promo ? offer.billingCycle : null;
   const unit = offer.price === null || offer.price === undefined ? null : Number(offer.price);
   const total = promo ? promo.finalPrice : unit === null ? null : unit * (gift ? Number(gift.quantity || 1) : isService(offer) ? Number(quantity || 1) : 1);
   return (
@@ -89,15 +98,28 @@ function Summary({ offer, method, setMethod, gift, setGift, promo, quantity, set
         <span>{tr('Total')}</span>
         {promo && unit !== null && <small className="checkout-strike">{priceMoney(unit)} {offer.currency} · −{promo.discountPercent}%</small>}
         <strong>{total === null ? tr('Precio por definir — simulación de acceso') : `${priceMoney(total)} ${offer.currency}`}</strong>
-        {chargePreview(total, offer.currency, charge) && <small><b>{tr('Se cobrará: {amount}', { amount: chargePreview(total, offer.currency, charge) })}</b></small>}
+        {chargePreview(total, offer.currency, charge) && <small><b>{tr(recurring ? 'Se cobrará cada ' + (recurring === 'YEARLY' ? 'año' : 'mes') + ': {amount}' : 'Se cobrará: {amount}', { amount: chargePreview(total, offer.currency, charge) })}</b></small>}
         {gift && <small>{tr('El periodo empieza cuando la persona active su regalo, no hoy.')}</small>}
         {promo && <small>{tr('Tu acceso se activará cuando el equipo de QLC autorice el pago.')}</small>}
-        {!gift && !promo && offer.type === 'FULL_ANNUAL' && <small>{tr('Vigencia de')}{' '}{offer.accessDays || 365}{' '}{tr('días')}</small>}
-        {!gift && !promo && offer.type === 'TOOL_ONLY' && <small>{offer.accessDays || 30}{' '}{tr('días de acceso por pago. Al terminar se bloquea y puedes renovar.')}</small>}
+        {recurring && <small><b>{tr('Suscripción con cobro automático cada {period} hasta que canceles en Mi acceso.', { period: periodLabel(recurring) })}</b></small>}
+        {!recurring && !gift && !promo && offer.type === 'FULL_ANNUAL' && <small>{tr('Vigencia de')}{' '}{offer.accessDays || 365}{' '}{tr('días')}</small>}
+        {!recurring && !gift && !promo && offer.type === 'TOOL_ONLY' && <small>{offer.accessDays || 30}{' '}{tr('días de acceso por pago. Al terminar se bloquea y puedes renovar.')}</small>}
         {!gift && !promo && offer.type === 'MASTERCLASS' && <small>{offer.accessDays || 30}{' '}{tr('días de acceso a este módulo. Tu avance se conserva.')}</small>}
         {!gift && !promo && offer.sessions > 0 && <small>{tr('Incluye {n} sesiones de orientación de 20 minutos', { n: offer.sessions })}</small>}
       </div>
-      {charge ? <p className="small muted">{tr('En el siguiente paso escribes los datos de tu tarjeta de débito o crédito.')}</p> : (
+      {gateways.length > 0 ? (
+        gateways.length > 1 ? (
+          <fieldset className="checkout-methods">
+            <legend>{tr('Método de pago')}</legend>
+            {gateways.map((code) => (
+              <label key={code} className={`checkout-method ${gateway === code ? 'is-selected' : ''}`}>
+                <input type="radio" name="gateway" value={code} checked={gateway === code} onChange={() => setGateway(code)} />
+                <span><b>{tr(GATEWAYS[code].label)}</b><small>{tr(GATEWAYS[code].hint)}</small></span>
+              </label>
+            ))}
+          </fieldset>
+        ) : <p className="small muted">{gateway === 'PAYPAL' ? tr('En el siguiente paso pagarás con PayPal.') : tr('En el siguiente paso escribes los datos de tu tarjeta de débito o crédito.')}</p>
+      ) : (
       <fieldset className="checkout-methods">
         <legend>{tr('Método de pago')}</legend>
         {METHODS.map((m) => (
@@ -220,11 +242,14 @@ export function PaymentResult({ attempt, offer, codes, gift, access, credits, re
 
 export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
   const { refreshAccess, accessInfo } = useAuth();
-  const gateway = accessInfo?.provider === 'MERCADOPAGO';
-  const charge = gateway ? accessInfo?.charge || { currency: null } : null;
+  const gateways = accessInfo?.providers || [];
+  const hasGateway = gateways.length > 0;
+  const [selectedGateway, setGateway] = useState(gateways[0] || null);
+  const charge = selectedGateway === 'PAYPAL' ? accessInfo?.paypal : selectedGateway === 'MERCADOPAGO' ? accessInfo?.charge : null;
   const navigate = useNavigate();
   const [outcome, setOutcome] = useState({ paid: false, access: null, credits: null, reason: null });
   const [card, setCard] = useState(null);
+  const [paypal, setPaypal] = useState(null);
   const [step, setStep] = useState('summary');
   const [method, setMethod] = useState('CARD');
   const [gift, setGift] = useState(mode === 'gift' ? { quantity: 1, recipientName: '', message: '' } : null);
@@ -248,11 +273,14 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
     const body = promo
       ? { promoCode: promo.code }
       : { offerCode: offer.code, ...(isService(offer) ? { quantity: Math.min(20, Math.max(1, Number(quantity) || 1)) } : {}), ...(gift ? { gift: { quantity: Number(gift.quantity || 1), recipientName: gift.recipientName || null, message: gift.message || null } } : {}) };
-    const res = await api.post('/payments/checkout', body);
+    const res = await api.post('/payments/checkout', { ...body, ...(selectedGateway ? { provider: selectedGateway } : {}) });
     setAttempt(res.attempt);
     if (res.checkout.mode === 'CARD') {
       setCard({ publicKey: res.checkout.publicKey, challenge: null });
       setStep('card');
+    } else if (res.checkout.mode === 'PAYPAL') {
+      setPaypal({ clientId: res.checkout.clientId, currency: res.checkout.currency });
+      setStep('paypal');
     } else setStep('test');
   });
 
@@ -282,7 +310,7 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
     if (res.challenge) {
       setCard((c) => ({ ...c, challenge: res.challenge }));
       setStep('challenge');
-    } else if (res.attempt.status === 'PENDING') confirmPayment(res);
+    } else if (res.attempt.status === 'PENDING' && !(res.attempt.billingCycle && res.attempt.provider === 'MERCADOPAGO')) confirmPayment(res);
     else showFinal(res);
   };
 
@@ -308,11 +336,11 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
 
   return (
     <Modal open title={gift ? tr('Regalar acceso') : tr('Pago seguro')} onClose={finish} className="checkout">
-      {!gateway && <div className="checkout-env">{tr('ENTORNO DE PRUEBA · No se realiza ningún cobro real')}</div>}
+      {!hasGateway && <div className="checkout-env">{tr('ENTORNO DE PRUEBA · No se realiza ningún cobro real')}</div>}
       <Steps current={step === 'summary' ? 'Resumen' : step === 'result' ? 'Resultado' : 'Pago'} />
       {step === 'summary' && (
         <>
-          <Summary offer={product} method={method} setMethod={setMethod} gift={gift} setGift={setGift} promo={promo} quantity={quantity} setQuantity={setQuantity} charge={charge} />
+          <Summary offer={product} method={method} setMethod={setMethod} gift={gift} setGift={setGift} promo={promo} quantity={quantity} setQuantity={setQuantity} charge={charge} gateways={gateways} gateway={selectedGateway} setGateway={setGateway} />
           <FormError error={state.error} />
           <div className="form-actions">
             <Button variant="secondary" onClick={onClose}>{tr('Cancelar')}</Button>
@@ -322,6 +350,9 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
       )}
       {step === 'card' && attempt && card && (
         <CardForm attempt={attempt} publicKey={card.publicKey} productName={product.name} onResult={onCardResult} onCancel={finish} />
+      )}
+      {step === 'paypal' && attempt && paypal && (
+        <PayPalForm attempt={attempt} clientId={paypal.clientId} currency={paypal.currency} productName={product.name} onResult={onCardResult} onCancel={finish} />
       )}
       {step === 'challenge' && attempt && card?.challenge && (
         <CardChallenge attemptId={attempt.id} challenge={card.challenge} onDone={confirmPayment} />
@@ -335,7 +366,7 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
       {step === 'processing' && (
         <div className="checkout-processing-result" role="status">
           <h4>{tr('Tu pago está en proceso')}</h4>
-          <p className="muted">{tr('Tu banco todavía no lo confirma. Tu acceso se activará solo en cuanto se confirme y te avisaremos por correo.')}</p>
+          <p className="muted">{attempt?.billingCycle ? tr('Tu suscripción quedó registrada. El primer cobro puede tardar hasta una hora; tu acceso se activará solo en cuanto se confirme y te avisaremos por correo.') : tr('Tu banco todavía no lo confirma. Tu acceso se activará solo en cuanto se confirme y te avisaremos por correo.')}</p>
           <div className="form-actions"><Button onClick={finish}>{tr('Entendido')}</Button></div>
         </div>
       )}
@@ -362,7 +393,7 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
         </div>
       )}
       {step === 'result' && attempt && (
-        <PaymentResult attempt={attempt} offer={product} codes={codes} gift={gift} access={outcome.access} credits={outcome.credits} reason={outcome.reason} onClose={finish} onGo={go} onRetry={() => { setAttempt(null); setCard(null); setOutcome({ paid: false, access: null, credits: null, reason: null }); setStep('summary'); }} />
+        <PaymentResult attempt={attempt} offer={product} codes={codes} gift={gift} access={outcome.access} credits={outcome.credits} reason={outcome.reason} onClose={finish} onGo={go} onRetry={() => { setAttempt(null); setCard(null); setPaypal(null); setOutcome({ paid: false, access: null, credits: null, reason: null }); setStep('summary'); }} />
       )}
     </Modal>
   );

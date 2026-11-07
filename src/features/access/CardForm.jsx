@@ -131,7 +131,7 @@ export function CardForm({ attempt, publicKey, productName, onResult, onCancel }
         <span className="checkout-pulse" aria-hidden="true" />
         <div>
           <b>{tr(productName)}</b>
-          <small>{tr('Total a pagar')}: {priceMoney(attempt.chargedAmount)} {attempt.chargedCurrency}</small>
+          <small>{attempt.billingCycle ? tr('{amount} cada {period}', { amount: `${priceMoney(attempt.chargedAmount)} ${attempt.chargedCurrency}`, period: tr(attempt.billingCycle === 'YEARLY' ? 'año' : 'mes') }) : `${tr('Total a pagar')}: ${priceMoney(attempt.chargedAmount)} ${attempt.chargedCurrency}`}</small>
         </div>
       </div>
       {!ready && !state.error && <Loading />}
@@ -146,12 +146,12 @@ export function CardForm({ attempt, publicKey, productName, onResult, onCancel }
           <Field label={tr('Vencimiento')}><div id="qlc-card-expiry" className={`input card-field ${marks['qlc-card-expiry'] || ''}`} /></Field>
           <Field label={tr('Código de seguridad')}><div id="qlc-card-code" className={`input card-field ${marks['qlc-card-code'] || ''}`} /></Field>
         </div>
-        <p className="small muted">{tr('Pago en una sola exhibición. Tus datos viajan cifrados: QLC no recibe ni guarda el número ni el código de tu tarjeta.')}</p>
+        <p className="small muted">{attempt.billingCycle ? tr('Se cobrará automáticamente en cada periodo hasta que canceles en Mi acceso. Tus datos viajan cifrados: QLC no recibe ni guarda el número ni el código de tu tarjeta.') : tr('Pago en una sola exhibición. Tus datos viajan cifrados: QLC no recibe ni guarda el número ni el código de tu tarjeta.')}</p>
       </div>
       <FormError error={state.error} />
       <div className="form-actions">
         <Button type="button" variant="secondary" disabled={state.busy} onClick={onCancel}>{tr('Cancelar')}</Button>
-        <Button type="submit" loading={state.busy} disabled={!ready}>{tr('Pagar {amount}', { amount: `${priceMoney(attempt.chargedAmount)} ${attempt.chargedCurrency}` })}</Button>
+        <Button type="submit" loading={state.busy} disabled={!ready}>{tr(attempt.billingCycle ? 'Suscribirme por {amount}' : 'Pagar {amount}', { amount: `${priceMoney(attempt.chargedAmount)} ${attempt.chargedCurrency}` })}</Button>
       </div>
     </form>
   );

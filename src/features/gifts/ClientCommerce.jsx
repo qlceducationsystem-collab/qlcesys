@@ -47,10 +47,13 @@ export function SubscriptionCard() {
       ) : (
         <p className="small">{access.hasAny ? tr('Tu suscripción está activa{until}.', { until: until ? tr(' hasta el {date}', { date: date(until) }) : '' }) : tr('Aún no tienes un acceso activo.')}</p>
       )}
+      {sub.billing && (
+        <p className="small">{tr('{name}: cobro automático de {amount} cada {period} con {provider}.', { name: tr(sub.billing.offerName || ''), amount: `${priceMoney(sub.billing.amount)} ${sub.billing.currency}`, period: tr(sub.billing.cycle === 'YEARLY' ? 'año' : 'mes'), provider: tr(sub.billing.provider === 'PAYPAL' ? 'PayPal' : 'tarjeta') })}{sub.billing.nextBillingAt ? ` ${tr('Próximo cobro: {date}.', { date: date(sub.billing.nextBillingAt) })}` : ''}</p>
+      )}
       <div className="row-actions">
-        {sub.cancelledAt
-          ? <Button loading={state.busy} onClick={() => run(() => api.post('/payments/subscription/resume'))}>{tr('Reactivar mi suscripción')}</Button>
-          : access.hasAny && <Button variant="secondary" onClick={() => setConfirm(true)}>{tr('Cancelar mi suscripción')}</Button>}
+        {sub.cancelledAt && !sub.billing
+          ? sub.canResume !== false && <Button loading={state.busy} onClick={() => run(() => api.post('/payments/subscription/resume'))}>{tr('Reactivar mi suscripción')}</Button>
+          : (access.hasAny || sub.billing) && <Button variant="secondary" onClick={() => setConfirm(true)}>{tr('Cancelar mi suscripción')}</Button>}
       </div>
       <label className="check">
         <input type="checkbox" checked={!sub.marketingOptOut} disabled={state.busy} onChange={(e) => run(() => api.put('/payments/preferences', { marketingOptOut: !e.target.checked }))} />
@@ -60,7 +63,7 @@ export function SubscriptionCard() {
       <ConfirmDialog
         open={confirm}
         title={tr('Cancelar mi suscripción')}
-        message={tr('Conservarás tu acceso hasta su fecha de vencimiento y tus datos no se borran. ¿Deseas cancelar?')}
+        message={tr('Ya no se te cobrará de nuevo. Conservarás tu acceso hasta su fecha de vencimiento y tus datos no se borran. ¿Deseas cancelar?')}
         danger
         loading={state.busy}
         onConfirm={() => run(() => api.post('/payments/subscription/cancel'))}

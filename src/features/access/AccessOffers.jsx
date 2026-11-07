@@ -41,6 +41,8 @@ export function AccessOffers({ title = 'Elige cómo usar QLC Financial Education
   const [selected, setSelected] = useState(null);
   const [gift, setGift] = useState(null);
   const offers = accessInfo?.offers || [];
+  const billing = accessInfo?.subscription?.billing || null;
+  const recurring = (offer) => (accessInfo?.providers || []).length > 0 && !!offer.billingCycle;
   const byCode = (code) => offers.find((o) => o.code === code);
   const plans = ['TOOLS_ALL', 'FULL_ANNUAL', 'DIAMOND_ANNUAL'].map(byCode).filter(Boolean);
   const services = ['CONSULTA', 'ORIENTACION'].map(byCode).filter(Boolean);
@@ -74,8 +76,11 @@ export function AccessOffers({ title = 'Elige cómo usar QLC Financial Education
               <h3>{tr(offer.name)}</h3>
               <p>{tr(info.text)}</p>
               <ul className="offer-list">{info.list.map((l) => <li key={l}>{tr(l)}</li>)}</ul>
-              <div className="offer-price">{offerPrice(offer)}{' '}{offer.type === 'TOOL_ONLY' ? tr('/ 30 días') : tr('/ 1 año')}</div>
-              {offer.type === 'TOOL_ONLY' && toolsOwned && !toolsUntil
+              <div className="offer-price">{offerPrice(offer)}{' '}{recurring(offer) ? tr(offer.billingCycle === 'YEARLY' ? '/ año' : '/ mes') : offer.type === 'TOOL_ONLY' ? tr('/ 30 días') : tr('/ 1 año')}</div>
+              {recurring(offer) && <small className="muted">{tr('Cobro automático. Cancela cuando quieras.')}</small>}
+              {billing?.offerCode === offer.code
+                ? <Pill>{tr('Suscripción activa')}</Pill>
+                : offer.type === 'TOOL_ONLY' && toolsOwned && !toolsUntil
                 ? <Pill>{tr('Incluido en tu membresía')}</Pill>
                 : <Button variant={offer.code === 'TOOLS_ALL' ? 'secondary' : undefined} onClick={() => setSelected(offer)}>{active ? tr('Renovar') : tr('Adquirir')}</Button>}
               {offer.giftable !== false && <Button variant="secondary" onClick={() => setGift(offer)}>{tr('🎁 Regalar')}</Button>}
