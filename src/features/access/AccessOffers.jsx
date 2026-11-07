@@ -42,9 +42,7 @@ export function AccessOffers({ title = 'Elige cómo usar QLC Financial Education
   const [gift, setGift] = useState(null);
   const offers = accessInfo?.offers || [];
   const billing = accessInfo?.subscription?.billing || null;
-  const providers = accessInfo?.providers || [];
-  const recurring = (offer) => providers.length > 0 && !!offer.billingCycle;
-  const automatic = providers.some((p) => p !== 'DLOCALGO');
+  const recurring = (offer) => accessInfo?.provider === 'DLOCALGO' && !!offer.billingCycle;
   const [params, setParams] = useSearchParams();
   const renew = params.get('renovar');
   useEffect(() => {
@@ -89,7 +87,6 @@ export function AccessOffers({ title = 'Elige cómo usar QLC Financial Education
               <p>{tr(info.text)}</p>
               <ul className="offer-list">{info.list.map((l) => <li key={l}>{tr(l)}</li>)}</ul>
               <div className="offer-price">{offerPrice(offer)}{' '}{recurring(offer) ? tr(offer.billingCycle === 'YEARLY' ? '/ año' : '/ mes') : offer.type === 'TOOL_ONLY' ? tr('/ 30 días') : tr('/ 1 año')}</div>
-              {recurring(offer) && automatic && <small className="muted">{tr(providers.includes('DLOCALGO') ? 'Cobro automático con tarjeta o PayPal. Cancela cuando quieras.' : 'Cobro automático. Cancela cuando quieras.')}</small>}
               {billing?.offerCode === offer.code
                 ? <Pill>{tr('Suscripción activa')}</Pill>
                 : offer.type === 'TOOL_ONLY' && toolsOwned && !toolsUntil

@@ -71,20 +71,17 @@ const ES = {
         'Los accesos, consultas y sesiones son personales y no se pueden cambiar por dinero ni transferir a otra cuenta, salvo los códigos de regalo descritos más adelante.',
       ]],
       ['Precios y moneda de cobro', [
-        'Los precios pueden expresarse en pesos mexicanos, dólares o USDT. Una referencia en USDT no significa que el pago se reciba en criptoactivos: el cobro se realiza en la moneda de la forma de pago elegida, con el tipo de cambio que define QLC. El monto exacto que se cobrará se muestra antes de que confirmes el pago.',
+        'Los precios pueden expresarse en pesos mexicanos, dólares o USDT. Una referencia en USDT no significa que el pago se reciba en criptoactivos: el precio se convierte con el tipo de cambio que define QLC y el procesador lo muestra en la moneda de tu país. El monto exacto se muestra antes de que confirmes el pago.',
         'Tu banco o tu proveedor de pago pueden aplicar comisiones o tipos de cambio propios, que son ajenos a QLC y corren por tu cuenta.',
-        'Los precios y el tipo de cambio pueden cambiar en cualquier momento. El cambio se aplica a compras nuevas y no afecta los accesos ya pagados ni el monto de las suscripciones ya contratadas.',
+        'Los precios y el tipo de cambio pueden cambiar en cualquier momento. El cambio se aplica a compras nuevas y no afecta los accesos ya pagados.',
       ]],
       ['Formas de pago y procesadores', [
-        'Los pagos se realizan con tarjeta de débito o crédito, con PayPal o con los métodos locales disponibles en tu país, a través de procesadores de pago externos, a cuyas condiciones también quedas sujeto. QLC no recibe ni guarda el número ni el código de seguridad de tu tarjeta.',
-        'En tu estado de cuenta o en los comprobantes puede aparecer el nombre del procesador de pago. Tu banco puede pedirte una verificación adicional o rechazar un pago por sus propias reglas. Si el pago queda en proceso, el acceso se activa cuando se confirme.',
+        'Los pagos se realizan con los métodos disponibles en tu país, a través de un procesador de pagos externo, a cuyas condiciones también quedas sujeto. Al pagar sales de la plataforma a la página del procesador. QLC no recibe ni guarda los datos de tu medio de pago.',
+        'En tu estado de cuenta o en los comprobantes puede aparecer el nombre del procesador de pago. Si pagas en efectivo o por transferencia, el pago puede quedar en proceso; el acceso se activa cuando se confirme.',
       ]],
-      ['Suscripciones y renovación automática', [
-        'Los productos indicados como suscripción se cobran de forma automática cada mes o cada año, según se muestre al contratar. Al contratar autorizas expresamente esos cobros periódicos a la forma de pago elegida, hasta que canceles.',
-        'Puedes cancelar en cualquier momento desde Mi acceso. La cancelación evita los cobros futuros y conservas tu acceso hasta su fecha de vencimiento. Para que no se haga el siguiente cobro, cancela antes de la fecha de renovación. Una suscripción cancelada no se reactiva: para continuar debes contratarla de nuevo.',
-        'Si un cobro periódico no se puede realizar, el procesador puede volver a intentarlo. Si no se confirma, el acceso termina a su vencimiento y se reactiva si el cobro se recupera. Es tu responsabilidad mantener vigente tu forma de pago.',
-        'Solo puedes tener una suscripción activa a la vez; para cambiar de plan primero debes cancelar la actual. Eliminar tu cuenta también cancela tus suscripciones. Los productos de pago único no se renuevan automáticamente.',
-        'Los pagos con métodos locales del país no se renuevan automáticamente: cada periodo debes pagar de nuevo antes del vencimiento. Te avisaremos por correo, pero el aviso no es condición para que el acceso venza.',
+      ['Renovación de accesos', [
+        'Los accesos no se cobran de forma automática: cada periodo mensual o anual debes pagar de nuevo antes del vencimiento. Te enviaremos un aviso por correo antes de que venza, pero el aviso no es condición para que el acceso termine. Si no pagas a tiempo, el acceso se bloquea hasta que lo renueves.',
+        'Si contrataste antes una suscripción con cobro automático, esta sigue vigente hasta que la canceles desde Mi acceso. La cancelación evita los cobros futuros y conservas tu acceso hasta su vencimiento. Solo puedes tener una suscripción de este tipo activa, y para adquirir otro plan primero debes cancelarla. Eliminar tu cuenta también la cancela.',
       ]],
       ['Sin reembolsos', [
         'Todos los pagos son finales y no reembolsables, en cualquier forma de pago. No se realizan reembolsos totales ni parciales por cancelar antes del vencimiento, por no usar el producto, por periodos parciales, por cambio de plan, por renovaciones que no se cancelaron a tiempo, por eliminar la cuenta ni por suspensión debida al incumplimiento de estos términos.',
@@ -95,11 +92,11 @@ const ES = {
         'Si se presenta un contracargo o una disputa, QLC puede suspender o retirar el acceso relacionado mientras se resuelve, y compartir con el procesador los registros de la compra y del uso del producto para atenderla.',
       ]],
       ['Regalos', [
-        'Cada acceso regalado genera un código único, que debe canjearse dentro del plazo indicado al comprarlo. La vigencia empieza cuando se activa, no cuando se compra. Los regalos son de pago único y no se renuevan.',
+        'Cada acceso regalado genera un código único, que debe canjearse dentro del plazo indicado al comprarlo. La vigencia empieza cuando se activa, no cuando se compra. Los regalos no se renuevan.',
         'Quien compra es responsable de entregar y resguardar el código. Un código no se puede cambiar por dinero, y un código perdido, compartido con otra persona o vencido no da derecho a reembolso.',
       ]],
       ['Promociones', [
-        'Las promociones son personales, tienen una vigencia y un solo uso, y no se acumulan con otras. El acceso de un pago promocional se activa cuando el Administrador General de QLC lo autoriza. Son de pago único y no se renuevan.',
+        'Las promociones son personales, tienen una vigencia y un solo uso, y no se acumulan con otras. El acceso de un pago promocional se activa cuando el Administrador General de QLC lo autoriza. No se renuevan.',
       ]],
       ['Vencimiento, conservación y eliminación de datos', [
         'Al vencer un acceso, las funciones relacionadas se bloquean hasta que lo renueves. Si no tienes ningún acceso vigente durante 30 días después del vencimiento, tu cuenta y tus datos pueden eliminarse de forma definitiva, después de avisarte a tu correo.',
@@ -205,20 +202,17 @@ const EN = {
         'Access, consultations and sessions are personal and cannot be exchanged for money or transferred to another account, except for the gift codes described below.',
       ]],
       ['Prices and charge currency', [
-        'Prices may be stated in Mexican pesos, US dollars or USDT. A reference in USDT does not mean payment is received in crypto assets: the charge is made in the currency of the chosen payment method, at the exchange rate set by QLC. The exact amount to be charged is shown before you confirm the payment.',
+        'Prices may be stated in Mexican pesos, US dollars or USDT. A reference in USDT does not mean payment is received in crypto assets: the price is converted at the exchange rate set by QLC and the processor shows it in your country’s currency. The exact amount is shown before you confirm the payment.',
         'Your bank or payment provider may apply its own fees or exchange rates, which are outside QLC’s control and are your responsibility.',
-        'Prices and the exchange rate may change at any time. Changes apply to new purchases and do not affect access already paid for or the amount of subscriptions already contracted.',
+        'Prices and the exchange rate may change at any time. Changes apply to new purchases and do not affect access already paid for.',
       ]],
       ['Payment methods and processors', [
-        'Payments are made by debit or credit card, with PayPal or with the local methods available in your country, through external payment processors, whose conditions also apply to you. QLC does not receive or store your card number or security code.',
-        'Your statement or receipts may show the payment processor’s name. Your bank may ask for additional verification or decline a payment under its own rules. If a payment is in process, access activates once it is confirmed.',
+        'Payments are made with the methods available in your country, through an external payment processor, whose conditions also apply to you. When paying you leave the platform for the processor’s page. QLC does not receive or store your payment method details.',
+        'Your statement or receipts may show the payment processor’s name. If you pay by cash or transfer, the payment may be in process; access activates once it is confirmed.',
       ]],
-      ['Subscriptions and automatic renewal', [
-        'Products indicated as subscriptions are charged automatically every month or every year, as shown when contracting. By contracting you expressly authorize those recurring charges to the chosen payment method until you cancel.',
-        'You can cancel at any time from My access. Cancelling prevents future charges and you keep your access until its expiration date. To avoid the next charge, cancel before the renewal date. A cancelled subscription cannot be reactivated: to continue you must contract it again.',
-        'If a recurring charge cannot be made, the processor may try again. If it is not confirmed, access ends at expiration and is reactivated if the charge is recovered. You are responsible for keeping your payment method valid.',
-        'You can only have one active subscription at a time; to change plans you must first cancel the current one. Deleting your account also cancels your subscriptions. One-time products do not renew automatically.',
-        'Payments with local country methods do not renew automatically: you must pay again each period before expiration. We will email you, but the notice is not a condition for the access to expire.',
+      ['Access renewal', [
+        'Access is not charged automatically: each monthly or annual period you must pay again before expiration. We will email you a notice before it expires, but the notice is not a condition for the access to end. If you do not pay in time, access is blocked until you renew it.',
+        'If you previously contracted a subscription with automatic billing, it stays in force until you cancel it from My access. Cancelling prevents future charges and you keep your access until expiration. You can only have one such subscription active, and to purchase another plan you must first cancel it. Deleting your account also cancels it.',
       ]],
       ['No refunds', [
         'All payments are final and non-refundable, for every payment method. No full or partial refunds are given for cancelling before expiration, not using the product, partial periods, plan changes, renewals not cancelled in time, deleting the account or suspension due to a breach of these terms.',
@@ -229,11 +223,11 @@ const EN = {
         'If a chargeback or dispute occurs, QLC may suspend or remove the related access while it is resolved, and share purchase and product usage records with the processor to address it.',
       ]],
       ['Gifts', [
-        'Each gifted access generates a unique code, which must be redeemed within the period stated at purchase. Validity starts when it is activated, not when it is purchased. Gifts are one-time payments and do not renew.',
+        'Each gifted access generates a unique code, which must be redeemed within the period stated at purchase. Validity starts when it is activated, not when it is purchased. Gifts do not renew.',
         'The purchaser is responsible for delivering and safeguarding the code. A code cannot be exchanged for money, and a lost, shared or expired code gives no right to a refund.',
       ]],
       ['Promotions', [
-        'Promotions are personal, have a validity period and a single use, and cannot be combined with others. Access from a promotional payment activates when the QLC General Administrator authorizes it. They are one-time payments and do not renew.',
+        'Promotions are personal, have a validity period and a single use, and cannot be combined with others. Access from a promotional payment activates when the QLC General Administrator authorizes it. They do not renew.',
       ]],
       ['Expiration, data retention and deletion', [
         'When an access expires, the related functions are blocked until you renew it. If you have no valid access for 30 days after expiration, your account and data may be permanently deleted, after notice to your email.',

@@ -49,11 +49,11 @@ function OfferEditor({ offer, onSaved, canEdit }) {
         <Field label={tr('Moneda')}><Input maxLength={3} value={f.currency} onChange={set('currency')} disabled={!canEdit} /></Field>
         <Field label={offer.type !== 'TOOL_ONLY' ? tr('Días de acceso') : tr('Días por mensualidad')}><Input type="number" min="1" value={f.accessDays} onChange={set('accessDays')} disabled={!canEdit} /></Field>
         {recurrable && (
-          <Field label={tr('Forma de cobro')} hint={tr('Las suscripciones ya contratadas conservan su precio y su periodo.')}>
+          <Field label={tr('Renovación')} hint={tr('El cliente paga de nuevo cada periodo. Recibe un correo 3 días antes de vencer.')}>
             <select className="input" value={f.billingCycle} onChange={set('billingCycle')} disabled={!canEdit}>
-              <option value="">{tr('Pago único')}</option>
-              <option value="MONTHLY">{tr('Suscripción mensual')}</option>
-              <option value="YEARLY">{tr('Suscripción anual')}</option>
+              <option value="">{tr('Sin aviso de renovación')}</option>
+              <option value="MONTHLY">{tr('Mensual con aviso')}</option>
+              <option value="YEARLY">{tr('Anual con aviso')}</option>
             </select>
           </Field>
         )}

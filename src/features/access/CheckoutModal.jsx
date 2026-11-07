@@ -7,27 +7,7 @@ import { Button } from '../../components/ui/Button.jsx';
 import { Field, FormError, Input, Textarea } from '../../components/ui/Form.jsx';
 import { date, priceMoney } from '../../utils/format.js';
 import { GiftCardModal } from '../gifts/GiftCard.jsx';
-import { Loading } from '../../components/ui/States.jsx';
-import { CardChallenge, CardForm } from './CardForm.jsx';
-import { PayPalForm } from './PayPalForm.jsx';
 import { tr } from '../../i18n/tr.js';
-
-const CONFIRM_TRIES = 6;
-const CONFIRM_WAIT_MS = 3000;
-
-const REJECT_REASONS = {
-  cc_rejected_bad_filled_card_number: 'Revisa el número de tu tarjeta.',
-  cc_rejected_bad_filled_date: 'Revisa la fecha de vencimiento de tu tarjeta.',
-  cc_rejected_bad_filled_security_code: 'Revisa el código de seguridad de tu tarjeta.',
-  cc_rejected_bad_filled_other: 'Revisa los datos de tu tarjeta.',
-  cc_rejected_insufficient_amount: 'Tu tarjeta no tiene fondos suficientes.',
-  cc_rejected_call_for_authorize: 'Tu banco pide que autorices este pago. Llama al número al reverso de tu tarjeta.',
-  cc_rejected_card_disabled: 'Tu tarjeta no está activa. Llama a tu banco para activarla.',
-  cc_rejected_duplicated_payment: 'Ya hiciste un pago por este monto. Revisa tu historial antes de intentarlo de nuevo.',
-  cc_rejected_max_attempts: 'Llegaste al límite de intentos con esta tarjeta. Prueba con otra.',
-  cc_rejected_3ds_challenge: 'Tu banco no pudo confirmar que eres tú.',
-  cc_rejected_high_risk: 'Tu banco o el sistema de seguridad rechazó el pago. Prueba con otra tarjeta.',
-};
 
 const METHODS = [
   { value: 'CARD', label: 'Tarjeta', hint: 'Débito o crédito' },
@@ -62,12 +42,6 @@ const chargePreview = (total, currency, charge) => {
   return `${priceMoney(charge.whole ? Math.ceil(value) : Math.round(value * 100) / 100)} ${charge.currency}`;
 };
 
-const GATEWAYS = {
-  MERCADOPAGO: { label: 'Tarjeta', hint: 'Débito o crédito' },
-  PAYPAL: { label: 'PayPal', hint: 'Con tu cuenta o tarjeta' },
-  DLOCALGO: { label: 'Pago local', hint: 'Métodos de pago de tu país' },
-};
-
 const COUNTRY_NAMES = { AR: 'Argentina', BO: 'Bolivia', BR: 'Brasil', CL: 'Chile', CO: 'Colombia', CR: 'Costa Rica', DO: 'República Dominicana', EC: 'Ecuador', GT: 'Guatemala', ID: 'Indonesia', KE: 'Kenia', MX: 'México', MY: 'Malasia', NG: 'Nigeria', PA: 'Panamá', PE: 'Perú', PY: 'Paraguay', UY: 'Uruguay' };
 
 const guessCountry = (list) => {
@@ -75,10 +49,7 @@ const guessCountry = (list) => {
   return list.includes(region) ? region : '';
 };
 
-const periodLabel = (cycle) => tr(cycle === 'YEARLY' ? 'año' : 'mes');
-
-function Summary({ offer, method, setMethod, gift, setGift, promo, quantity, setQuantity, charge, gateways, gateway, setGateway, countries, country, setCountry }) {
-  const recurring = gateways.length > 0 && gateway !== 'DLOCALGO' && !gift && !promo ? offer.billingCycle : null;
+function Summary({ offer, method, setMethod, gift, setGift, promo, quantity, setQuantity, charge, hasGateway, countries, country, setCountry }) {
   const unit = offer.price === null || offer.price === undefined ? null : Number(offer.price);
   const total = promo ? promo.finalPrice : unit === null ? null : unit * (gift ? Number(gift.quantity || 1) : isService(offer) ? Number(quantity || 1) : 1);
   return (
@@ -106,30 +77,17 @@ function Summary({ offer, method, setMethod, gift, setGift, promo, quantity, set
         <span>{tr('Total')}</span>
         {promo && unit !== null && <small className="checkout-strike">{priceMoney(unit)} {offer.currency} · −{promo.discountPercent}%</small>}
         <strong>{total === null ? tr('Precio por definir — simulación de acceso') : `${priceMoney(total)} ${offer.currency}`}</strong>
-        {chargePreview(total, offer.currency, charge) && <small><b>{tr(recurring ? 'Se cobrará cada ' + (recurring === 'YEARLY' ? 'año' : 'mes') + ': {amount}' : 'Se cobrará: {amount}', { amount: chargePreview(total, offer.currency, charge) })}</b></small>}
+        {chargePreview(total, offer.currency, charge) && <small><b>{tr('Se cobrará: {amount}', { amount: chargePreview(total, offer.currency, charge) })}</b></small>}
         {gift && <small>{tr('El periodo empieza cuando la persona active su regalo, no hoy.')}</small>}
         {promo && <small>{tr('Tu acceso se activará cuando el equipo de QLC autorice el pago.')}</small>}
-        {gateway === 'DLOCALGO' && <small>{tr('Al pagar verás el monto en la moneda de tu país.')}</small>}
-        {gateway === 'DLOCALGO' && !gift && !promo && offer.billingCycle && <small><b>{tr('Este pago no se renueva solo: te avisaremos por correo antes de que venza.')}</b></small>}
-        {recurring && <small><b>{tr('Suscripción con cobro automático cada {period} hasta que canceles en Mi acceso.', { period: periodLabel(recurring) })}</b></small>}
-        {!recurring && !gift && !promo && offer.type === 'FULL_ANNUAL' && <small>{tr('Vigencia de')}{' '}{offer.accessDays || 365}{' '}{tr('días')}</small>}
-        {!recurring && !gift && !promo && offer.type === 'TOOL_ONLY' && <small>{offer.accessDays || 30}{' '}{tr('días de acceso por pago. Al terminar se bloquea y puedes renovar.')}</small>}
+        {hasGateway && <small>{tr('Al pagar verás el monto en la moneda de tu país.')}</small>}
+        {hasGateway && !gift && !promo && offer.billingCycle && <small><b>{tr('Este pago no se renueva solo: te avisaremos por correo antes de que venza.')}</b></small>}
+        {!gift && !promo && offer.type === 'FULL_ANNUAL' && <small>{tr('Vigencia de')}{' '}{offer.accessDays || 365}{' '}{tr('días')}</small>}
+        {!gift && !promo && offer.type === 'TOOL_ONLY' && <small>{offer.accessDays || 30}{' '}{tr('días de acceso por pago. Al terminar se bloquea y puedes renovar.')}</small>}
         {!gift && !promo && offer.type === 'MASTERCLASS' && <small>{offer.accessDays || 30}{' '}{tr('días de acceso a este módulo. Tu avance se conserva.')}</small>}
         {!gift && !promo && offer.sessions > 0 && <small>{tr('Incluye {n} sesiones de orientación de 20 minutos', { n: offer.sessions })}</small>}
       </div>
-      {gateways.length > 0 ? (
-        gateways.length > 1 ? (
-          <fieldset className="checkout-methods">
-            <legend>{tr('Método de pago')}</legend>
-            {gateways.map((code) => (
-              <label key={code} className={`checkout-method ${gateway === code ? 'is-selected' : ''}`}>
-                <input type="radio" name="gateway" value={code} checked={gateway === code} onChange={() => setGateway(code)} />
-                <span><b>{tr(GATEWAYS[code].label)}</b><small>{tr(GATEWAYS[code].hint)}</small></span>
-              </label>
-            ))}
-          </fieldset>
-        ) : <p className="small muted">{gateway === 'DLOCALGO' ? tr('En el siguiente paso pagarás con los métodos de pago de tu país.') : gateway === 'PAYPAL' ? tr('En el siguiente paso pagarás con PayPal.') : tr('En el siguiente paso escribes los datos de tu tarjeta de débito o crédito.')}</p>
-      ) : (
+      {hasGateway ? <p className="small muted">{tr('En el siguiente paso pagarás con los métodos de pago de tu país.')}</p> : (
       <fieldset className="checkout-methods">
         <legend>{tr('Método de pago')}</legend>
         {METHODS.map((m) => (
@@ -140,7 +98,7 @@ function Summary({ offer, method, setMethod, gift, setGift, promo, quantity, set
         ))}
       </fieldset>
       )}
-      {gateway === 'DLOCALGO' && (
+      {hasGateway && (
         <Field label={tr('Tu país')}>
           <select className="input" value={country} onChange={(e) => setCountry(e.target.value)}>
             <option value="">{tr('Selecciona tu país')}</option>
@@ -216,7 +174,7 @@ const paidPreview = (offer, mode, promo) => {
   return tr('Se activa {name} de inmediato.', { name: offer.name });
 };
 
-export function PaymentResult({ attempt, offer, codes, gift, access, credits, reason, onClose, onGo, onRetry }) {
+export function PaymentResult({ attempt, offer, codes, gift, access, credits, onClose, onGo, onRetry }) {
   const [card, setCard] = useState(null);
   const ok = attempt.status === 'APPROVED';
   const pending = ok && attempt.kind === 'PROMO';
@@ -225,7 +183,6 @@ export function PaymentResult({ attempt, offer, codes, gift, access, credits, re
     <div className={`checkout-result ${ok ? 'is-ok' : 'is-bad'}`} role="status">
       <span className="checkout-result-icon" aria-hidden="true">{ok ? '✓' : '!'}</span>
       <h4>{!ok ? tr('El pago no se realizó') : pending ? tr('Pago confirmado') : tr('Pago realizado')}</h4>
-      {!ok && REJECT_REASONS[reason] && <p><b>{tr(REJECT_REASONS[reason])}</b></p>}
       {!ok && <p>{tr('No se hizo ningún cobro y no se activó nada. Tu cuenta y tu información siguen igual. Puedes intentarlo de nuevo cuando quieras.')}</p>}
       {pending && <p>{tr('Recibimos tu pago promocional. Tu acceso a {name} se activará en cuanto el Administrador de QLC lo autorice; te avisaremos al quedar listo.', { name: offer.name })}</p>}
       {ok && !pending && codes && (
@@ -260,16 +217,12 @@ export function PaymentResult({ attempt, offer, codes, gift, access, credits, re
 
 export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
   const { refreshAccess, accessInfo } = useAuth();
-  const gateways = accessInfo?.providers || [];
-  const hasGateway = gateways.length > 0;
-  const [selectedGateway, setGateway] = useState(gateways[0] || null);
-  const charge = selectedGateway === 'PAYPAL' ? accessInfo?.paypal : selectedGateway === 'MERCADOPAGO' ? accessInfo?.charge : selectedGateway === 'DLOCALGO' ? accessInfo?.dlocal : null;
+  const hasGateway = accessInfo?.provider === 'DLOCALGO';
+  const charge = hasGateway ? accessInfo?.dlocal : null;
   const countries = accessInfo?.dlocal?.countries || [];
   const [country, setCountry] = useState(() => guessCountry(countries));
   const navigate = useNavigate();
-  const [outcome, setOutcome] = useState({ paid: false, access: null, credits: null, reason: null });
-  const [card, setCard] = useState(null);
-  const [paypal, setPaypal] = useState(null);
+  const [outcome, setOutcome] = useState({ paid: false, access: null, credits: null });
   const [step, setStep] = useState('summary');
   const [method, setMethod] = useState('CARD');
   const [gift, setGift] = useState(mode === 'gift' ? { quantity: 1, recipientName: '', message: '' } : null);
@@ -293,48 +246,11 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
     const body = promo
       ? { promoCode: promo.code }
       : { offerCode: offer.code, ...(isService(offer) ? { quantity: Math.min(20, Math.max(1, Number(quantity) || 1)) } : {}), ...(gift ? { gift: { quantity: Number(gift.quantity || 1), recipientName: gift.recipientName || null, message: gift.message || null } } : {}) };
-    const res = await api.post('/payments/checkout', { ...body, ...(selectedGateway ? { provider: selectedGateway } : {}), ...(selectedGateway === 'DLOCALGO' ? { country } : {}) });
+    const res = await api.post('/payments/checkout', { ...body, ...(hasGateway ? { country } : {}) });
     setAttempt(res.attempt);
-    if (res.checkout.mode === 'CARD') {
-      setCard({ publicKey: res.checkout.publicKey, challenge: null });
-      setStep('card');
-    } else if (res.checkout.mode === 'REDIRECT' && res.checkout.initPoint) {
-      window.location.assign(res.checkout.initPoint);
-    } else if (res.checkout.mode === 'PAYPAL') {
-      setPaypal({ clientId: res.checkout.clientId, currency: res.checkout.currency });
-      setStep('paypal');
-    } else setStep('test');
+    if (res.checkout.mode === 'REDIRECT' && res.checkout.initPoint) window.location.assign(res.checkout.initPoint);
+    else setStep('test');
   });
-
-  const showFinal = (res) => {
-    setAttempt(res.attempt);
-    if (res.attempt.status === 'PENDING') {
-      setStep('processing');
-      return;
-    }
-    setCodes(res.gifts || null);
-    setOutcome({ paid: res.attempt.status === 'APPROVED', access: res.access || null, credits: res.credits || null, reason: res.reason || null });
-    setStep('result');
-  };
-
-  const confirmPayment = async (first) => {
-    setStep('confirming');
-    let last = first;
-    for (let i = 0; i < CONFIRM_TRIES && last.attempt.status === 'PENDING'; i += 1) {
-      await new Promise((done) => setTimeout(done, CONFIRM_WAIT_MS));
-      last = await api.post(`/payments/attempts/${encodeURIComponent(first.attempt.id)}/sync`, {}).catch(() => last);
-    }
-    showFinal(last);
-  };
-
-  const onCardResult = (res) => {
-    setAttempt(res.attempt);
-    if (res.challenge) {
-      setCard((c) => ({ ...c, challenge: res.challenge }));
-      setStep('challenge');
-    } else if (res.attempt.status === 'PENDING' && !(res.attempt.billingCycle && res.attempt.provider === 'MERCADOPAGO')) confirmPayment(res);
-    else showFinal(res);
-  };
 
   const simulate = (outcome) => run(async () => {
     const res = await api.post(`/payments/attempts/${attempt.id}/simulate`, { outcome });
@@ -347,7 +263,7 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
   });
 
   const finish = async () => {
-    if (outcome.paid || step === 'processing') await refreshAccess();
+    if (outcome.paid) await refreshAccess();
     onClose();
   };
 
@@ -362,35 +278,13 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
       <Steps current={step === 'summary' ? 'Resumen' : step === 'result' ? 'Resultado' : 'Pago'} />
       {step === 'summary' && (
         <>
-          <Summary offer={product} method={method} setMethod={setMethod} gift={gift} setGift={setGift} promo={promo} quantity={quantity} setQuantity={setQuantity} charge={charge} gateways={gateways} gateway={selectedGateway} setGateway={setGateway} countries={countries} country={country} setCountry={setCountry} />
+          <Summary offer={product} method={method} setMethod={setMethod} gift={gift} setGift={setGift} promo={promo} quantity={quantity} setQuantity={setQuantity} charge={charge} hasGateway={hasGateway} countries={countries} country={country} setCountry={setCountry} />
           <FormError error={state.error} />
           <div className="form-actions">
             <Button variant="secondary" onClick={onClose}>{tr('Cancelar')}</Button>
-            <Button loading={state.busy} disabled={selectedGateway === 'DLOCALGO' && !country} onClick={start} data-autofocus>{tr('Continuar al pago')}</Button>
+            <Button loading={state.busy} disabled={hasGateway && !country} onClick={start} data-autofocus>{tr('Continuar al pago')}</Button>
           </div>
         </>
-      )}
-      {step === 'card' && attempt && card && (
-        <CardForm attempt={attempt} publicKey={card.publicKey} productName={product.name} onResult={onCardResult} onCancel={finish} />
-      )}
-      {step === 'paypal' && attempt && paypal && (
-        <PayPalForm attempt={attempt} clientId={paypal.clientId} currency={paypal.currency} productName={product.name} onResult={onCardResult} onCancel={finish} />
-      )}
-      {step === 'challenge' && attempt && card?.challenge && (
-        <CardChallenge attemptId={attempt.id} challenge={card.challenge} onDone={confirmPayment} />
-      )}
-      {step === 'confirming' && (
-        <div className="stack">
-          <Loading />
-          <p className="muted small">{tr('Estamos confirmando tu pago…')}</p>
-        </div>
-      )}
-      {step === 'processing' && (
-        <div className="checkout-processing-result" role="status">
-          <h4>{tr('Tu pago está en proceso')}</h4>
-          <p className="muted">{attempt?.billingCycle ? tr('Tu suscripción quedó registrada. El primer cobro puede tardar hasta una hora; tu acceso se activará solo en cuanto se confirme y te avisaremos por correo.') : tr('Tu banco todavía no lo confirma. Tu acceso se activará solo en cuanto se confirme y te avisaremos por correo.')}</p>
-          <div className="form-actions"><Button onClick={finish}>{tr('Entendido')}</Button></div>
-        </div>
       )}
       {step === 'test' && attempt && (
         <div className="checkout-test">
@@ -415,7 +309,7 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
         </div>
       )}
       {step === 'result' && attempt && (
-        <PaymentResult attempt={attempt} offer={product} codes={codes} gift={gift} access={outcome.access} credits={outcome.credits} reason={outcome.reason} onClose={finish} onGo={go} onRetry={() => { setAttempt(null); setCard(null); setPaypal(null); setOutcome({ paid: false, access: null, credits: null, reason: null }); setStep('summary'); }} />
+        <PaymentResult attempt={attempt} offer={product} codes={codes} gift={gift} access={outcome.access} credits={outcome.credits} onClose={finish} onGo={go} onRetry={() => { setAttempt(null); setOutcome({ paid: false, access: null, credits: null }); setStep('summary'); }} />
       )}
     </Modal>
   );

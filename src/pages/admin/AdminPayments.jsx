@@ -22,7 +22,7 @@ export default function AdminPayments() {
       <PageHeader
         kicker={tr('Comercial')}
         title={tr('Pagos')}
-        subtitle={tr('Intentos de pago registrados por Mercado Pago, PayPal, dLocal Go o el modo de prueba.')}
+        subtitle={tr('Intentos de pago registrados por dLocal Go, las pasarelas anteriores o el modo de prueba.')}
         actions={<Select className="month" value={status} onChange={(e) => setStatus(e.target.value)} options={statusOptions} aria-label={tr('Estado')} />}
       />
       <StatGrid cols={3}>
