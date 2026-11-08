@@ -9,6 +9,7 @@ import { AsyncView } from '../../components/ui/States.jsx';
 import { DataTable } from '../../components/ui/DataTable.jsx';
 import { tr } from '../../i18n/tr.js';
 import { MailSettings } from '../../features/admin/MailSettings.jsx';
+import { DriveSettings } from '../../features/admin/DriveSettings.jsx';
 
 export default function AdminIntegrations() {
   const { user } = useAuth();
@@ -20,7 +21,7 @@ export default function AdminIntegrations() {
     const connected = params.get('connected');
     const error = params.get('error');
     if (connected || error) {
-      setFlash(connected ? { ok: true, text: 'Gmail conectado correctamente.' } : { ok: false, text: error });
+      setFlash(connected ? { ok: true, text: connected === 'DRIVE' ? 'Google Drive conectado correctamente. Pulsa Probar conexión para confirmarlo.' : 'Gmail conectado correctamente.' } : { ok: false, text: error });
       setParams({}, { replace: true });
     }
   }, [params, setParams]);
@@ -33,6 +34,7 @@ export default function AdminIntegrations() {
         {(d) => (
           <>
             <MailSettings canManage={user?.adminLevel === 'FULL'} onChanged={res.reload} />
+            {user?.adminLevel === 'FULL' && <DriveSettings canManage onChanged={res.reload} />}
             <Card title={tr('Últimos correos del sistema')}>
               <DataTable rows={d.emails} empty={tr('Sin envíos registrados.')} columns={[
                 { key: 'createdAt', label: tr('Fecha'), render: (e) => dateTime(e.createdAt) },

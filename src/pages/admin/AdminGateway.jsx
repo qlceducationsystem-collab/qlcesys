@@ -138,7 +138,7 @@ function BitgetEditor({ data, canManage, onSaved }) {
         {data.enabled ? <Pill>{tr('Activa')}</Pill> : <Pill variant="warn">{tr('Desactivada')}</Pill>}
         <span className="small muted">{tr('Disponible para clientes de todos los países.')}</span>
       </div>
-      <p className="small muted">{tr('El cliente transfiere USDT a este UID desde su cuenta de Bitget y reporta el N.º de orden con su evidencia. Tú revisas el reporte en Pagos y confirmas el pago. Las evidencias se guardan en el Google Drive conectado en Integraciones.')}</p>
+      <p className="small muted">{tr('El cliente transfiere USDT a este UID desde su cuenta de Bitget y reporta el N.º de orden con su evidencia. Tú revisas el reporte en Pagos y confirmas el pago. Las evidencias se guardan en el Google Drive conectado en Integraciones, en la tarjeta Google Drive.')}</p>
       <div className="form-grid cols-2">
         <Field label={tr('UID de recepción de Bitget')} hint={tr('Es el mismo para todos los clientes. El cliente no puede cambiarlo.')}>
           <Input name="qlc-bitget-uid" autoComplete="off" inputMode="numeric" maxLength={20} value={f.uid} disabled={!canManage} onChange={(e) => setF({ ...f, uid: e.target.value })} />
