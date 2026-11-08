@@ -201,7 +201,7 @@ const paidPreview = (offer, mode, promo) => {
   return tr('Se activa {name} de inmediato.', { name: offer.name });
 };
 
-export function PaymentResult({ attempt, offer, codes, gift, access, credits, reason, onClose, onGo, onRetry }) {
+export function PaymentResult({ attempt, offer, codes, gift, access, credits, reason, detail, onClose, onGo, onRetry }) {
   const [card, setCard] = useState(null);
   const ok = attempt.status === 'APPROVED';
   const pending = ok && attempt.kind === 'PROMO';
@@ -211,6 +211,7 @@ export function PaymentResult({ attempt, offer, codes, gift, access, credits, re
       <span className="checkout-result-icon" aria-hidden="true">{ok ? '✓' : '!'}</span>
       <h4>{!ok ? tr('El pago no se realizó') : pending ? tr('Pago confirmado') : tr('Pago realizado')}</h4>
       {!ok && REJECT_REASONS[reason] && <p><b>{tr(REJECT_REASONS[reason])}</b></p>}
+      {!ok && detail && <p className="small muted">{tr('Detalle para soporte:')} {detail}</p>}
       {!ok && <p>{tr('No se hizo ningún cobro y no se activó nada. Tu cuenta y tu información siguen igual. Puedes intentarlo de nuevo cuando quieras.')}</p>}
       {pending && <p>{tr('Recibimos tu pago promocional. Tu acceso a {name} se activará en cuanto el Administrador de QLC lo autorice; te avisaremos al quedar listo.', { name: offer.name })}</p>}
       {ok && !pending && codes && (
@@ -325,7 +326,7 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
       return;
     }
     setCodes(res.gifts || null);
-    setOutcome({ paid: res.attempt.status === 'APPROVED', access: res.access || null, credits: res.credits || null, reason: res.reason || null });
+    setOutcome({ paid: res.attempt.status === 'APPROVED', access: res.access || null, credits: res.credits || null, reason: res.reason || null, detail: res.detail || null });
     setStep('result');
   };
 
@@ -439,7 +440,7 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
         </div>
       )}
       {step === 'result' && attempt && (
-        <PaymentResult attempt={attempt} offer={product} codes={codes} gift={gift} access={outcome.access} credits={outcome.credits} reason={outcome.reason} onClose={finish} onGo={go} onRetry={() => { setAttempt(null); setCard(null); setBitget(null); setOutcome({ paid: false, access: null, credits: null, reason: null }); setStep('summary'); }} />
+        <PaymentResult attempt={attempt} offer={product} codes={codes} gift={gift} access={outcome.access} credits={outcome.credits} reason={outcome.reason} detail={outcome.detail} onClose={finish} onGo={go} onRetry={() => { setAttempt(null); setCard(null); setBitget(null); setOutcome({ paid: false, access: null, credits: null, reason: null }); setStep('summary'); }} />
       )}
     </Modal>
   );
