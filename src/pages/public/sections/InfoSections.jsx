@@ -100,8 +100,10 @@ export function AccessSection({ section, offers, go }) {
               <span className="access-tag">{tag}</span>
               <h3>{offer.name}</h3>
               <p>{text}</p>
-              <div className="access-price">{priceLabel(offer, t)}<small> / {period}</small></div>
-              {code === 'TOOLS_ALL' && find('TOOLS_ANNUAL') && <div className="access-price">{priceLabel(find('TOOLS_ANNUAL'), t)}<small> / {lang === 'es' ? '1 año' : '1 year'}</small></div>}
+              <div className="access-prices">
+                <div className="access-price">{priceLabel(offer, t)}<small> / {period}</small></div>
+                {code === 'TOOLS_ALL' && find('TOOLS_ANNUAL') && <div className="access-price">{priceLabel(find('TOOLS_ANNUAL'), t)}<small> / {lang === 'es' ? '1 año' : '1 year'}</small></div>}
+              </div>
               {offer.giftable !== false && <CtaButton label={lang === 'es' ? '🎁 Regalar' : '🎁 Give as a gift'} target="/app/acceso#regalar" go={go} variant="ghost" />}
             </article>
           );

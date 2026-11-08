@@ -65,7 +65,7 @@ export function BitgetReports({ onChanged }) {
               { key: 'createdAt', label: tr('Reportado'), render: (r) => dateTime(r.createdAt) },
               { key: 'user', label: tr('Cliente'), render: (r) => <Link to={`/admin/clientes/${r.user.id}`}>{r.user.name}<span className="small block">{r.user.email}</span></Link> },
               { key: 'product', label: tr('Producto'), render: (r) => <>{tr(r.attempt?.product || '')}<span className="small block">{`${priceMoney(r.attempt?.amount)} ${r.attempt?.currency || ''}`}</span></> },
-              { key: 'order', label: tr('N.º de orden'), render: (r) => <>{r.orderNumber}<span className="small block">{dateTime(r.transferredAt)}</span></> },
+              { key: 'order', label: tr('Comprobante'), render: (r) => <span className="wallet-order">{r.orderNumber}<span className="small block">{dateTime(r.transferredAt)}</span></span> },
               { key: 'files', label: tr('Evidencia'), render: (r) => r.files.map((file) => <button key={file.id} type="button" className="btn-link block" onClick={() => openEvidence(`/admin/bitget-files/${file.id}`)}>{file.name}</button>) },
               { key: 'status', label: tr('Estado'), render: (r) => <><Pill variant={REPORT_VARIANT[r.status]}>{tr(r.statusLabel)}</Pill>{r.rejectReason && <span className="small block">{r.rejectReason}</span>}</> },
               { key: 'actions', label: tr('Acciones'), render: (r) => (

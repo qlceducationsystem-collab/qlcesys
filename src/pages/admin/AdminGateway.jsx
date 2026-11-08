@@ -118,10 +118,12 @@ function Editor({ data, canManage, onSaved }) {
 }
 
 function BitgetEditor({ data, canManage, onSaved }) {
-  const [f, setF] = useState({ uid: data.uid, instructions: data.instructions, rates: { ...data.rates } });
+  const [f, setF] = useState({ uid: data.uid, instructions: data.instructions, walletAddress: data.walletAddress, walletNetwork: data.walletNetwork, rates: { ...data.rates } });
   const [state, setState] = useState({ busy: false, error: null, info: null });
   const body = () => ({
     uid: f.uid.trim(),
+    walletAddress: f.walletAddress.trim(),
+    walletNetwork: f.walletNetwork,
     instructions: f.instructions.trim(),
     rates: Object.fromEntries(Object.entries(f.rates).filter(([, v]) => Number(v) > 0).map(([k, v]) => [k, Number(v)])),
   });
@@ -141,10 +143,19 @@ function BitgetEditor({ data, canManage, onSaved }) {
         {data.enabled ? <Pill>{tr('Activa')}</Pill> : <Pill variant="warn">{tr('Desactivada')}</Pill>}
         <span className="small muted">{tr('Disponible para clientes de todos los países.')}</span>
       </div>
-      <p className="small muted">{tr('El cliente transfiere USDT a este UID desde su cuenta de Bitget y reporta el N.º de orden con su evidencia. Tú revisas el reporte en Pagos y confirmas el pago. Las evidencias se guardan en el Google Drive conectado en Integraciones, en la tarjeta Google Drive.')}</p>
+      <p className="small muted">{tr('El cliente transfiere USDT al UID de Bitget o a la wallet y reporta el N.º de orden o hash con su evidencia. Tú revisas el reporte en Pagos y confirmas el pago. Las evidencias se guardan en el Google Drive conectado en Integraciones, en la tarjeta Google Drive.')}</p>
       <div className="form-grid cols-2">
         <Field label={tr('UID de recepción de Bitget')} hint={tr('Es el mismo para todos los clientes. El cliente no puede cambiarlo.')}>
           <Input name="qlc-bitget-uid" autoComplete="off" inputMode="numeric" maxLength={20} value={f.uid} disabled={!canManage} onChange={(e) => setF({ ...f, uid: e.target.value })} />
+        </Field>
+        <Field label={tr('Dirección de wallet de USDT')} hint={tr('El cliente la ve con su código QR y un botón para copiar.')}>
+          <Input name="qlc-wallet-address" autoComplete="off" maxLength={128} value={f.walletAddress} disabled={!canManage} onChange={(e) => setF({ ...f, walletAddress: e.target.value })} />
+        </Field>
+        <Field label={tr('Red de la wallet')} hint={tr('Debe ser la red real de esa dirección. La wallet no se muestra hasta elegirla.')}>
+          <select className="input" value={f.walletNetwork} disabled={!canManage} onChange={(e) => setF({ ...f, walletNetwork: e.target.value })}>
+            <option value="">{tr('Selecciona la red')}</option>
+            {data.networks.map((n) => <option key={n.value} value={n.value}>{n.label}</option>)}
+          </select>
         </Field>
         <Field label={tr('Instrucciones de pago')} full>
           <Textarea rows={3} maxLength={1500} value={f.instructions} disabled={!canManage} onChange={(e) => setF({ ...f, instructions: e.target.value })} />
@@ -190,7 +201,7 @@ export default function AdminGateway() {
           {(data) => <Editor data={data} canManage={user?.adminLevel === 'FULL'} onSaved={res.reload} />}
         </AsyncView>
       </Card>
-      <Card title={tr('Transferencia interna Bitget')}>
+      <Card title={tr('Transferencia en USDT (Bitget y wallet)')}>
         <AsyncView {...bg} onRetry={bg.reload}>
           {(data) => <BitgetEditor data={data} canManage={user?.adminLevel === 'FULL'} onSaved={bg.reload} />}
         </AsyncView>

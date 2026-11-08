@@ -46,7 +46,7 @@ const chargePreview = (total, currency, charge) => {
 
 const GATEWAYS = {
   MERCADOPAGO: { label: 'Mercado Pago', hint: 'Pagas en la página de Mercado Pago' },
-  BITGET: { label: 'Transferencia interna Bitget', hint: 'En USDT, sin comisión' },
+  BITGET: { label: 'Transferencia en USDT', hint: 'Por UID de Bitget o a una wallet' },
 };
 
 const periodLabel = (cycle) => tr(cycle === 'YEARLY' ? 'año' : 'mes');
@@ -101,7 +101,7 @@ function Summary({ offer, method, setMethod, gift, setGift, promo, quantity, set
               </label>
             ))}
           </fieldset>
-        ) : <p className="small muted">{gateway === 'BITGET' ? tr('En el siguiente paso verás el UID de QLC para transferir tus USDT desde Bitget.') : tr('En el siguiente paso pagarás en la página de Mercado Pago.')}</p>
+        ) : <p className="small muted">{gateway === 'BITGET' ? tr('En el siguiente paso verás los datos de QLC para transferir tus USDT.') : tr('En el siguiente paso pagarás en la página de Mercado Pago.')}</p>
       ) : !simulated ? <p className="small muted">{tr('Por ahora no hay una forma de pago disponible para tu país. Escríbenos para ayudarte.')}</p> : (
       <fieldset className="checkout-methods">
         <legend>{tr('Método de pago')}</legend>
@@ -290,7 +290,7 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
     if (res.checkout.mode === 'REDIRECT' && res.checkout.initPoint) {
       window.location.assign(res.checkout.initPoint);
     } else if (res.checkout.mode === 'BITGET') {
-      setBitget({ uid: res.checkout.uid, instructions: res.checkout.instructions });
+      setBitget({ uid: res.checkout.uid, instructions: res.checkout.instructions, wallet: res.checkout.wallet });
       setStep('bitget');
     } else setStep('test');
   });
@@ -332,7 +332,7 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
       )}
       {step === 'bitget' && attempt && bitget && (
         <div className="stack">
-          <BitgetInstructions uid={bitget.uid} instructions={bitget.instructions} amount={attempt.chargedAmount} currency={attempt.chargedCurrency} />
+          <BitgetInstructions uid={bitget.uid} instructions={bitget.instructions} wallet={bitget.wallet} amount={attempt.chargedAmount} currency={attempt.chargedCurrency} />
           <BitgetReportForm attemptId={attempt.id} onDone={() => setStep('reported')} />
           <p className="muted small">{tr('Si aún no transfieres, puedes cerrar esta ventana y reportarla después en Mi acceso, en Transferencias Bitget.')}</p>
         </div>

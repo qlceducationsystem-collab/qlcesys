@@ -31,32 +31,50 @@ export function openEvidence(path) {
   });
 }
 
-export function BitgetInstructions({ uid, instructions, amount, currency }) {
+function CopyButton({ value }) {
   const [copied, setCopied] = useState(false);
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(uid);
+      await navigator.clipboard.writeText(value);
       setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch {
       setCopied(false);
     }
   };
+  return <Button variant="secondary" onClick={copy}>{copied ? tr('Copiado') : tr('Copiar')}</Button>;
+}
+
+export function BitgetInstructions({ uid, instructions, wallet, amount, currency }) {
   return (
     <div className="stack">
-      <h4>{tr('Transferencia interna Bitget')}</h4>
+      <h4>{tr('Transferencia en USDT')}</h4>
       <div className="checkout-amount">
         <span>{tr('Monto a transferir')}</span>
         <strong>{amount === null || amount === undefined ? '—' : `${priceMoney(amount)} ${currency}`}</strong>
       </div>
-      <div className="inline-form">
-        <Field label={tr('UID de QLC (sin comisión)')}><Input readOnly value={uid || ''} /></Field>
-        <Button variant="secondary" onClick={copy}>{copied ? tr('Copiado') : tr('Copiar')}</Button>
-      </div>
+      {uid && (
+        <div className="inline-form">
+          <Field label={tr('Transferencia interna Bitget: UID de QLC (sin comisión)')}><Input readOnly value={uid} /></Field>
+          <CopyButton value={uid} />
+        </div>
+      )}
+      {wallet && (
+        <div className="wallet-box">
+          <img className="wallet-qr" src={wallet.qr} alt={tr('Código QR de la dirección de USDT')} width="132" height="132" />
+          <div className="wallet-info">
+            <span className="small muted">{tr('Dirección de USDT · Red {network}', { network: wallet.network })}</span>
+            <code className="wallet-address">{wallet.address}</code>
+            <CopyButton value={wallet.address} />
+            <p className="small down">{tr('Envía solo USDT por la red {network}. Si usas otra red, los fondos se pueden perder.', { network: wallet.network })}</p>
+          </div>
+        </div>
+      )}
       {instructions && <p className="small muted" style={{ whiteSpace: 'pre-line' }}>{instructions}</p>}
       <ol className="small">
-        <li>{tr('Desde tu cuenta de Bitget transfiere los USDT a ese UID.')}</li>
-        <li>{tr('Bitget te dará un N.º de orden.')}</li>
-        <li>{tr('Llena abajo «Confirma tu transferencia» con ese número, la fecha y hora, y tu evidencia.')}</li>
+        <li>{tr('Envía los USDT por una de las opciones de arriba. Debe llegar el monto completo.')}</li>
+        <li>{tr('Guarda el N.º de orden de Bitget o el hash de la transacción.')}</li>
+        <li>{tr('Llena abajo «Confirma tu transferencia» con ese dato, la fecha y hora, y tu evidencia.')}</li>
       </ol>
     </div>
   );
@@ -102,7 +120,7 @@ export function BitgetReportForm({ attemptId, report, onDone, onCancel }) {
     <form className="stack" onSubmit={submit}>
       <h4>{tr('Confirma tu transferencia')}</h4>
       <div className="form-grid cols-2">
-        <Field label={tr('N.º de orden de Bitget')}><Input required maxLength={64} autoComplete="off" value={f.orderNumber} onChange={(e) => setF({ ...f, orderNumber: e.target.value })} /></Field>
+        <Field label={tr('N.º de orden o hash de la transacción')}><Input required maxLength={128} autoComplete="off" value={f.orderNumber} onChange={(e) => setF({ ...f, orderNumber: e.target.value })} /></Field>
         <Field label={tr('Fecha y hora de la transferencia')}><Input required type="datetime-local" value={f.transferredAt} onChange={(e) => setF({ ...f, transferredAt: e.target.value })} /></Field>
       </div>
       <Field label={tr('Evidencia')} hint={tr('De 1 a 5 archivos JPG, PNG, WEBP o PDF, de máximo 5 MB cada uno.')}>
@@ -163,7 +181,7 @@ export function BitgetReportsCard() {
               <b>{tr(r.attempt?.product || '')}</b>
               <span className="small muted">{`${priceMoney(r.attempt?.amount)} ${r.attempt?.currency || ''}`}</span>
             </div>
-            <p className="small muted">{tr('N.º de orden {order} · {date}', { order: r.orderNumber, date: dateTime(r.transferredAt) })}</p>
+            <p className="small muted">{tr('Comprobante {order} · {date}', { order: r.orderNumber, date: dateTime(r.transferredAt) })}</p>
             {r.status === 'REJECTED' && <p className="small down">{r.rejectReason ? tr('Motivo: {reason}', { reason: r.rejectReason }) : tr('Tu reporte fue rechazado. Corrígelo para enviarlo de nuevo.')}</p>}
             {r.status === 'REVIEW' && <p className="small muted">{tr('Identificamos tu transferencia. Tu pago sigue en revisión.')}</p>}
             <div className="form-actions">
@@ -181,7 +199,7 @@ export function BitgetReportsCard() {
       <Modal open={!!paying} title={tr('Reportar transferencia')} onClose={() => setPaying(null)}>
         {paying && (
           <div className="stack">
-            <BitgetInstructions uid={data.info?.uid} instructions={data.info?.instructions} amount={paying.amount} currency={paying.currency} />
+            <BitgetInstructions uid={data.info?.uid} instructions={data.info?.instructions} wallet={data.info?.wallet} amount={paying.amount} currency={paying.currency} />
             <BitgetReportForm attemptId={paying.id} onDone={done} onCancel={() => setPaying(null)} />
           </div>
         )}
