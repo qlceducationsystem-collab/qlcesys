@@ -1667,4 +1667,5 @@ export const PAGES_EN = {
   'El Google Drive de esta cuenta no tiene espacio disponible.': 'The Google Drive of this account has no space available.',
   'Google no dio permiso para usar Google Drive. Pulsa Conectar con Google otra vez y acepta el permiso.': 'Google did not grant Google Drive permission. Press Connect with Google again and accept the permission.',
   'Mercado Pago no aceptó esta operación. Inténtalo con otra tarjeta o escríbenos para ayudarte.': 'Mercado Pago did not accept this operation. Try another card or write to us for help.',
+  'Pago exitoso': 'Payment successful',
 };

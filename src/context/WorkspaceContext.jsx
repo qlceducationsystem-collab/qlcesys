@@ -10,7 +10,7 @@ const readStored = (k) => { try { return localStorage.getItem(k); } catch { retu
 const writeStored = (k, v) => { try { localStorage.setItem(k, v); } catch { return undefined; } };
 
 export function WorkspaceProvider({ clientId = null, client = null, children }) {
-  const { user } = useAuth();
+  const { user, hasAccess } = useAuth();
   const api = useMemo(() => createApi(clientId), [clientId]);
   const [periods, setPeriods] = useState([]);
   const [periodId, setPeriodId] = useState(null);
@@ -30,7 +30,16 @@ export function WorkspaceProvider({ clientId = null, client = null, children }) 
     }
   }, [api, clientId]);
 
-  useEffect(() => { reloadPeriods(); }, [reloadPeriods]);
+  useEffect(() => {
+    if (hasAccess) {
+      setState((current) => ({ ...current, loading: true }));
+      reloadPeriods();
+    } else {
+      setPeriods([]);
+      setPeriodId(null);
+      setState({ loading: false, error: null });
+    }
+  }, [hasAccess, reloadPeriods]);
   useEffect(() => { if (periodId) writeStored(storeKey(clientId), periodId); }, [periodId, clientId]);
 
   const isAdminView = user?.role === 'ADMIN';
