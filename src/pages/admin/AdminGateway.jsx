@@ -10,7 +10,7 @@ import { AsyncView } from '../../components/ui/States.jsx';
 import { tr } from '../../i18n/tr.js';
 
 function Editor({ data, canManage, onSaved }) {
-  const [f, setF] = useState({ accessToken: '', publicKey: data.publicKey || '', webhookSecret: '' });
+  const [f, setF] = useState({ accessToken: '', publicKey: data.publicKey || '', webhookSecret: '', testPayerEmail: data.testPayerEmail || '' });
   const [state, setState] = useState({ busy: false, error: null, info: null });
   const run = async (fn, info) => {
     setState({ busy: true, error: null, info: null });
@@ -28,6 +28,7 @@ function Editor({ data, canManage, onSaved }) {
     ...(f.accessToken.trim() ? { accessToken: f.accessToken.trim() } : {}),
     ...(f.publicKey.trim() ? { publicKey: f.publicKey.trim() } : {}),
     ...(f.webhookSecret.trim() ? { webhookSecret: f.webhookSecret.trim() } : {}),
+    ...(data.testMode ? { testPayerEmail: f.testPayerEmail.trim() } : {}),
   });
   const save = () => run(() => api.put('/admin/payment-settings', body()), tr('Configuración guardada.'));
   const test = () => run(async () => {
@@ -62,6 +63,12 @@ function Editor({ data, canManage, onSaved }) {
           <Input type="password" name="qlc-mp-webhook" autoComplete="new-password" value={f.webhookSecret} disabled={!canManage} onChange={(e) => setF({ ...f, webhookSecret: e.target.value })} placeholder={data.hasWebhookSecret ? '••••••••' : ''} />
         </Field>
       </div>
+
+      {data.testMode && (
+        <Field label={tr('Correo del comprador de prueba')} hint={tr('Solo se usa mientras las credenciales sean de prueba. Con credenciales de producción se ignora y se usa el correo real del cliente.')}>
+          <Input type="email" name="qlc-mp-test-buyer" autoComplete="off" value={f.testPayerEmail} disabled={!canManage} onChange={(e) => setF({ ...f, testPayerEmail: e.target.value })} placeholder="test_user_123@testuser.com" />
+        </Field>
+      )}
 
       <h4>{tr('URL del webhook')}</h4>
       <code className="code-line">{data.webhookUrl}</code>

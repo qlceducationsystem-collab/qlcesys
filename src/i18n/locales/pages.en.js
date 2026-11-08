@@ -1669,4 +1669,6 @@ export const PAGES_EN = {
   'Mercado Pago no aceptó esta operación. Inténtalo con otra tarjeta o escríbenos para ayudarte.': 'Mercado Pago did not accept this operation. Try another card or write to us for help.',
   'Pago exitoso': 'Payment successful',
   'Detalle para soporte:': 'Details for support:',
+  'Correo del comprador de prueba': 'Test buyer email',
+  'Solo se usa mientras las credenciales sean de prueba. Con credenciales de producción se ignora y se usa el correo real del cliente.': 'Used only while the credentials are test credentials. With production credentials it is ignored and the client real email is used.',
 };
