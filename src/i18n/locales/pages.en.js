@@ -1636,4 +1636,9 @@ export const PAGES_EN = {
   'A los 20 días sin pagar te avisamos que en 10 días se eliminará.': 'After 20 days without payment we notify you that it will be deleted in 10 days.',
   'A los 29 días sin pagar te avisamos que en 1 día se eliminará.': 'After 29 days without payment we notify you that it will be deleted in 1 day.',
   'A los 30 días sin pagar tu cuenta queda eliminada.': 'After 30 days without payment your account is deleted.',
+  'Se actualiza solo cada hora y a cada valor de mercado se le suma {markup} {currency} para evitar pérdidas. El cliente ve el monto exacto antes de pagar.': 'It updates by itself every hour and {markup} {currency} is added to each market value to avoid losses. The client sees the exact amount before paying.',
+  'Valor de mercado: {value}': 'Market value: {value}',
+  'Pendiente de actualizar': 'Pending update',
+  'Última actualización:': 'Last update:',
+  'El tipo de cambio no se pudo actualizar. Se sigue usando el último valor guardado; revísalo antes de vender.': 'The exchange rate could not be updated. The last saved value is still in use; check it before selling.',
 };

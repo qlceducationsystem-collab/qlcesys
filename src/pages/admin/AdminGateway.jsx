@@ -10,7 +10,7 @@ import { AsyncView } from '../../components/ui/States.jsx';
 import { tr } from '../../i18n/tr.js';
 
 function Editor({ data, canManage, onSaved }) {
-  const [f, setF] = useState({ accessToken: '', publicKey: data.publicKey || '', webhookSecret: '', rates: { ...data.rates } });
+  const [f, setF] = useState({ accessToken: '', publicKey: data.publicKey || '', webhookSecret: '' });
   const [state, setState] = useState({ busy: false, error: null, info: null });
   const run = async (fn, info) => {
     setState({ busy: true, error: null, info: null });
@@ -28,7 +28,6 @@ function Editor({ data, canManage, onSaved }) {
     ...(f.accessToken.trim() ? { accessToken: f.accessToken.trim() } : {}),
     ...(f.publicKey.trim() ? { publicKey: f.publicKey.trim() } : {}),
     ...(f.webhookSecret.trim() ? { webhookSecret: f.webhookSecret.trim() } : {}),
-    rates: Object.fromEntries(Object.entries(f.rates).filter(([, v]) => Number(v) > 0).map(([k, v]) => [k, Number(v)])),
   });
   const save = () => run(() => api.put('/admin/payment-settings', body()), tr('Configuración guardada.'));
   const test = () => run(async () => {
@@ -41,7 +40,6 @@ function Editor({ data, canManage, onSaved }) {
     if (!enabled && !window.confirm(tr('Los clientes ya no podrán pagar con tarjeta. Si Bitget tampoco está activa, volverá el modo de prueba, donde cualquier cliente puede activar su acceso sin pagar. ¿Desactivar Mercado Pago?'))) return;
     run(() => api.put('/admin/payment-settings', { ...body(), enabled }), enabled ? tr('Mercado Pago activado.') : tr('Mercado Pago desactivado.'));
   };
-  const setRate = (code, value) => setF({ ...f, rates: { ...f.rates, [code]: value } });
 
   return (
     <div className="stack">
@@ -82,14 +80,16 @@ function Editor({ data, canManage, onSaved }) {
       {data.chargeCurrency && data.ratesNeeded.length > 0 && (
         <>
           <h4>{tr('Tipo de cambio')}</h4>
-          <p className="small muted">{tr('Mercado Pago cobra en {currency}, no en USD ni en USDT. Los precios se convierten con este valor, que tú defines y actualizas aquí. El cliente ve el monto exacto antes de pagar.', { currency: data.chargeCurrency })}</p>
+          <p className="small muted">{tr('Se actualiza solo cada hora y a cada valor de mercado se le suma {markup} {currency} para evitar pérdidas. El cliente ve el monto exacto antes de pagar.', { markup: data.rateMarkup, currency: data.chargeCurrency })}</p>
           <div className="form-grid cols-2">
             {data.ratesNeeded.map((code) => (
-              <Field key={code} label={tr('1 {from} equivale a ({to})', { from: code, to: data.chargeCurrency })}>
-                <Input type="number" min="0" step="0.01" value={f.rates[code] ?? ''} disabled={!canManage} onChange={(e) => setRate(code, e.target.value)} />
+              <Field key={code} label={tr('1 {from} equivale a ({to})', { from: code, to: data.chargeCurrency })} hint={data.marketRates[code] ? tr('Valor de mercado: {value}', { value: data.marketRates[code] }) : undefined}>
+                <Input readOnly value={data.rates[code] ?? ''} placeholder={tr('Pendiente de actualizar')} />
               </Field>
             ))}
           </div>
+          {data.ratesUpdatedAt && <p className="small muted">{tr('Última actualización:')} {dateTime(data.ratesUpdatedAt)}</p>}
+          {(data.ratesError || data.ratesStale) && <Notice variant="gold">{tr('El tipo de cambio no se pudo actualizar. Se sigue usando el último valor guardado; revísalo antes de vender.')}</Notice>}
         </>
       )}
 
