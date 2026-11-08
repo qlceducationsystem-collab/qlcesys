@@ -17,6 +17,7 @@ const CONFIRM_TRIES = 6;
 const CONFIRM_WAIT_MS = 3000;
 
 const REJECT_REASONS = {
+  gateway_refused: 'Mercado Pago no aceptó esta operación. Inténtalo con otra tarjeta o escríbenos para ayudarte.',
   cc_rejected_bad_filled_card_number: 'Revisa el número de tu tarjeta.',
   cc_rejected_bad_filled_date: 'Revisa la fecha de vencimiento de tu tarjeta.',
   cc_rejected_bad_filled_security_code: 'Revisa el código de seguridad de tu tarjeta.',
