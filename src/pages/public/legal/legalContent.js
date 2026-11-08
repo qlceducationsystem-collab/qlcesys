@@ -76,11 +76,11 @@ const ES = {
         'Los precios y el tipo de cambio pueden cambiar en cualquier momento. El cambio se aplica a compras nuevas y no afecta los accesos ya pagados.',
       ]],
       ['Formas de pago y procesadores', [
-        'Las formas de pago dependen del país de residencia que declaras en tu cuenta, que debe ser verdadero. Si resides en México puedes pagar con tarjeta a través de Mercado Pago, a cuyas condiciones también quedas sujeto; QLC no guarda los datos completos de tu tarjeta. Desde cualquier país puedes pagar por transferencia interna de USDT en Bitget al UID que indica la plataforma.',
+        'Las formas de pago dependen del país de residencia que declaras en tu cuenta, que debe ser verdadero. Si resides en México puedes pagar en la página de Mercado Pago, con los métodos que ofrezca, a cuyas condiciones también quedas sujeto; QLC no recibe ni guarda los datos de tu tarjeta. Desde cualquier país puedes pagar por transferencia interna de USDT en Bitget al UID que indica la plataforma.',
         'En tu estado de cuenta puede aparecer el nombre del procesador de pago. En la transferencia Bitget debes reportar el N.º de orden, la fecha y hora y tu evidencia; el acceso se activa cuando QLC confirma el pago, no al enviar el reporte. Tu evidencia se guarda en el almacenamiento de Google Drive de QLC. Eres responsable de transferir el monto exacto al UID correcto: las transferencias de criptoactivos no se pueden revertir.',
       ]],
       ['Renovación de accesos', [
-        'Con Mercado Pago, los productos mensuales o anuales son suscripciones con cobro automático a tu tarjeta en cada periodo, hasta que canceles en Mi acceso. Con transferencia Bitget no hay cobro automático: cada periodo debes pagar de nuevo antes del vencimiento. Te enviaremos un aviso por correo antes de que venza, pero el aviso no es condición para que el acceso termine. Si no pagas a tiempo, el acceso se bloquea hasta que lo renueves.',
+        'Con Mercado Pago, los productos mensuales o anuales son suscripciones con cobro automático a tu medio de pago en cada periodo, hasta que canceles en Mi acceso. Con transferencia Bitget no hay cobro automático: cada periodo debes pagar de nuevo antes del vencimiento. Te enviaremos un aviso por correo antes de que venza, pero el aviso no es condición para que el acceso termine. Si no pagas a tiempo, el acceso se bloquea hasta que lo renueves.',
         'Una suscripción con cobro automático sigue vigente hasta que la canceles desde Mi acceso. La cancelación evita los cobros futuros y conservas tu acceso hasta su vencimiento. Solo puedes tener una suscripción de este tipo activa, y para adquirir otro plan primero debes cancelarla. Eliminar tu cuenta también la cancela.',
       ]],
       ['Sin reembolsos', [
@@ -207,11 +207,11 @@ const EN = {
         'Prices and the exchange rate may change at any time. Changes apply to new purchases and do not affect access already paid for.',
       ]],
       ['Payment methods and processors', [
-        'Payment methods depend on the country of residence you declare in your account, which must be true. If you live in Mexico you can pay by card through Mercado Pago, whose conditions also apply to you; QLC does not store your full card details. From any country you can pay by internal USDT transfer on Bitget to the UID shown on the platform.',
+        'Payment methods depend on the country of residence you declare in your account, which must be true. If you live in Mexico you can pay on the Mercado Pago page, with the methods it offers, whose conditions also apply to you; QLC does not receive or store your card details. From any country you can pay by internal USDT transfer on Bitget to the UID shown on the platform.',
         'Your statement may show the payment processor’s name. For a Bitget transfer you must report the order number, date and time, and your evidence; access activates when QLC confirms the payment, not when you send the report. Your evidence is stored in QLC’s Google Drive storage. You are responsible for transferring the exact amount to the correct UID: crypto asset transfers cannot be reversed.',
       ]],
       ['Access renewal', [
-        'With Mercado Pago, monthly or annual products are subscriptions charged automatically to your card each period, until you cancel in My access. With a Bitget transfer there is no automatic charge: each period you must pay again before expiration. We will email you a notice before it expires, but the notice is not a condition for the access to end. If you do not pay in time, access is blocked until you renew it.',
+        'With Mercado Pago, monthly or annual products are subscriptions charged automatically to your payment method each period, until you cancel in My access. With a Bitget transfer there is no automatic charge: each period you must pay again before expiration. We will email you a notice before it expires, but the notice is not a condition for the access to end. If you do not pay in time, access is blocked until you renew it.',
         'A subscription with automatic billing stays in force until you cancel it from My access. Cancelling prevents future charges and you keep your access until expiration. You can only have one such subscription active, and to purchase another plan you must first cancel it. Deleting your account also cancels it.',
       ]],
       ['No refunds', [

@@ -7,29 +7,9 @@ import { Button } from '../../components/ui/Button.jsx';
 import { Field, FormError, Input, Textarea } from '../../components/ui/Form.jsx';
 import { date, priceMoney } from '../../utils/format.js';
 import { GiftCardModal } from '../gifts/GiftCard.jsx';
-import { Loading } from '../../components/ui/States.jsx';
-import { CardChallenge, CardForm } from './CardForm.jsx';
 import { BitgetInstructions, BitgetReportForm } from './BitgetPayment.jsx';
 import { COUNTRIES } from '../../shared/countries.js';
 import { getLanguage, tr } from '../../i18n/tr.js';
-
-const CONFIRM_TRIES = 6;
-const CONFIRM_WAIT_MS = 3000;
-
-const REJECT_REASONS = {
-  gateway_refused: 'Mercado Pago no aceptó esta operación. Inténtalo con otra tarjeta o escríbenos para ayudarte.',
-  cc_rejected_bad_filled_card_number: 'Revisa el número de tu tarjeta.',
-  cc_rejected_bad_filled_date: 'Revisa la fecha de vencimiento de tu tarjeta.',
-  cc_rejected_bad_filled_security_code: 'Revisa el código de seguridad de tu tarjeta.',
-  cc_rejected_bad_filled_other: 'Revisa los datos de tu tarjeta.',
-  cc_rejected_insufficient_amount: 'Tu tarjeta no tiene fondos suficientes.',
-  cc_rejected_call_for_authorize: 'Tu banco pide que autorices este pago. Llama al número al reverso de tu tarjeta.',
-  cc_rejected_card_disabled: 'Tu tarjeta no está activa. Llama a tu banco para activarla.',
-  cc_rejected_duplicated_payment: 'Ya hiciste un pago por este monto. Revisa tu historial antes de intentarlo de nuevo.',
-  cc_rejected_max_attempts: 'Llegaste al límite de intentos con esta tarjeta. Prueba con otra.',
-  cc_rejected_3ds_challenge: 'Tu banco no pudo confirmar que eres tú.',
-  cc_rejected_high_risk: 'Tu banco o el sistema de seguridad rechazó el pago. Prueba con otra tarjeta.',
-};
 
 const METHODS = [
   { value: 'CARD', label: 'Tarjeta', hint: 'Débito o crédito' },
@@ -65,7 +45,7 @@ const chargePreview = (total, currency, charge) => {
 };
 
 const GATEWAYS = {
-  MERCADOPAGO: { label: 'Tarjeta', hint: 'Débito o crédito' },
+  MERCADOPAGO: { label: 'Mercado Pago', hint: 'Pagas en la página de Mercado Pago' },
   BITGET: { label: 'Transferencia interna Bitget', hint: 'En USDT, sin comisión' },
 };
 
@@ -121,7 +101,7 @@ function Summary({ offer, method, setMethod, gift, setGift, promo, quantity, set
               </label>
             ))}
           </fieldset>
-        ) : <p className="small muted">{gateway === 'BITGET' ? tr('En el siguiente paso verás el UID de QLC para transferir tus USDT desde Bitget.') : tr('En el siguiente paso escribes los datos de tu tarjeta de débito o crédito.')}</p>
+        ) : <p className="small muted">{gateway === 'BITGET' ? tr('En el siguiente paso verás el UID de QLC para transferir tus USDT desde Bitget.') : tr('En el siguiente paso pagarás en la página de Mercado Pago.')}</p>
       ) : !simulated ? <p className="small muted">{tr('Por ahora no hay una forma de pago disponible para tu país. Escríbenos para ayudarte.')}</p> : (
       <fieldset className="checkout-methods">
         <legend>{tr('Método de pago')}</legend>
@@ -201,7 +181,7 @@ const paidPreview = (offer, mode, promo) => {
   return tr('Se activa {name} de inmediato.', { name: offer.name });
 };
 
-export function PaymentResult({ attempt, offer, codes, gift, access, credits, reason, detail, onClose, onGo, onRetry }) {
+export function PaymentResult({ attempt, offer, codes, gift, access, credits, onClose, onGo, onRetry }) {
   const [card, setCard] = useState(null);
   const ok = attempt.status === 'APPROVED';
   const pending = ok && attempt.kind === 'PROMO';
@@ -210,8 +190,6 @@ export function PaymentResult({ attempt, offer, codes, gift, access, credits, re
     <div className={`checkout-result ${ok ? 'is-ok' : 'is-bad'}`} role="status">
       <span className="checkout-result-icon" aria-hidden="true">{ok ? '✓' : '!'}</span>
       <h4>{!ok ? tr('El pago no se realizó') : pending ? tr('Pago confirmado') : tr('Pago realizado')}</h4>
-      {!ok && REJECT_REASONS[reason] && <p><b>{tr(REJECT_REASONS[reason])}</b></p>}
-      {!ok && detail && <p className="small muted">{tr('Detalle para soporte:')} {detail}</p>}
       {!ok && <p>{tr('No se hizo ningún cobro y no se activó nada. Tu cuenta y tu información siguen igual. Puedes intentarlo de nuevo cuando quieras.')}</p>}
       {pending && <p>{tr('Recibimos tu pago promocional. Tu acceso a {name} se activará en cuanto el Administrador de QLC lo autorice; te avisaremos al quedar listo.', { name: offer.name })}</p>}
       {ok && !pending && codes && (
@@ -282,8 +260,7 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
   const selectedGateway = gateways.includes(chosenGateway) ? chosenGateway : gateways[0] || null;
   const charge = selectedGateway === 'BITGET' ? accessInfo?.bitget : selectedGateway === 'MERCADOPAGO' ? accessInfo?.charge : null;
   const navigate = useNavigate();
-  const [outcome, setOutcome] = useState({ paid: false, access: null, credits: null, reason: null });
-  const [card, setCard] = useState(null);
+  const [outcome, setOutcome] = useState({ paid: false, access: null, credits: null });
   const [bitget, setBitget] = useState(null);
   const [step, setStep] = useState('summary');
   const [method, setMethod] = useState('CARD');
@@ -310,44 +287,13 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
       : { offerCode: offer.code, ...(isService(offer) ? { quantity: Math.min(20, Math.max(1, Number(quantity) || 1)) } : {}), ...(gift ? { gift: { quantity: Number(gift.quantity || 1), recipientName: gift.recipientName || null, message: gift.message || null } } : {}) };
     const res = await api.post('/payments/checkout', { ...body, ...(selectedGateway ? { provider: selectedGateway } : {}) });
     setAttempt(res.attempt);
-    if (res.checkout.mode === 'CARD') {
-      setCard({ publicKey: res.checkout.publicKey, challenge: null });
-      setStep('card');
+    if (res.checkout.mode === 'REDIRECT' && res.checkout.initPoint) {
+      window.location.assign(res.checkout.initPoint);
     } else if (res.checkout.mode === 'BITGET') {
       setBitget({ uid: res.checkout.uid, instructions: res.checkout.instructions });
       setStep('bitget');
     } else setStep('test');
   });
-
-  const showFinal = (res) => {
-    setAttempt(res.attempt);
-    if (res.attempt.status === 'PENDING') {
-      setStep('processing');
-      return;
-    }
-    setCodes(res.gifts || null);
-    setOutcome({ paid: res.attempt.status === 'APPROVED', access: res.access || null, credits: res.credits || null, reason: res.reason || null, detail: res.detail || null });
-    setStep('result');
-  };
-
-  const confirmPayment = async (first) => {
-    setStep('confirming');
-    let last = first;
-    for (let i = 0; i < CONFIRM_TRIES && last.attempt.status === 'PENDING'; i += 1) {
-      await new Promise((done) => setTimeout(done, CONFIRM_WAIT_MS));
-      last = await api.post(`/payments/attempts/${encodeURIComponent(first.attempt.id)}/sync`, {}).catch(() => last);
-    }
-    showFinal(last);
-  };
-
-  const onCardResult = (res) => {
-    setAttempt(res.attempt);
-    if (res.challenge) {
-      setCard((c) => ({ ...c, challenge: res.challenge }));
-      setStep('challenge');
-    } else if (res.attempt.status === 'PENDING' && !(res.attempt.billingCycle && res.attempt.provider === 'MERCADOPAGO')) confirmPayment(res);
-    else showFinal(res);
-  };
 
   const simulate = (outcome) => run(async () => {
     const res = await api.post(`/payments/attempts/${attempt.id}/simulate`, { outcome });
@@ -360,7 +306,7 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
   });
 
   const finish = async () => {
-    if (outcome.paid || step === 'processing' || step === 'reported') await refreshAccess();
+    if (outcome.paid || step === 'reported') await refreshAccess();
     onClose();
   };
 
@@ -384,9 +330,6 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
           </div>
         </>
       )}
-      {step === 'card' && attempt && card && (
-        <CardForm attempt={attempt} publicKey={card.publicKey} productName={product.name} onResult={onCardResult} onCancel={finish} />
-      )}
       {step === 'bitget' && attempt && bitget && (
         <div className="stack">
           <BitgetInstructions uid={bitget.uid} instructions={bitget.instructions} amount={attempt.chargedAmount} currency={attempt.chargedCurrency} />
@@ -398,22 +341,6 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
         <div className="checkout-processing-result" role="status">
           <h4>{tr('Transferencia reportada')}</h4>
           <p className="muted">{tr('Revisaremos tu transferencia. Tu acceso se activará cuando se confirme el pago y te avisaremos. Puedes ver el estado en Mi acceso.')}</p>
-          <div className="form-actions"><Button onClick={finish}>{tr('Entendido')}</Button></div>
-        </div>
-      )}
-      {step === 'challenge' && attempt && card?.challenge && (
-        <CardChallenge attemptId={attempt.id} challenge={card.challenge} onDone={confirmPayment} />
-      )}
-      {step === 'confirming' && (
-        <div className="stack">
-          <Loading />
-          <p className="muted small">{tr('Estamos confirmando tu pago…')}</p>
-        </div>
-      )}
-      {step === 'processing' && (
-        <div className="checkout-processing-result" role="status">
-          <h4>{tr('Tu pago está en proceso')}</h4>
-          <p className="muted">{attempt?.billingCycle ? tr('Tu suscripción quedó registrada. El primer cobro puede tardar hasta una hora; tu acceso se activará solo en cuanto se confirme y te avisaremos por correo.') : tr('Tu banco todavía no lo confirma. Tu acceso se activará solo en cuanto se confirme y te avisaremos por correo.')}</p>
           <div className="form-actions"><Button onClick={finish}>{tr('Entendido')}</Button></div>
         </div>
       )}
@@ -440,7 +367,7 @@ export function CheckoutModal({ offer, mode = 'buy', promo = null, onClose }) {
         </div>
       )}
       {step === 'result' && attempt && (
-        <PaymentResult attempt={attempt} offer={product} codes={codes} gift={gift} access={outcome.access} credits={outcome.credits} reason={outcome.reason} detail={outcome.detail} onClose={finish} onGo={go} onRetry={() => { setAttempt(null); setCard(null); setBitget(null); setOutcome({ paid: false, access: null, credits: null, reason: null }); setStep('summary'); }} />
+        <PaymentResult attempt={attempt} offer={product} codes={codes} gift={gift} access={outcome.access} credits={outcome.credits} onClose={finish} onGo={go} onRetry={() => { setAttempt(null); setBitget(null); setOutcome({ paid: false, access: null, credits: null }); setStep('summary'); }} />
       )}
     </Modal>
   );

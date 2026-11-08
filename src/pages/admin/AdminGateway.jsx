@@ -10,7 +10,7 @@ import { AsyncView } from '../../components/ui/States.jsx';
 import { tr } from '../../i18n/tr.js';
 
 function Editor({ data, canManage, onSaved }) {
-  const [f, setF] = useState({ accessToken: '', publicKey: data.publicKey || '', webhookSecret: '', testPayerEmail: data.testPayerEmail || '' });
+  const [f, setF] = useState({ accessToken: '', webhookSecret: '', testPayerEmail: data.testPayerEmail || '' });
   const [state, setState] = useState({ busy: false, error: null, info: null });
   const run = async (fn, info) => {
     setState({ busy: true, error: null, info: null });
@@ -26,7 +26,6 @@ function Editor({ data, canManage, onSaved }) {
   };
   const body = () => ({
     ...(f.accessToken.trim() ? { accessToken: f.accessToken.trim() } : {}),
-    ...(f.publicKey.trim() ? { publicKey: f.publicKey.trim() } : {}),
     ...(f.webhookSecret.trim() ? { webhookSecret: f.webhookSecret.trim() } : {}),
     ...(data.testMode ? { testPayerEmail: f.testPayerEmail.trim() } : {}),
   });
@@ -38,7 +37,7 @@ function Editor({ data, canManage, onSaved }) {
   }, tr('Conexión correcta con Mercado Pago.'));
   const toggle = (enabled) => {
     if (enabled && !data.testMode && !window.confirm(tr('A partir de ahora los clientes que residen en México pagarán con dinero real en Mercado Pago y ya no existirá el pago simulado. ¿Activar?'))) return;
-    if (!enabled && !window.confirm(tr('Los clientes ya no podrán pagar con tarjeta. Si Bitget tampoco está activa, volverá el modo de prueba, donde cualquier cliente puede activar su acceso sin pagar. ¿Desactivar Mercado Pago?'))) return;
+    if (!enabled && !window.confirm(tr('Los clientes ya no podrán pagar con Mercado Pago. Si Bitget tampoco está activa, volverá el modo de prueba, donde cualquier cliente puede activar su acceso sin pagar. ¿Desactivar Mercado Pago?'))) return;
     run(() => api.put('/admin/payment-settings', { ...body(), enabled }), enabled ? tr('Mercado Pago activado.') : tr('Mercado Pago desactivado.'));
   };
 
@@ -55,9 +54,6 @@ function Editor({ data, canManage, onSaved }) {
       <div className="form-grid cols-2">
         <Field label={tr('Access Token')} hint={data.hasToken ? tr('Ya hay un token guardado. Al cambiarlo, Mercado Pago se desactiva hasta volver a probar la conexión.') : tr('Empieza con APP_USR- o TEST-.')}>
           <Input type="password" name="qlc-mp-token" autoComplete="new-password" value={f.accessToken} disabled={!canManage} onChange={(e) => setF({ ...f, accessToken: e.target.value })} placeholder={data.hasToken ? '••••••••' : 'APP_USR-...'} />
-        </Field>
-        <Field label={tr('Public Key')} hint={tr('Permite mostrar el formulario de tarjeta dentro de la plataforma. Debe ser del mismo tipo que el Access Token: prueba o producción.')}>
-          <Input name="qlc-mp-public" autoComplete="off" value={f.publicKey} disabled={!canManage} onChange={(e) => setF({ ...f, publicKey: e.target.value })} placeholder="APP_USR-..." />
         </Field>
         <Field label={tr('Clave secreta del webhook')} hint={data.hasWebhookSecret ? tr('Ya hay una clave guardada.') : tr('Sirve para comprobar que cada aviso de pago viene de Mercado Pago.')}>
           <Input type="password" name="qlc-mp-webhook" autoComplete="new-password" value={f.webhookSecret} disabled={!canManage} onChange={(e) => setF({ ...f, webhookSecret: e.target.value })} placeholder={data.hasWebhookSecret ? '••••••••' : ''} />
@@ -76,8 +72,8 @@ function Editor({ data, canManage, onSaved }) {
       <details className="more-actions">
         <summary>{tr('Cómo obtener estos datos')}</summary>
         <ol className="small">
-          <li>{tr('Entra a «Tus integraciones» en Mercado Pago Developers y crea una aplicación de tipo «Pagos en línea» con Checkout API.')}</li>
-          <li>{tr('En «Credenciales de producción» copia la Public Key y el Access Token. Para probar sin dinero real usa las credenciales de prueba.')}</li>
+          <li>{tr('Entra a «Tus integraciones» en Mercado Pago Developers y crea una aplicación de tipo Checkout Pro.')}</li>
+          <li>{tr('En «Credenciales de producción» copia el Access Token. Para probar sin dinero real usa las credenciales de prueba.')}</li>
           <li>{tr('En «Webhooks» pega la URL de arriba, marca los eventos «Pagos» y «Planes y suscripciones», y guarda.')}</li>
           <li>{tr('Copia la «Clave secreta» que muestra esa misma pantalla y pégala aquí.')}</li>
           <li>{tr('Pulsa «Guardar y probar conexión», revisa los tipos de cambio y activa Mercado Pago.')}</li>
@@ -188,7 +184,7 @@ export default function AdminGateway() {
   const bg = useAsync(() => api.get('/admin/bitget-settings'), []);
   return (
     <>
-      <PageHeader kicker={tr('Comercial')} title={tr('Pasarela de pago')} subtitle={tr('Mercado Pago solo se muestra a clientes que residen en México. La transferencia Bitget se muestra a todos.')} />
+      <PageHeader kicker={tr('Comercial')} title={tr('Pasarela de pago')} subtitle={tr('Mercado Pago solo se muestra a clientes que residen en México: pagan en su página, con suscripción en productos mensuales o anuales y pago único en los demás. La transferencia Bitget se muestra a todos.')} />
       <Card title={tr('Mercado Pago')}>
         <AsyncView {...res} onRetry={res.reload}>
           {(data) => <Editor data={data} canManage={user?.adminLevel === 'FULL'} onSaved={res.reload} />}

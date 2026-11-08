@@ -1,3 +1,4 @@
+import { PaymentReturn } from '../features/access/PaymentReturn.jsx';
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { api as rootApi } from '../api/client.js';
@@ -124,6 +125,7 @@ export function AppLayout() {
         {(hasAccess || isAdminView) && !relative.startsWith('/academia') && !relative.startsWith('/acceso') && (
           <div className="topbar"><PeriodSelector /></div>
         )}
+        {!isAdminView && <PaymentReturn />}
         <div className="page-enter" key={`${location.pathname}-${lang}-${currency}`}>{gated ? <AccessGate /> : <Outlet />}</div>
         {!isAdminView && <LoginNotice />}
         <Disclaimer />
