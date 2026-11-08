@@ -1,4 +1,4 @@
-export const LEGAL_VERSION = '2026-11-07';
+export const LEGAL_VERSION = '2026-11-08';
 const CONTACT = import.meta.env.VITE_LEGAL_CONTACT_EMAIL || '';
 const contactText = CONTACT ? `al correo ${CONTACT}` : 'a través de los canales oficiales de contacto de QLC Financial Education';
 const contactTextEn = CONTACT ? `to ${CONTACT}` : 'through the official QLC Financial Education contact channels';
@@ -71,17 +71,17 @@ const ES = {
         'Los accesos, consultas y sesiones son personales y no se pueden cambiar por dinero ni transferir a otra cuenta, salvo los códigos de regalo descritos más adelante.',
       ]],
       ['Precios y moneda de cobro', [
-        'Los precios pueden expresarse en pesos mexicanos, dólares o USDT. Una referencia en USDT no significa que el pago se reciba en criptoactivos: el precio se convierte con el tipo de cambio que define QLC y el procesador lo muestra en la moneda de tu país. El monto exacto se muestra antes de que confirmes el pago.',
+        'Los precios pueden expresarse en pesos mexicanos, dólares o USDT. Con Mercado Pago el precio se convierte a pesos mexicanos con el tipo de cambio que define QLC. Con transferencia interna Bitget el pago se hace en USDT. El monto exacto se muestra antes de que pagues.',
         'Tu banco o tu proveedor de pago pueden aplicar comisiones o tipos de cambio propios, que son ajenos a QLC y corren por tu cuenta.',
         'Los precios y el tipo de cambio pueden cambiar en cualquier momento. El cambio se aplica a compras nuevas y no afecta los accesos ya pagados.',
       ]],
       ['Formas de pago y procesadores', [
-        'Los pagos se realizan con los métodos disponibles en tu país, a través de un procesador de pagos externo, a cuyas condiciones también quedas sujeto. Al pagar sales de la plataforma a la página del procesador. QLC no recibe ni guarda los datos de tu medio de pago.',
-        'En tu estado de cuenta o en los comprobantes puede aparecer el nombre del procesador de pago. Si pagas en efectivo o por transferencia, el pago puede quedar en proceso; el acceso se activa cuando se confirme.',
+        'Las formas de pago dependen del país de residencia que declaras en tu cuenta, que debe ser verdadero. Si resides en México puedes pagar con tarjeta a través de Mercado Pago, a cuyas condiciones también quedas sujeto; QLC no guarda los datos completos de tu tarjeta. Desde cualquier país puedes pagar por transferencia interna de USDT en Bitget al UID que indica la plataforma.',
+        'En tu estado de cuenta puede aparecer el nombre del procesador de pago. En la transferencia Bitget debes reportar el N.º de orden, la fecha y hora y tu evidencia; el acceso se activa cuando QLC confirma el pago, no al enviar el reporte. Tu evidencia se guarda en el almacenamiento de Google Drive de QLC. Eres responsable de transferir el monto exacto al UID correcto: las transferencias de criptoactivos no se pueden revertir.',
       ]],
       ['Renovación de accesos', [
-        'Los accesos no se cobran de forma automática: cada periodo mensual o anual debes pagar de nuevo antes del vencimiento. Te enviaremos un aviso por correo antes de que venza, pero el aviso no es condición para que el acceso termine. Si no pagas a tiempo, el acceso se bloquea hasta que lo renueves.',
-        'Si contrataste antes una suscripción con cobro automático, esta sigue vigente hasta que la canceles desde Mi acceso. La cancelación evita los cobros futuros y conservas tu acceso hasta su vencimiento. Solo puedes tener una suscripción de este tipo activa, y para adquirir otro plan primero debes cancelarla. Eliminar tu cuenta también la cancela.',
+        'Con Mercado Pago, los productos mensuales o anuales son suscripciones con cobro automático a tu tarjeta en cada periodo, hasta que canceles en Mi acceso. Con transferencia Bitget no hay cobro automático: cada periodo debes pagar de nuevo antes del vencimiento. Te enviaremos un aviso por correo antes de que venza, pero el aviso no es condición para que el acceso termine. Si no pagas a tiempo, el acceso se bloquea hasta que lo renueves.',
+        'Una suscripción con cobro automático sigue vigente hasta que la canceles desde Mi acceso. La cancelación evita los cobros futuros y conservas tu acceso hasta su vencimiento. Solo puedes tener una suscripción de este tipo activa, y para adquirir otro plan primero debes cancelarla. Eliminar tu cuenta también la cancela.',
       ]],
       ['Sin reembolsos', [
         'Todos los pagos son finales y no reembolsables, en cualquier forma de pago. No se realizan reembolsos totales ni parciales por cancelar antes del vencimiento, por no usar el producto, por periodos parciales, por cambio de plan, por renovaciones que no se cancelaron a tiempo, por eliminar la cuenta ni por suspensión debida al incumplimiento de estos términos.',
@@ -99,7 +99,7 @@ const ES = {
         'Las promociones son personales, tienen una vigencia y un solo uso, y no se acumulan con otras. El acceso de un pago promocional se activa cuando el Administrador General de QLC lo autoriza. No se renuevan.',
       ]],
       ['Vencimiento, conservación y eliminación de datos', [
-        'Al vencer un acceso, las funciones relacionadas se bloquean hasta que lo renueves. Si no tienes ningún acceso vigente durante 30 días después del vencimiento, tu cuenta y tus datos pueden eliminarse de forma definitiva, después de avisarte a tu correo.',
+        'Al vencer un acceso, las funciones relacionadas se bloquean hasta que lo renueves. Tienes un mes para pagar. A los 10 días sin pagar te avisamos por correo que en 20 días se eliminará tu cuenta; a los 20 días, que se eliminará en 10 días; a los 29 días, que se eliminará en 1 día; y a los 30 días tu cuenta y tus datos se eliminan de forma definitiva.',
         'Puedes eliminar tu cuenta en cualquier momento desde la plataforma. La eliminación es definitiva: se borran tus datos y se pierden los accesos, consultas y sesiones que tengas, sin derecho a reembolso. Te recomendamos conservar por tu cuenta la información que necesites.',
       ]],
       ['Compartir datos y autorizar cambios', [
@@ -202,17 +202,17 @@ const EN = {
         'Access, consultations and sessions are personal and cannot be exchanged for money or transferred to another account, except for the gift codes described below.',
       ]],
       ['Prices and charge currency', [
-        'Prices may be stated in Mexican pesos, US dollars or USDT. A reference in USDT does not mean payment is received in crypto assets: the price is converted at the exchange rate set by QLC and the processor shows it in your country’s currency. The exact amount is shown before you confirm the payment.',
+        'Prices may be stated in Mexican pesos, US dollars or USDT. With Mercado Pago the price is converted to Mexican pesos at the exchange rate set by QLC. With a Bitget internal transfer the payment is made in USDT. The exact amount is shown before you pay.',
         'Your bank or payment provider may apply its own fees or exchange rates, which are outside QLC’s control and are your responsibility.',
         'Prices and the exchange rate may change at any time. Changes apply to new purchases and do not affect access already paid for.',
       ]],
       ['Payment methods and processors', [
-        'Payments are made with the methods available in your country, through an external payment processor, whose conditions also apply to you. When paying you leave the platform for the processor’s page. QLC does not receive or store your payment method details.',
-        'Your statement or receipts may show the payment processor’s name. If you pay by cash or transfer, the payment may be in process; access activates once it is confirmed.',
+        'Payment methods depend on the country of residence you declare in your account, which must be true. If you live in Mexico you can pay by card through Mercado Pago, whose conditions also apply to you; QLC does not store your full card details. From any country you can pay by internal USDT transfer on Bitget to the UID shown on the platform.',
+        'Your statement may show the payment processor’s name. For a Bitget transfer you must report the order number, date and time, and your evidence; access activates when QLC confirms the payment, not when you send the report. Your evidence is stored in QLC’s Google Drive storage. You are responsible for transferring the exact amount to the correct UID: crypto asset transfers cannot be reversed.',
       ]],
       ['Access renewal', [
-        'Access is not charged automatically: each monthly or annual period you must pay again before expiration. We will email you a notice before it expires, but the notice is not a condition for the access to end. If you do not pay in time, access is blocked until you renew it.',
-        'If you previously contracted a subscription with automatic billing, it stays in force until you cancel it from My access. Cancelling prevents future charges and you keep your access until expiration. You can only have one such subscription active, and to purchase another plan you must first cancel it. Deleting your account also cancels it.',
+        'With Mercado Pago, monthly or annual products are subscriptions charged automatically to your card each period, until you cancel in My access. With a Bitget transfer there is no automatic charge: each period you must pay again before expiration. We will email you a notice before it expires, but the notice is not a condition for the access to end. If you do not pay in time, access is blocked until you renew it.',
+        'A subscription with automatic billing stays in force until you cancel it from My access. Cancelling prevents future charges and you keep your access until expiration. You can only have one such subscription active, and to purchase another plan you must first cancel it. Deleting your account also cancels it.',
       ]],
       ['No refunds', [
         'All payments are final and non-refundable, for every payment method. No full or partial refunds are given for cancelling before expiration, not using the product, partial periods, plan changes, renewals not cancelled in time, deleting the account or suspension due to a breach of these terms.',
@@ -230,7 +230,7 @@ const EN = {
         'Promotions are personal, have a validity period and a single use, and cannot be combined with others. Access from a promotional payment activates when the QLC General Administrator authorizes it. They do not renew.',
       ]],
       ['Expiration, data retention and deletion', [
-        'When an access expires, the related functions are blocked until you renew it. If you have no valid access for 30 days after expiration, your account and data may be permanently deleted, after notice to your email.',
+        'When an access expires, the related functions are blocked until you renew it. You have one month to pay. After 10 days without payment we email you that your account will be deleted in 20 days; after 20 days, that it will be deleted in 10 days; after 29 days, that it will be deleted in 1 day; and after 30 days your account and data are permanently deleted.',
         'You can delete your account at any time from the platform. Deletion is permanent: your data is erased and you lose any access, consultations and sessions you have, with no right to a refund. We recommend keeping on your own any information you need.',
       ]],
       ['Sharing data and authorizing changes', [

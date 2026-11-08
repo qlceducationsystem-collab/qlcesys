@@ -39,7 +39,7 @@ function OfferEditor({ offer, onSaved, canEdit }) {
   return (
     <article className={`price-card ${offer.type === 'FULL_ANNUAL' ? 'is-featured' : ''}`}>
       <header>
-        <span className="price-code">{offer.type === 'FULL_ANNUAL' ? tr('Acceso completo anual') : (offer.moduleNumber ? `Herramienta M${offer.moduleNumber}` : tr('Herramientas M1–M12'))}</span>
+        <span className="price-code">{offer.type === 'FULL_ANNUAL' ? tr('Acceso completo anual') : offer.code === 'TOOLS_ANNUAL' ? tr('Herramientas M1–M12 · 1 año') : (offer.moduleNumber ? `Herramienta M${offer.moduleNumber}` : tr('Herramientas M1–M12'))}</span>
         <Pill variant={offer.active ? '' : 'muted'}>{offer.active ? tr('Activo') : tr('Inactivo')}</Pill>
       </header>
       <strong className="price-current">{priceText(offer)}</strong>
@@ -47,13 +47,13 @@ function OfferEditor({ offer, onSaved, canEdit }) {
         <Field label={tr('Nombre')} full><Input value={f.name} onChange={set('name')} disabled={!canEdit} /></Field>
         <Field label={tr('Precio')} hint={tr('Vacío = Precio por definir')}><MoneyInput value={f.price} onChange={set('price')} disabled={!canEdit} placeholder={tr('Por definir')} /></Field>
         <Field label={tr('Moneda')}><Input maxLength={3} value={f.currency} onChange={set('currency')} disabled={!canEdit} /></Field>
-        <Field label={offer.type !== 'TOOL_ONLY' ? tr('Días de acceso') : tr('Días por mensualidad')}><Input type="number" min="1" value={f.accessDays} onChange={set('accessDays')} disabled={!canEdit} /></Field>
+        <Field label={offer.type !== 'TOOL_ONLY' || offer.code === 'TOOLS_ANNUAL' ? tr('Días de acceso') : tr('Días por mensualidad')}><Input type="number" min="1" value={f.accessDays} onChange={set('accessDays')} disabled={!canEdit} /></Field>
         {recurrable && (
-          <Field label={tr('Renovación')} hint={tr('El cliente paga de nuevo cada periodo. Recibe un correo 3 días antes de vencer.')}>
+          <Field label={tr('Renovación')} hint={tr('Con Mercado Pago el cobro es automático en cada periodo. Con Bitget el cliente paga de nuevo y recibe un correo 3 días antes de vencer.')}>
             <select className="input" value={f.billingCycle} onChange={set('billingCycle')} disabled={!canEdit}>
-              <option value="">{tr('Sin aviso de renovación')}</option>
-              <option value="MONTHLY">{tr('Mensual con aviso')}</option>
-              <option value="YEARLY">{tr('Anual con aviso')}</option>
+              <option value="">{tr('Pago único')}</option>
+              <option value="MONTHLY">{tr('Mensual')}</option>
+              <option value="YEARLY">{tr('Anual')}</option>
             </select>
           </Field>
         )}
@@ -122,7 +122,7 @@ export default function AdminPricing() {
               <div className="price-grid single">{offers.filter((o) => o.type === 'FULL_ANNUAL').map((o) => <OfferEditor key={`${o.code}-${o.price}-${o.active}`} offer={o} onSaved={res.reload} canEdit={canEdit} />)}</div>
             </Card>
             <Card title={tr('Solo herramientas · un solo pago mensual por las 12 herramientas')}>
-              <div className="price-grid single">{offers.filter((o) => o.type === 'TOOL_ONLY' && !o.moduleNumber).map((o) => <OfferEditor key={`${o.code}-${o.price}-${o.active}`} offer={o} onSaved={res.reload} canEdit={canEdit} />)}</div>
+              <div className="price-grid">{offers.filter((o) => o.type === 'TOOL_ONLY' && !o.moduleNumber).map((o) => <OfferEditor key={`${o.code}-${o.price}-${o.active}`} offer={o} onSaved={res.reload} canEdit={canEdit} />)}</div>
             </Card>
             <Card title={tr('Masterclass · submódulo de cada módulo')}>
               <MasterclassSettings canEdit={canEdit} />

@@ -75,6 +75,15 @@ async function download(path, clientId, fallbackName = 'documento.pdf') {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+async function blobUrl(path, clientId) {
+  const res = await fetch(`${BASE}/api${path}`, { headers: headers(clientId, false) });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, data.error || 'No se pudo abrir el archivo');
+  }
+  return URL.createObjectURL(await res.blob());
+}
+
 export function createApi(clientId = null) {
   return {
     clientId,
@@ -85,6 +94,7 @@ export function createApi(clientId = null) {
     del: (p, body) => request('DELETE', p, { body, clientId }),
     upload: (p, form, method = 'POST') => request(method, p, { form, clientId }),
     download: (p, name) => download(p, clientId, name),
+    blobUrl: (p) => blobUrl(p, clientId),
   };
 }
 

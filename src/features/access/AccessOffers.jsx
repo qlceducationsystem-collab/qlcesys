@@ -16,7 +16,7 @@ const TOOL_LABELS = [
 const PLAN_TEXT = {
   TOOLS_ALL: {
     tag: 'Herramientas',
-    text: 'Acceso a todas las herramientas financieras durante 30 días. Al terminar se bloquean y puedes renovar cuando quieras.',
+    text: 'Acceso a todas las herramientas financieras por 30 días o por 1 año. Al terminar se bloquean y puedes renovar cuando quieras.',
     list: ['Herramientas M1–M12 conectadas a tu plataforma', 'Mi portafolio de inversión, patrimonio, cortes e informe anual', 'La Masterclass no está incluida'],
   },
   FULL_ANNUAL: {
@@ -42,7 +42,7 @@ export function AccessOffers({ title = 'Elige cómo usar QLC Financial Education
   const [gift, setGift] = useState(null);
   const offers = accessInfo?.offers || [];
   const billing = accessInfo?.subscription?.billing || null;
-  const recurring = (offer) => accessInfo?.provider === 'DLOCALGO' && !!offer.billingCycle;
+  const recurring = (offer) => accessInfo?.provider !== 'MOCK' && !!offer.billingCycle;
   const [params, setParams] = useSearchParams();
   const renew = params.get('renovar');
   useEffect(() => {
@@ -77,6 +77,12 @@ export function AccessOffers({ title = 'Elige cómo usar QLC Financial Education
         {plans.map((offer) => {
           const info = PLAN_TEXT[offer.code];
           const active = status(offer);
+          const annual = offer.code === 'TOOLS_ALL' ? byCode('TOOLS_ANNUAL') : null;
+          const buyButton = (item, label) => (billing?.offerCode === item.code
+            ? <Pill key={item.code}>{tr('Suscripción activa')}</Pill>
+            : item.type === 'TOOL_ONLY' && toolsOwned && !toolsUntil
+              ? <Pill key={item.code}>{tr('Incluido en tu membresía')}</Pill>
+              : <Button key={item.code} variant={item.type === 'TOOL_ONLY' ? 'secondary' : undefined} onClick={() => setSelected(item)}>{label}</Button>);
           return (
             <article key={offer.code} className={`offer-card ${offer.code === 'DIAMOND_ANNUAL' ? 'is-featured' : ''}`}>
               <div className="offer-top">
@@ -86,12 +92,10 @@ export function AccessOffers({ title = 'Elige cómo usar QLC Financial Education
               <h3>{tr(offer.name)}</h3>
               <p>{tr(info.text)}</p>
               <ul className="offer-list">{info.list.map((l) => <li key={l}>{tr(l)}</li>)}</ul>
-              <div className="offer-price">{offerPrice(offer)}{' '}{recurring(offer) ? tr(offer.billingCycle === 'YEARLY' ? '/ año' : '/ mes') : offer.type === 'TOOL_ONLY' ? tr('/ 30 días') : tr('/ 1 año')}</div>
-              {billing?.offerCode === offer.code
-                ? <Pill>{tr('Suscripción activa')}</Pill>
-                : offer.type === 'TOOL_ONLY' && toolsOwned && !toolsUntil
-                ? <Pill>{tr('Incluido en tu membresía')}</Pill>
-                : <Button variant={offer.code === 'TOOLS_ALL' ? 'secondary' : undefined} onClick={() => setSelected(offer)}>{active ? tr('Renovar') : tr('Adquirir')}</Button>}
+              <div className="offer-price">{offerPrice(offer)}{' '}{offer.type === 'TOOL_ONLY' ? tr('/ 30 días') : recurring(offer) ? tr(offer.billingCycle === 'YEARLY' ? '/ año' : '/ mes') : tr('/ 1 año')}</div>
+              {annual && <div className="offer-price">{offerPrice(annual)}{' '}{tr('/ 1 año')}</div>}
+              {buyButton(offer, annual ? (active ? tr('Renovar por 30 días') : tr('Adquirir por 30 días')) : active ? tr('Renovar') : tr('Adquirir'))}
+              {annual && buyButton(annual, active ? tr('Renovar por 1 año') : tr('Adquirir por 1 año'))}
               {offer.giftable !== false && <Button variant="secondary" onClick={() => setGift(offer)}>{tr('🎁 Regalar')}</Button>}
             </article>
           );

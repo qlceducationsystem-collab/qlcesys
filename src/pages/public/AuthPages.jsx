@@ -7,6 +7,7 @@ import { CodeInput, Field, FormError, Input } from '../../components/ui/Form.jsx
 import { useI18n } from '../../i18n/I18nContext.jsx';
 import { BRAND_FULL } from '../../components/layout/Brand.jsx';
 import { LEGAL_PATHS, LEGAL_VERSION } from './legal/legalContent.js';
+import { COUNTRIES } from '../../shared/countries.js';
 
 function AuthCard({ title, subtitle, children, footer, wide }) {
   return (
@@ -142,7 +143,9 @@ export function Register() {
   const { t, lang } = useI18n();
   const nav = useNavigate();
   const loc = useLocation();
-  const f = useForm({ name: '', email: '', password: '', confirm: '', code: '' });
+  const f = useForm({ name: '', email: '', residenceCountry: '', password: '', confirm: '', code: '' });
+  const countryLang = lang === 'en' ? 'en' : 'es';
+  const countries = [...COUNTRIES].sort((a, b) => a[countryLang].localeCompare(b[countryLang], countryLang));
   const [local, setLocal] = useState(null);
   const [accepted, setAccepted] = useState(false);
   const [verify, setVerify] = useState(null);
@@ -196,6 +199,12 @@ export function Register() {
       <form className="stack" onSubmit={submit}>
         <Field label={t('auth.register.name')}><Input required autoComplete="name" maxLength={120} {...f.bind('name')} /></Field>
         <Field label={t('auth.email')}><Input type="email" required autoComplete="email" {...f.bind('email')} /></Field>
+        <Field label={t('auth.register.country')}>
+          <select className="input" required autoComplete="country" {...f.bind('residenceCountry')}>
+            <option value="">{t('auth.register.countrySelect')}</option>
+            {countries.map((c) => <option key={c.code} value={c.code}>{c[countryLang]}</option>)}
+          </select>
+        </Field>
         <Field label={t('auth.password')} hint={t('auth.minChars')}><Input type="password" required minLength={8} autoComplete="new-password" {...f.bind('password')} /></Field>
         <Field label={t('auth.confirmPassword')}><Input type="password" required minLength={8} autoComplete="new-password" {...f.bind('confirm')} /></Field>
         <label className="check legal-check">

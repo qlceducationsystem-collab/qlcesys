@@ -165,6 +165,8 @@ export const en = {
       codeResent: 'We sent you a new code.',
       changeEmail: 'Change email',
       acceptRequired: 'You must accept the Terms and the Privacy notice',
+      country: 'Country of residence',
+      countrySelect: 'Select your country',
       acceptBefore: 'I have read and accept the ',
       acceptAnd: ' and the ',
       submit: 'Create account',

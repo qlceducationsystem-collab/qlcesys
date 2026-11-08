@@ -11,9 +11,24 @@ import { Button } from '../../components/ui/Button.jsx';
 import { CodeInput, Field, FormError, Input } from '../../components/ui/Form.jsx';
 import { Modal } from '../../components/ui/Modal.jsx';
 import { AccessOffers } from '../../features/access/AccessOffers.jsx';
+import { BitgetReportsCard } from '../../features/access/BitgetPayment.jsx';
 import { tr } from '../../i18n/tr.js';
 import { DataShareCard } from '../../features/share/DataShare.jsx';
 import { GiftShop, MyGifts, PromoCodeCard, RedeemCard, SubscriptionCard } from '../../features/gifts/ClientCommerce.jsx';
+
+function RetentionInfo() {
+  return (
+    <Card title={tr('Si no renuevas tu acceso')}>
+      <p className="small muted">{tr('Cuando vence tu acceso tienes un mes para pagar. Si no pagas, tu cuenta y tus datos se eliminan de forma definitiva:')}</p>
+      <ul className="small">
+        <li>{tr('A los 10 días sin pagar te avisamos que en 20 días se eliminará tu cuenta.')}</li>
+        <li>{tr('A los 20 días sin pagar te avisamos que en 10 días se eliminará.')}</li>
+        <li>{tr('A los 29 días sin pagar te avisamos que en 1 día se eliminará.')}</li>
+        <li>{tr('A los 30 días sin pagar tu cuenta queda eliminada.')}</li>
+      </ul>
+    </Card>
+  );
+}
 
 function clearPeriodSelection() {
   try {
@@ -163,6 +178,8 @@ export default function AccessPage() {
       <PageHeader kicker={tr('Mi acceso')} title={tr('Acceso a QLC Financial Education')} subtitle={`Modalidad actual: ${ACCESS_MODES[access.mode]}`} />
       {isClient && <SubscriptionCard />}
       <AccessOffers title={tr('Formas de adquirir')} />
+      {isClient && <BitgetReportsCard key={accessInfo?.access?.mode} />}
+      {isClient && <RetentionInfo />}
       {isClient && <PromoCodeCard />}
       {isClient && <GiftShop />}
       {isClient && <MyGifts />}
@@ -175,7 +192,7 @@ export default function AccessPage() {
             { key: 'createdAt', label: tr('Fecha'), render: (a) => dateTime(a.createdAt) },
             { key: 'offer', label: tr('Producto'), render: (a) => a.offer?.name },
             { key: 'amount', label: tr('Monto'), align: 'right', render: (a) => (a.amount === null ? tr('Por definir') : `${priceMoney(a.amount)} ${a.currency}${a.chargedAmount !== null && a.chargedAmount !== undefined && a.chargedCurrency !== a.currency ? ` · ${priceMoney(a.chargedAmount)} ${a.chargedCurrency}` : ''}`) },
-            { key: 'provider', label: tr('Proveedor'), render: (a) => ({ MOCK: tr('Simulado'), PAYPAL: 'PayPal', DLOCALGO: tr('Pago local') }[a.provider] || tr('Tarjeta')) },
+            { key: 'provider', label: tr('Proveedor'), render: (a) => ({ MOCK: tr('Simulado'), PAYPAL: 'PayPal', DLOCALGO: tr('Pago local'), BITGET: 'Bitget' }[a.provider] || tr('Tarjeta')) },
             { key: 'status', label: tr('Estado'), render: (a) => <Pill variant={a.status === 'APPROVED' ? '' : a.status === 'REJECTED' ? 'bad' : 'warn'}>{tr(PAYMENT_STATUS[a.status])}</Pill> },
           ]}
         />

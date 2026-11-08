@@ -9,6 +9,8 @@ export const setTrLang = (lang) => {
   current = lang === 'en' ? 'en' : 'es';
 };
 
+export const getLanguage = () => current;
+
 export function tr(text, vars) {
   if (typeof text !== 'string') return text;
   const value = current === 'en' ? EN[text] ?? EN[text.trim()] ?? text : text;

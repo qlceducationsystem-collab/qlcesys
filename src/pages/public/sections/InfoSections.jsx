@@ -74,7 +74,7 @@ export function FeatureSection({ section, go }) {
 }
 
 const PUBLIC_PLANS = [
-  ['TOOLS_ALL', { es: ['Herramientas', '30 días', 'Todas las herramientas financieras durante 30 días. Se bloquean al terminar y se renuevan cuando quieras. No incluye la Masterclass.'], en: ['Tools', '30 days', 'All financial tools for 30 days. They lock when the period ends and can be renewed anytime. Masterclass not included.'] }],
+  ['TOOLS_ALL', { es: ['Herramientas', '30 días', 'Todas las herramientas financieras por 30 días o por 1 año. Se bloquean al terminar y se renuevan cuando quieras. No incluye la Masterclass.'], en: ['Tools', '30 days', 'All financial tools for 30 days or 1 year. They lock when the period ends and can be renewed anytime. Masterclass not included.'] }],
   ['FULL_ANNUAL', { es: ['Membresía anual', '1 año', 'Todas las herramientas y todos los módulos de la Masterclass durante 12 meses.'], en: ['Annual membership', '1 year', 'All tools and every Masterclass module for 12 months.'] }],
   ['DIAMOND_ANNUAL', { es: ['Membresía anual', '1 año', 'Todo lo de QLC Premium Access más 6 sesiones de orientación personalizada de 20 minutos.'], en: ['Annual membership', '1 year', 'Everything in QLC Premium Access plus 6 personal guidance sessions of 20 minutes.'] }],
 ];
@@ -101,6 +101,7 @@ export function AccessSection({ section, offers, go }) {
               <h3>{offer.name}</h3>
               <p>{text}</p>
               <div className="access-price">{priceLabel(offer, t)}<small> / {period}</small></div>
+              {code === 'TOOLS_ALL' && find('TOOLS_ANNUAL') && <div className="access-price">{priceLabel(find('TOOLS_ANNUAL'), t)}<small> / {lang === 'es' ? '1 año' : '1 year'}</small></div>}
               {offer.giftable !== false && <CtaButton label={lang === 'es' ? '🎁 Regalar' : '🎁 Give as a gift'} target="/app/acceso#regalar" go={go} variant="ghost" />}
             </article>
           );

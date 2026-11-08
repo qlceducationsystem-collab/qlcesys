@@ -1,3 +1,4 @@
+import { COUNTRIES, countryName } from '../../shared/countries.js';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../../api/client.js';
@@ -11,7 +12,7 @@ import { FormError } from '../../components/ui/Form.jsx';
 import { AsyncView } from '../../components/ui/States.jsx';
 import { DataTable } from '../../components/ui/DataTable.jsx';
 import { accessPill } from './AdminClients.jsx';
-import { tr } from '../../i18n/tr.js';
+import { getLanguage, tr } from '../../i18n/tr.js';
 
 const SOURCE_LABELS = { PAGO: 'Pago', MANUAL: 'Manual', REGALO: 'Regalo', PROMOCION: 'Pago promocional' };
 
@@ -63,6 +64,31 @@ function TwoFactorReset({ client, onSaved }) {
   );
 }
 
+function ResidenceCountry({ client, canEdit, onSaved }) {
+  const [error, setError] = useState(null);
+  const lang = getLanguage() === 'en' ? 'en' : 'es';
+  const list = [...COUNTRIES].sort((a, b) => a[lang].localeCompare(b[lang], lang));
+  const save = async (e) => {
+    setError(null);
+    try {
+      await api.patch(`/admin/clients/${client.id}/residence-country`, { residenceCountry: e.target.value });
+      onSaved();
+    } catch (err) {
+      setError(err);
+    }
+  };
+  if (!canEdit) return countryName(client.residenceCountry, lang) || '—';
+  return (
+    <>
+      <select className="input" value={client.residenceCountry || ''} onChange={save} aria-label={tr('País de residencia')}>
+        {!client.residenceCountry && <option value="">—</option>}
+        {list.map((c) => <option key={c.code} value={c.code}>{c[lang]}</option>)}
+      </select>
+      <FormError error={error} />
+    </>
+  );
+}
+
 export default function AdminClientDetail() {
   const { clientId } = useParams();
   const { user } = useAuth();
@@ -99,6 +125,7 @@ export default function AdminClientDetail() {
               <Row label={tr('Verificación en dos pasos')} value={<Pill variant={c.twoFactorEnabled ? '' : 'warn'}>{c.twoFactorEnabled ? tr('Activa') : tr('Pendiente')}</Pill>} />
               {user?.adminLevel === 'FULL' && <TwoFactorReset client={c} onSaved={client.reload} />}
               <Row label={tr('Teléfono')} value={c.phone || '—'} />
+              <Row label={tr('País de residencia')} value={<ResidenceCountry client={c} canEdit={user?.adminLevel === 'FULL' || user?.adminLevel === 'EDIT'} onSaved={client.reload} />} />
               <Row label={tr('Último acceso')} value={dateTime(c.lastLoginAt)} />
               <Row label={tr('Periodos / cortes / citas')} value={`${c.counts.periods} / ${c.counts.monthlyCloses} / ${c.counts.appointments}`} />
               <Row label={tr('Cliente desde')} value={date(c.createdAt)} />
